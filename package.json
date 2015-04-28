@@ -1,0 +1,14 @@
+{
+  "name": "connect-plugin",
+  "description": "basic example heroku plugin",
+  "version": "0.0.1",
+  "author": "Scott Persinger @persingerscott",
+  "bugs": {
+    "url": "https://github.com/heroku/heroku-hello-world/issues"
+  },
+  "keywords": [
+    "heroku-plugin"
+  ],
+  "license": "ISC",
+  "main": "index.js"
+}
