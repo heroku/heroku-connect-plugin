@@ -1,10 +1,10 @@
 {
   "name": "connect-plugin",
-  "description": "basic example heroku plugin",
+  "description": "Minimal Heroku Connect plugin for Heroku Toolbelt",
   "version": "0.0.1",
   "author": "Scott Persinger @persingerscott",
   "bugs": {
-    "url": "https://github.com/heroku/heroku-hello-world/issues"
+    "url": "https://github.com/heroku/heroku-connect-plugin/issues"
   },
   "keywords": [
     "heroku-plugin"
