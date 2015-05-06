@@ -10,5 +10,9 @@
     "heroku-plugin"
   ],
   "license": "ISC",
-  "main": "index.js"
+  "main": "index.js",
+  "dependencies": {
+    "heroku-client": "^1.10.0",
+    "q": "^1.3.0"
+  }
 }
