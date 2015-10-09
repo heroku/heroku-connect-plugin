@@ -1,7 +1,7 @@
 {
   "name": "heroku-connect-plugin",
   "description": "Minimal Heroku Connect plugin for Heroku Toolbelt",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "author": "Scott Persinger @persingerscott",
   "bugs": {
     "url": "https://github.com/heroku/heroku-connect-plugin/issues"
