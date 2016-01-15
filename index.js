@@ -1,7 +1,7 @@
 'use strict';
 exports.topics = [{
   name: 'connect',
-  description: 'manage connections for heroku connect'
+  description: 'manage connections for Heroku Connect'
 }];
 
 exports.commands = [
