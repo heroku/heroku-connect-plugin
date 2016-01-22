@@ -20,6 +20,8 @@ Heroku Connect Toolbelt Plugin
     heroku connect:setup             - configure a new connection
     heroku connect:state             - Return the state flag for a single connection
     heroku connect:status            - Print connection status
+    heroku connect:pause             - Pause a connection
+    heroku connect:resume            - Resume a connection
 
 # Examples
 
