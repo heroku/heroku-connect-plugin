@@ -15,6 +15,7 @@ exports.commands = [
   require('./lib/commands/connect/export'),
   require('./lib/commands/connect/pause'),
   require('./lib/commands/connect/resume'),
+  require('./lib/commands/connect/restart'),
   require('./lib/commands/connect/create-mapping'),
   require('./lib/commands/connect/delete-mapping')
 ];
