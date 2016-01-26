@@ -22,6 +22,7 @@ Heroku Connect Toolbelt Plugin
     heroku connect:status            - Print connection status
     heroku connect:pause             - Pause a connection
     heroku connect:resume            - Resume a connection
+    heroku connect:restart           - Restart a connection
 
 # Examples
 
