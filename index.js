@@ -5,7 +5,7 @@ exports.topics = [{
 }];
 
 exports.commands = [
-  require('./lib/commands/connect/status'),
+  require('./lib/commands/connect/info'),
   require('./lib/commands/connect/state'),
   require('./lib/commands/connect/preauth'),
   require('./lib/commands/connect/auth_connection'),
