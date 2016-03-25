@@ -3,6 +3,10 @@
   "description": "Heroku Connect plugin for Heroku Toolbelt",
   "version": "0.3.2",
   "author": "Heroku (@heroku)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heroku/heroku-connect-plugin.git"
+  },
   "bugs": {
     "url": "https://github.com/heroku/heroku-connect-plugin/issues"
   },
