@@ -16,5 +16,6 @@ exports.commands = [
   require('./lib/commands/connect/resume'),
   require('./lib/commands/connect/restart'),
   require('./lib/commands/connect/mapping-state'),
-  require('./lib/commands/connect/mapping-delete')
+  require('./lib/commands/connect/mapping-delete'),
+  require('./lib/commands/connect/mapping-reload')
 ];
