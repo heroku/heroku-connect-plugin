@@ -7,7 +7,7 @@ exports.topics = [{
 exports.commands = [
   require('./lib/commands/connect/info'),
   require('./lib/commands/connect/state'),
-  require('./lib/commands/connect/auth_connection'),
+  require('./lib/commands/connect/auth'),
   require('./lib/commands/connect/setup'),
   require('./lib/commands/connect/import'),
   require('./lib/commands/connect/export'),
