@@ -34,13 +34,6 @@ Download an existing mapping configuration
 
 # Tutorial
 
-Create an authorization into your Salesforce org. Note the result token.
-
-    heroku connect:preauth
-
-    Token: xxx
-
-
 Make sure you have a Heroku app, with a Postgres database attached
 
 Add the Heroku Connect add-on to your app
@@ -51,9 +44,17 @@ Link the new connection (the Heroku Connect add-on instance) to your Heroku user
 
     $ heroku connect:info
 
-Now link the connection to the database and the Salesforce Org, using the preauth token
+Now link the connection to the database, specifying the config var and schema name
 
-    $ heroku connect:setup -d DATABASE_URL -s salesforce -t <token from step 1>
+    $ heroku connect:setup -d DATABASE_URL -s salesforce
+    Configuring connection with
+     { schema_name: 'salesforce', db_key: 'DATABASE_URL' }
+    Setup complete
+
+Authorize the connection to access your Salesforce organization
+
+    $ heroku connect:auth
+    Auth response  https://login.salesforce.com/services/oauth2/authorize?…
 
 Verify that connection is now in 'IDLE' state
 
