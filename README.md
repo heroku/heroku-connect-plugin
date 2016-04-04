@@ -65,9 +65,16 @@ This will launch your browser for an interactive authorization session.
     $ heroku connect:state
     IDLE
 
-## Now sync the Contact table
+## Now restore the exported configuration
 
-    $ heroku connect:mapping:create Contact --fields FirstName,LastName --mode write --with-required -a <app>
+This could be exported using the `connect:export` command or directly through the Heroku Connect dashboard. By editing this configuration file, you can add and edit existing mappings easily.
+
+    $ heroku connect:import app-name-resource-name.json
+    Upload complete
+
+If you need to delete a mapping after the configuration has been imported, you can use a separate command for that:
+
+    $ heroku connect:mapping:delete Contact
 
 ## Connect to your database to see the data
 
