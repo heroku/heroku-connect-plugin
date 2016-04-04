@@ -36,36 +36,36 @@ Download an existing mapping configuration
 
 Make sure you have a Heroku app, with a Postgres database attached
 
-Add the Heroku Connect add-on to your app
+## Add the Heroku Connect add-on to your app
 
     $ heroku addons:create herokuconnect
 
-Link the new connection (the Heroku Connect add-on instance) to your Heroku user
+## Link the new connection (the Heroku Connect add-on instance) to your Heroku user
 
     $ heroku connect:info
 
-Now link the connection to the database, specifying the config var and schema name
+## Now link the connection to the database, specifying the config var and schema name
 
     $ heroku connect:setup -d DATABASE_URL -s salesforce
     Configuring connection with
      { schema_name: 'salesforce', db_key: 'DATABASE_URL' }
     Setup complete
 
-Authorize the connection to access your Salesforce organization
+## Authorize the connection to access your Salesforce organization
 
     $ heroku connect:auth
     Auth response  https://login.salesforce.com/services/oauth2/authorize?…
 
-Verify that connection is now in 'IDLE' state
+## Verify that connection is now in 'IDLE' state
 
     $ heroku connect:info
     .. check for '(IDLE)'
 
-Now sync the Contact table
+## Now sync the Contact table
 
     $ heroku connect:mapping:create Contact --fields FirstName,LastName --mode write --with-required -a <app>
 
-Connect to your database to see the data
+## Connect to your database to see the data
 
     $ heroku pg:psql
     > select * from salesforce.contact;
