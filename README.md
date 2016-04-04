@@ -27,7 +27,7 @@ Heroku Connect Toolbelt Plugin
 
 # Examples
 
-Download the mapping configuration
+Download an existing mapping configuration
 
     heroku connect:export
 
