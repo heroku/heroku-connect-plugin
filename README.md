@@ -29,7 +29,8 @@ Heroku Connect Toolbelt Plugin
 
 Download an existing mapping configuration
 
-    heroku connect:export
+    $ heroku connect:export
+    Saved config-file: app-name-resource-name.json
 
 # Tutorial
 
