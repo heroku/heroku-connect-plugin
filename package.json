@@ -18,6 +18,6 @@
   "dependencies": {
     "co": "4.6.0",
     "heroku-cli-util": "^5.4.6",
-    "heroku-client": "^1.10.0",
+    "heroku-client": "^1.10.0"
   }
 }
