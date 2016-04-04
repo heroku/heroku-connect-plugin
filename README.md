@@ -58,8 +58,8 @@ Make sure you have a Heroku app, with a Postgres database attached
 
 ## Verify that connection is now in 'IDLE' state
 
-    $ heroku connect:info
-    .. check for '(IDLE)'
+    $ heroku connect:state
+    IDLE
 
 ## Now sync the Contact table
 
