@@ -12,17 +12,18 @@ Heroku Connect Toolbelt Plugin
 
 # Commands
 
-    heroku connect:auth                   - Authenticate a connection to Salesforce
-    heroku connect:preauth                - Store a Salesforce authentication for future use
-    heroku connect:export                 - Export a mapping configuration JSON file
-    heroku connect:import                 - Import a mapping configuration JSON file
-    heroku connect:info                   - Display connection information 
-    heroku connect:mapping:state MAPPING  - Returns the state of a mapping
-    heroku connect:setup                  - Configure a new connection
-    heroku connect:state                  - Return the state flag for a single connection
-    heroku connect:pause                  - Pause a connection
-    heroku connect:resume                 - Resume a connection
-    heroku connect:restart                - Restart a connection
+    heroku connect:auth                    - Authenticate a connection to Salesforce
+    heroku connect:export                  - Export a mapping configuration JSON file
+    heroku connect:import FILE             - Import a mapping configuration JSON file
+    heroku connect:info                    - Display connection information 
+    heroku connect:mapping:state MAPPING   - Return the state of a mapping
+    heroku connect:mapping:delete MAPPING  - Delete an existing mapping
+    heroku connect:mapping:reload MAPPING  - Reload a mapping's data from Salesforce
+    heroku connect:pause                   - Pause a connection
+    heroku connect:resume                  - Resume a connection
+    heroku connect:restart                 - Restart a connection
+    heroku connect:setup                   - Configure a new connection
+    heroku connect:state                   - Return the state flag for a single connection
 
 # Examples
 
