@@ -54,7 +54,11 @@ Make sure you have a Heroku app, with a Postgres database attached
 ## Authorize the connection to access your Salesforce organization
 
     $ heroku connect:auth
-    Auth response  https://login.salesforce.com/services/oauth2/authorize?…
+    Launching Salesforce for authorization. If your browser doesn't open, please copy the following URL to proceed:
+
+    https://login.salesforce.com/services/oauth2/authorize?…
+
+This will launch your browser for an interactive authorization session.
 
 ## Verify that connection is now in 'IDLE' state
 
