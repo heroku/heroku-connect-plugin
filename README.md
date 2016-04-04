@@ -44,19 +44,19 @@ Make sure you have a Heroku app, with a Postgres database attached
 
 Add the Heroku Connect add-on to your app
 
-    $ heroku addons:create herokuconnect -a <app>
+    $ heroku addons:create herokuconnect
 
 Link the new connection (the Heroku Connect add-on instance) to your Heroku user
 
-    $ heroku connect:info -a <app>
+    $ heroku connect:info
 
 Now link the connection to the database and the Salesforce Org, using the preauth token
 
-    $ heroku connect:setup -d DATABASE_URL -s salesforce -t <token from step 1> -a <app>
+    $ heroku connect:setup -d DATABASE_URL -s salesforce -t <token from step 1>
 
 Verify that connection is now in 'IDLE' state
 
-    $ heroku connect:info -a <app>
+    $ heroku connect:info
     .. check for '(IDLE)'
 
 Now sync the Contact table
@@ -65,6 +65,6 @@ Now sync the Contact table
 
 Connect to your database to see the data
 
-    $ heroku pg:psql -a <app>
+    $ heroku pg:psql
     > select * from salesforce.contact;
 
