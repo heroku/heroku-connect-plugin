@@ -12,7 +12,7 @@ Heroku Connect Toolbelt Plugin
 
 # Commands
 
-    heroku connect:db:set                  - Configure a new connection
+    heroku connect:db:set                  - Set database parameters
     heroku connect:export                  - Export a mapping configuration JSON file
     heroku connect:import FILE             - Import a mapping configuration JSON file
     heroku connect:info                    - Display connection information 
@@ -46,10 +46,12 @@ Make sure you have a Heroku app, with a Postgres database attached
 
 ## Now link the connection to the database, specifying the config var and schema name
 
-    $ heroku connect:db:set DATABASE_URL salesforce
-    Configuring connection with
-     { schema_name: 'salesforce', db_key: 'DATABASE_URL' }
-    Setup complete
+    $ heroku connect:db:set --db=DATABASE_URL --schema=salesforce
+    settings database parameters... done
+    db_key:      DATABASE_URL
+    schema_name: salesforce
+
+If either option is not supplied, this command will ask for a value.
 
 ## Authorize the connection to access your Salesforce organization
 
