@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 exports.topics = [{
   name: 'connect',
   description: 'manage connections for Heroku Connect'
-}];
+}]
 
 exports.commands = [
   require('./lib/commands/connect/info'),
@@ -17,4 +17,4 @@ exports.commands = [
   require('./lib/commands/connect/mapping-state'),
   require('./lib/commands/connect/mapping-delete'),
   require('./lib/commands/connect/mapping-reload')
-];
+]
