@@ -83,3 +83,10 @@ If you need to delete a mapping after the configuration has been imported, you c
     $ heroku pg:psql
     > select * from salesforce.contact;
 
+## Contributing
+
+Read the following:
+
+- [Developing CLI Plugins](https://devcenter.heroku.com/articles/developing-cli-plugins)
+- [Testing CLI Plugins](https://devcenter.heroku.com/articles/testing-cli-plugins)
+- [CLI Style Guide](https://devcenter.heroku.com/articles/cli-style-guide)
