@@ -15,6 +15,9 @@
   ],
   "license": "ISC",
   "main": "index.js",
+  "scripts": {
+    "test": "mocha && standard"
+  },
   "dependencies": {
     "co": "4.6.0",
     "heroku-cli-util": "^5.4.6",
