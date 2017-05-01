@@ -50,7 +50,7 @@ function * run (context, heroku) {
 		yield cli.open(redir)
 	}))
 
-	console.log("\nIf your browser doesn't open, please copy the following URL to proceed:\n" + redir + '\n')
+	cli.log("\nIf your browser doesn't open, please copy the following URL to proceed:\n" + redir + '\n')
 
 	yield cli.action('waiting for authorization', callbackServer())
 }
