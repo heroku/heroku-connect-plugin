@@ -4,7 +4,7 @@
 const cli = require('heroku-cli-util')
 const nock = require('nock')
 const expect = require('unexpected')
-const stateCmd = require('../../../lib/commands/connect/state')
+const stateCmd = require('../../../commands/connect/state')
 
 describe('connect:state', () => {
   // prevent stdout/stderr from displaying

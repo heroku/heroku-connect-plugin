@@ -1,6 +1,6 @@
 'use strict'
-const api = require('./shared.js')
-const regions = require('./regions.js')
+const api = require('../../lib/connect/api.js')
+const regions = require('../../lib/connect/regions.js')
 const cli = require('heroku-cli-util')
 const co = require('co')
 const fs = require('fs')

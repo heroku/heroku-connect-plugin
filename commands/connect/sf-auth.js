@@ -1,6 +1,6 @@
 'use strict'
-const api = require('./shared.js')
-const regions = require('./regions.js')
+const api = require('../../lib/connect/api.js')
+const regions = require('../../lib/connect/regions.js')
 const cli = require('heroku-cli-util')
 const co = require('co')
 const http = require('http')
@@ -26,6 +26,35 @@ function callbackServer () {
   })
 }
 
+function * run (context, heroku) {
+	context.region = regions.determineRegion(context)
+	let redir
+
+	yield cli.action('fetching authorizing URL', co(function * () {
+		let connection = yield api.withConnection(context, heroku)
+
+		let url = '/api/v3/connections/' + connection.id + '/authorize_url'
+		let args = {
+			'environment': 'production',
+			// Redirect to the local server created in callbackServer(), so the CLI
+			// can respond immediately after successful authorization
+			'next': `http://localhost:${LOCAL_PORT}`
+		}
+		if (context.flags.login) {
+			args.login_url = context.flags.login
+		}
+
+		let response = yield api.request(context, 'POST', url, args)
+		redir = response.json.redirect
+
+		yield cli.open(redir)
+	}))
+
+	console.log("\nIf your browser doesn't open, please copy the following URL to proceed:\n" + redir + '\n')
+
+	yield cli.action('waiting for authorization', callbackServer())
+}
+
 module.exports = {
   topic: 'connect',
   command: 'sf:auth',
@@ -39,32 +68,5 @@ module.exports = {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = regions.determineRegion(context)
-    let redir
-
-    yield cli.action('fetching authorizing URL', co(function * () {
-      let connection = yield api.withConnection(context, heroku)
-
-      let url = '/api/v3/connections/' + connection.id + '/authorize_url'
-      let args = {
-        'environment': 'production',
-        // Redirect to the local server created in callbackServer(), so the CLI
-        // can respond immediately after successful authorization
-        'next': `http://localhost:${LOCAL_PORT}`
-      }
-      if (context.flags.login) {
-        args.login_url = context.flags.login
-      }
-
-      let response = yield api.request(context, 'POST', url, args)
-      redir = response.json.redirect
-
-      yield cli.open(redir)
-    }))
-
-    console.log("\nIf your browser doesn't open, please copy the following URL to proceed:\n" + redir + '\n')
-
-    yield cli.action('waiting for authorization', callbackServer())
-  }))
+  run: cli.command(co.wrap(run))
 }
