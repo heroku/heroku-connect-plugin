@@ -16,7 +16,8 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "test": "mocha && standard"
+    "test": "mocha && standard",
+    "style-fix": "standard --fix"
   },
   "dependencies": {
     "co": "4.6.0",

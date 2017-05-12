@@ -27,32 +27,32 @@ function callbackServer () {
 }
 
 function * run (context, heroku) {
-	context.region = regions.determineRegion(context)
-	let redir
+  context.region = regions.determineRegion(context)
+  let redir
 
-	yield cli.action('fetching authorizing URL', co(function * () {
-		let connection = yield api.withConnection(context, heroku)
+  yield cli.action('fetching authorizing URL', co(function * () {
+    let connection = yield api.withConnection(context, heroku)
 
-		let url = '/api/v3/connections/' + connection.id + '/authorize_url'
-		let args = {
-			'environment': 'production',
-			// Redirect to the local server created in callbackServer(), so the CLI
-			// can respond immediately after successful authorization
-			'next': `http://localhost:${LOCAL_PORT}`
-		}
-		if (context.flags.login) {
-			args.login_url = context.flags.login
-		}
+    let url = '/api/v3/connections/' + connection.id + '/authorize_url'
+    let args = {
+      'environment': 'production',
+      // Redirect to the local server created in callbackServer(), so the CLI
+      // can respond immediately after successful authorization
+      'next': `http://localhost:${LOCAL_PORT}`
+    }
+    if (context.flags.login) {
+      args.login_url = context.flags.login
+    }
 
-		let response = yield api.request(context, 'POST', url, args)
-		redir = response.json.redirect
+    let response = yield api.request(context, 'POST', url, args)
+    redir = response.json.redirect
 
-		yield cli.open(redir)
-	}))
+    yield cli.open(redir)
+  }))
 
-	cli.log("\nIf your browser doesn't open, please copy the following URL to proceed:\n" + redir + '\n')
+  cli.log("\nIf your browser doesn't open, please copy the following URL to proceed:\n" + redir + '\n')
 
-	yield cli.action('waiting for authorization', callbackServer())
+  yield cli.action('waiting for authorization', callbackServer())
 }
 
 module.exports = {
