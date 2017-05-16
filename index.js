@@ -1,20 +1,20 @@
-'use strict';
+'use strict'
 exports.topics = [{
   name: 'connect',
   description: 'manage connections for Heroku Connect'
-}];
+}]
 
 exports.commands = [
-  require('./lib/commands/connect/info'),
-  require('./lib/commands/connect/state'),
-  require('./lib/commands/connect/import'),
-  require('./lib/commands/connect/export'),
-  require('./lib/commands/connect/pause'),
-  require('./lib/commands/connect/resume'),
-  require('./lib/commands/connect/restart'),
-  require('./lib/commands/connect/sf-auth'),
-  require('./lib/commands/connect/db-set'),
-  require('./lib/commands/connect/mapping-state'),
-  require('./lib/commands/connect/mapping-delete'),
-  require('./lib/commands/connect/mapping-reload')
-];
+  require('./commands/connect/info'),
+  require('./commands/connect/state'),
+  require('./commands/connect/import'),
+  require('./commands/connect/export'),
+  require('./commands/connect/pause'),
+  require('./commands/connect/resume'),
+  require('./commands/connect/restart'),
+  require('./commands/connect/sf-auth'),
+  require('./commands/connect/db-set'),
+  require('./commands/connect/mapping-state'),
+  require('./commands/connect/mapping-delete'),
+  require('./commands/connect/mapping-reload')
+]
