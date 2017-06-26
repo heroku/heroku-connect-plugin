@@ -22,5 +22,33 @@ module.exports = {
       let url = '/api/v3/connections/' + connection.id + '/diagnose'
       return yield api.request(context, 'GET', url)
     }))
+
+    cli.log() // Blank line to separate each section
+    cli.styledHeader(`Connection: ${connection.name}`)
+    displayResults(results);
+
+    for (let object_name in results.mappings) {
+      cli.log() // Blank line to separate each section
+      cli.styledHeader(`Mapping: ${object_name}`)
+      displayResults(results.mappings[object_name])
+    }
   }))
+}
+
+function displayResults(results) {
+  results.errors.forEach(displayResult('red'))
+  results.warnings.forEach(displayResult('yellow'))
+  results.passes.forEach(displayResult('green'))
+}
+
+function displayResult(color) {
+  return function(result) {
+    cli.log(cli.color[color](`${color.toUpperCase()}: ${result.rule_name}`))
+    if(result.message) {
+      cli.log(result.message)
+      if(result.doc_url) {
+        cli.log(result.doc_url)
+      }
+    }
+  }
 }
