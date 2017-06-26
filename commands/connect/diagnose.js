@@ -17,8 +17,8 @@ module.exports = {
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
     context.region = regions.determineRegion(context)
+    let connection = yield api.withConnection(context, heroku)
     let results = yield cli.action('Diagnosing connection', co(function * () {
-      let connection = yield api.withConnection(context, heroku)
       let url = '/api/v3/connections/' + connection.id + '/diagnose'
       return yield api.request(context, 'GET', url)
     }))
