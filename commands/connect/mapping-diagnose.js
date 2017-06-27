@@ -25,7 +25,6 @@ module.exports = {
     let mapping = yield api.withMapping(connection, context.args.mapping)
     let results = yield cli.action('Diagnosing mapping', co(function * () {
       let url = '/api/v3/mappings/' + mapping.id + '/validations'
-      cli.debug(url)
       return yield api.request(context, 'GET', url)
     }))
 
