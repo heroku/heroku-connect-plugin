@@ -4,6 +4,28 @@ const regions = require('../../lib/connect/regions.js')
 const cli = require('heroku-cli-util')
 const co = require('co')
 
+function displayResults(results) {
+  results.errors.forEach(displayResult('red'))
+  results.warnings.forEach(displayResult('yellow'))
+  results.passes.forEach(displayResult('green', false))
+}
+
+function displayResult(color, display_messages) {
+  // Default to displaying messages, unless overridden
+  if (display_messages == undefined) {
+    display_messages = true
+  }
+  return function(result) {
+    cli.log(cli.color[color](`${color.toUpperCase()}: ${result.display_name}`))
+    if(display_messages) {
+      cli.log(result.message)
+      if(result.doc_url) {
+        cli.log(result.doc_url)
+      }
+    }
+  }
+}
+
 module.exports = {
   topic: 'connect',
   command: 'diagnose',
@@ -32,27 +54,8 @@ module.exports = {
       cli.styledHeader(`Mapping: ${object_name}`)
       displayResults(results.json.mappings[object_name])
     }
-  }))
-}
+  })),
 
-function displayResults(results) {
-  results.errors.forEach(displayResult('red'))
-  results.warnings.forEach(displayResult('yellow'))
-  results.passes.forEach(displayResult('green', false))
-}
-
-function displayResult(color, display_messages) {
-  // Default to displaying messages, unless overridden
-  if (display_messages == undefined) {
-    display_messages = true
-  }
-  return function(result) {
-    cli.log(cli.color[color](`${color.toUpperCase()}: ${result.display_name}`))
-    if(display_messages) {
-      cli.log(result.message)
-      if(result.doc_url) {
-        cli.log(result.doc_url)
-      }
-    }
-  }
+  // Additional exports for code sharing
+  displayResults: displayResults
 }
