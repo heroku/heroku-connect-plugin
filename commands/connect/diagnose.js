@@ -43,8 +43,8 @@ function displayResults(results) {
 
 function displayResult(color) {
   return function(result) {
-    cli.log(cli.color[color](`${color.toUpperCase()}: ${result.rule_name}`))
     if(result.message) {
+    cli.log(cli.color[color](`${color.toUpperCase()}: ${result.display_name}`))
       cli.log(result.message)
       if(result.doc_url) {
         cli.log(result.doc_url)
