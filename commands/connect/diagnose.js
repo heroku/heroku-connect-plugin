@@ -38,13 +38,17 @@ module.exports = {
 function displayResults(results) {
   results.errors.forEach(displayResult('red'))
   results.warnings.forEach(displayResult('yellow'))
-  results.passes.forEach(displayResult('green'))
+  results.passes.forEach(displayResult('green', false))
 }
 
-function displayResult(color) {
+function displayResult(color, display_messages) {
+  // Default to displaying messages, unless overridden
+  if (display_messages == undefined) {
+    display_messages = true
+  }
   return function(result) {
-    if(result.message) {
     cli.log(cli.color[color](`${color.toUpperCase()}: ${result.display_name}`))
+    if(display_messages) {
       cli.log(result.message)
       if(result.doc_url) {
         cli.log(result.doc_url)
