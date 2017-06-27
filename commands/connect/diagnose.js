@@ -25,7 +25,7 @@ module.exports = {
 
     cli.log() // Blank line to separate each section
     cli.styledHeader(`Connection: ${connection.name}`)
-    displayResults(results.json);
+    displayResults(results.json)
 
     for (let object_name in results.json.mappings) {
       cli.log() // Blank line to separate each section
