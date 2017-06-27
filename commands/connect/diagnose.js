@@ -19,7 +19,7 @@ module.exports = {
     context.region = regions.determineRegion(context)
     let connection = yield api.withConnection(context, heroku)
     let results = yield cli.action('Diagnosing connection', co(function * () {
-      let url = '/api/v3/connections/' + connection.id + '/diagnose'
+      let url = '/api/v3/connections/' + connection.id + '/validations'
       return yield api.request(context, 'GET', url)
     }))
 
