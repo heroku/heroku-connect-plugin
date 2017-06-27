@@ -14,8 +14,9 @@ exports.commands = [
   require('./commands/connect/restart'),
   require('./commands/connect/sf-auth'),
   require('./commands/connect/db-set'),
+  require('./commands/connect/diagnose'),
   require('./commands/connect/mapping-state'),
   require('./commands/connect/mapping-delete'),
   require('./commands/connect/mapping-reload'),
-  require('./commands/connect/diagnose')
+  require('./commands/connect/mapping-diagnose')
 ]
