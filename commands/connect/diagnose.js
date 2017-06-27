@@ -4,22 +4,22 @@ const regions = require('../../lib/connect/regions.js')
 const cli = require('heroku-cli-util')
 const co = require('co')
 
-function displayResults(results) {
+function displayResults (results) {
   results.errors.forEach(displayResult('red'))
   results.warnings.forEach(displayResult('yellow'))
   results.passes.forEach(displayResult('green', false))
 }
 
-function displayResult(color, display_messages) {
+function displayResult (color, displayMessages) {
   // Default to displaying messages, unless overridden
-  if (display_messages == undefined) {
-    display_messages = true
+  if (displayMessages === undefined) {
+    displayMessages = true
   }
-  return function(result) {
+  return function (result) {
     cli.log(cli.color[color](`${color.toUpperCase()}: ${result.display_name}`))
-    if(display_messages) {
+    if (displayMessages) {
       cli.log(result.message)
-      if(result.doc_url) {
+      if (result.doc_url) {
         cli.log(result.doc_url)
       }
     }
@@ -49,10 +49,10 @@ module.exports = {
     cli.styledHeader(`Connection: ${connection.name}`)
     displayResults(results.json)
 
-    for (let object_name in results.json.mappings) {
+    for (let objectName in results.json.mappings) {
       cli.log() // Blank line to separate each section
-      cli.styledHeader(`Mapping: ${object_name}`)
-      displayResults(results.json.mappings[object_name])
+      cli.styledHeader(`Mapping: ${objectName}`)
+      displayResults(results.json.mappings[objectName])
     }
   })),
 
