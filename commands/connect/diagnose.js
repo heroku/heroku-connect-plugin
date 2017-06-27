@@ -25,12 +25,12 @@ module.exports = {
 
     cli.log() // Blank line to separate each section
     cli.styledHeader(`Connection: ${connection.name}`)
-    displayResults(results);
+    displayResults(results.json);
 
-    for (let object_name in results.mappings) {
+    for (let object_name in results.json.mappings) {
       cli.log() // Blank line to separate each section
       cli.styledHeader(`Mapping: ${object_name}`)
-      displayResults(results.mappings[object_name])
+      displayResults(results.json.mappings[object_name])
     }
   }))
 }
