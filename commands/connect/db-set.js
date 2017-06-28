@@ -32,7 +32,7 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = regions.determineRegion(context)
+    context.region = yield regions.determineRegion(context, heroku)
     let data = {
       db_key: context.flags.db,
       schema_name: context.flags.schema

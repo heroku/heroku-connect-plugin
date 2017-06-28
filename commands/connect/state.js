@@ -5,7 +5,7 @@ const cli = require('heroku-cli-util')
 const co = require('co')
 
 function * run (context, heroku) {
-  context.region = regions.determineRegion(context)
+  context.region = yield regions.determineRegion(context, heroku)
   let connections = yield api.withUserConnections(context, context.app, context.flags, heroku)
 
   connections.forEach(function (connection) {

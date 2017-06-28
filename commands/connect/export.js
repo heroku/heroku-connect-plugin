@@ -17,7 +17,7 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = regions.determineRegion(context)
+    context.region = yield regions.determineRegion(context, heroku)
     let connection, response
 
     yield cli.action('fetching configuration', co(function * () {

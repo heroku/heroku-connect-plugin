@@ -20,7 +20,7 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = regions.determineRegion(context)
+    context.region = yield regions.determineRegion(context, heroku)
     yield cli.confirmApp(context.app, context.flags.confirm)
 
     yield cli.action('deleting mapping', co(function * () {
