@@ -29,7 +29,7 @@ module.exports = {
     }))
 
     cli.log() // Blank line to separate each section
-    cli.styledHeader(`Mapping: ${mapping.object_name}`)
+    cli.styledHeader(mapping.object_name)
     diagnose.displayResults(results.json)
   }))
 }

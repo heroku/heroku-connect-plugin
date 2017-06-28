@@ -51,7 +51,7 @@ module.exports = {
 
     for (let objectName in results.json.mappings) {
       cli.log() // Blank line to separate each section
-      cli.styledHeader(`Mapping: ${objectName}`)
+      cli.styledHeader(objectName)
       displayResults(results.json.mappings[objectName])
     }
   })),
