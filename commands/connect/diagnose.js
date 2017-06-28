@@ -46,7 +46,7 @@ module.exports = {
     }))
 
     cli.log() // Blank line to separate each section
-    cli.styledHeader(`Connection: ${connection.name}`)
+    cli.styledHeader(`Connection: ${connection.name || connection.internal_name}`)
     displayResults(results.json)
 
     for (let objectName in results.json.mappings) {
