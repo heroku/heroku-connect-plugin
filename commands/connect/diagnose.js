@@ -71,7 +71,7 @@ module.exports = {
       }
     }
 
-    if (!(didDisplayAnything || context.flags.verbose)) {
+    if (!didDisplayAnything && !context.flags.verbose) {
       cli.log(cli.color['green']('Everything appears to be fine'))
     }
   })),
