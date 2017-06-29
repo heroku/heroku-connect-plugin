@@ -27,7 +27,7 @@ function callbackServer () {
 }
 
 function * run (context, heroku) {
-  context.region = regions.determineRegion(context)
+  context.region = yield regions.determineRegion(context, heroku)
   let redir
 
   yield cli.action('fetching authorizing URL', co(function * () {

@@ -16,7 +16,7 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = regions.determineRegion(context)
+    context.region = yield regions.determineRegion(context, heroku)
     yield cli.action('restarting connection', co(function * () {
       let connection = yield api.withConnection(context, heroku)
       let url = '/api/v3/connections/' + connection.id + '/actions/restart'

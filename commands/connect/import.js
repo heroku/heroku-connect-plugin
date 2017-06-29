@@ -20,7 +20,7 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = regions.determineRegion(context)
+    context.region = yield regions.determineRegion(context, heroku)
     let fName = context.args.file
     yield cli.action(`uploading ${fName}`, co(function * () {
       let connection = yield api.withConnection(context, heroku)
