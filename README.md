@@ -13,6 +13,7 @@ Heroku Connect Toolbelt Plugin
 # Commands
 
     heroku connect:db:set                  - Set database parameters
+    heroku connect:diagnose                - Display diagnostic information about a connection
     heroku connect:export                  - Export a mapping configuration JSON file
     heroku connect:import FILE             - Import a mapping configuration JSON file
     heroku connect:info                    - Display connection information 
