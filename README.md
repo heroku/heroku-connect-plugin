@@ -1,4 +1,4 @@
-Heroku Connect Toolbelt Plugin
+Heroku Connect CLI Plugin
 ==================
 
 # Install

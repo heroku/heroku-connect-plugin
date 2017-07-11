@@ -19,7 +19,7 @@ describe('connect:state', () => {
       reqheaders: {
         'content-type': 'application/json',
         'authorization': `Bearer ${password}`,
-        'heroku-client': 'toolbelt'
+        'heroku-client': 'cli'
       }
     })
       .get('/api/v3/connections')
