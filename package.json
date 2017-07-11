@@ -1,7 +1,7 @@
 {
   "name": "heroku-connect-plugin",
   "description": "Heroku Connect plugin for Heroku CLI",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "author": "Heroku (@heroku)",
   "repository": {
     "type": "git",
