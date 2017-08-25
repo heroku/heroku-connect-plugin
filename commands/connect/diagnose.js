@@ -5,10 +5,11 @@ const cli = require('heroku-cli-util')
 const co = require('co')
 
 function displayResults (results, flags) {
-  results.errors.forEach(displayResult('red'))
-  results.warnings.forEach(displayResult('yellow'))
+  results.errors.forEach(displayResult('RED', 'red'))
+  results.warnings.forEach(displayResult('YELLOW', 'yellow'))
   if (flags.verbose) {
-    results.passes.forEach(displayResult('green', false))
+    results.passes.forEach(displayResult('GREEN', 'green', false))
+    results.skips.forEach(displayResult('SKIPPED', 'dim', false))
   }
 }
 
@@ -16,13 +17,13 @@ function shouldDisplay (results, flags) {
   return (results.errors.length > 0 || results.warnings.length > 0 || flags.verbose)
 }
 
-function displayResult (color, displayMessages) {
+function displayResult (label, color, displayMessages) {
   // Default to displaying messages, unless overridden
   if (displayMessages === undefined) {
     displayMessages = true
   }
   return function (result) {
-    cli.log(cli.color[color](`${color.toUpperCase()}: ${result.display_name}`))
+    cli.log(cli.color[color](`${label}: ${result.display_name}`))
     if (displayMessages) {
       cli.log(result.message)
       if (result.doc_url) {
@@ -39,7 +40,7 @@ module.exports = {
   help: 'Checks a connection for common configuration errors. ',
   flags: [
     {name: 'resource', description: 'specific connection resource name', hasValue: true},
-    {name: 'verbose', char: 'v', description: 'display passed check information as well'},
+    {name: 'verbose', char: 'v', description: 'display passed and skipped check information as well'},
     regions.flag
   ],
   needsApp: true,
