@@ -15,6 +15,7 @@ module.exports = {
   ],
   flags: [
     {name: 'resource', description: 'specific connection resource name', hasValue: true},
+    {name: 'verbose', char: 'v', description: 'display passed and skipped check information as well'},
     regions.flag
   ],
   needsApp: true,
@@ -30,6 +31,6 @@ module.exports = {
 
     cli.log() // Blank line to separate each section
     cli.styledHeader(mapping.object_name)
-    diagnose.displayResults(results.json)
+    diagnose.displayResults(results.json, context.flags)
   }))
 }
