@@ -29,7 +29,7 @@ describe('connect:state', () => {
     return stateCmd.run({
       app: appName,
       flags: {
-        resource_name: resourceName,
+        resource: resourceName,
         region: 'us'
       },
       auth: {
