@@ -13,7 +13,7 @@ describe('connect:state', () => {
 
   it('retrieves the state of the connect addon', () => {
     let appName = 'fake-app'
-    let resourceId = 'abcd-ef01'
+    let resourceName = 'abcd-ef01'
     let password = 's3cr3t3'
     let api = nock('https://connect-us.heroku.com:443', {
       reqheaders: {
@@ -23,13 +23,13 @@ describe('connect:state', () => {
       }
     })
       .get('/api/v3/connections')
-      .query({deep: true, app: appName, resource_id: resourceId})
+      .query({deep: true, app: appName, resource_name: resourceName})
       .reply(200, {results: [{state: 'NEW'}]})
 
     return stateCmd.run({
       app: appName,
       flags: {
-        resource_id: resourceId,
+        resource_name: resourceName,
         region: 'us'
       },
       auth: {
