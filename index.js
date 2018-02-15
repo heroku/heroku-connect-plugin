@@ -18,5 +18,6 @@ exports.commands = [
   require('./commands/connect/mapping-state'),
   require('./commands/connect/mapping-delete'),
   require('./commands/connect/mapping-reload'),
-  require('./commands/connect/mapping-diagnose')
+  require('./commands/connect/mapping-diagnose'),
+  require('./commands/connect/mapping-write-errors')
 ]
