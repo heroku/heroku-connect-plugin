@@ -19,12 +19,12 @@ describe('connect:sf:auth', () => {
 
   it('authenticates the user to Salesforce', () => {
     let appName = 'fake-app'
-    let resourceId = 'abcd-ef01'
+    let resourceName = 'abcd-ef01'
     let connectionId = '123'
     let password = 's3cr3t3'
     let apiWithPort = nock('https://connect-us.heroku.com:443')
       .get('/api/v3/connections')
-      .query({deep: true, app: appName, resource_id: resourceId})
+      .query({deep: true, app: appName, resource_name: resourceName})
       .reply(200, {results: [{id: connectionId}]})
     let apiWithoutPort = nock('https://connect-us.heroku.com')
       .post('/api/v3/connections/' + connectionId + '/authorize_url', {
@@ -36,7 +36,7 @@ describe('connect:sf:auth', () => {
     return sfAuthCmd.run({
       app: appName,
       flags: {
-        resource_id: resourceId,
+        resource: resourceName,
         login: undefined,
         region: 'us'
       },
