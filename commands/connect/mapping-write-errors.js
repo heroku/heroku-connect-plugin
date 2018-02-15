@@ -18,16 +18,20 @@ function * run (context, heroku) {
   if (errors.count === 0) {
     cli.log('No write errors in the last 24 hours')
   } else {
-    cli.table(errors.results, {
-      printHeader: true,
-      columns: [
-        {key: 'id', label: 'Trigger Log ID'},
-        {key: 'table_name', label: 'Table Name'},
-        {key: 'record_id', label: 'Table ID'},
-        {key: 'message', label: 'Error Message'},
-        {key: 'created_at', label: 'Created'}
-      ]
-    })
+    if (context.flags.json) {
+      cli.styledJSON(errors.results)
+    } else {
+      cli.table(errors.results, {
+        printHeader: true,
+        columns: [
+          {key: 'id', label: 'Trigger Log ID'},
+          {key: 'table_name', label: 'Table Name'},
+          {key: 'record_id', label: 'Table ID'},
+          {key: 'message', label: 'Error Message'},
+          {key: 'created_at', label: 'Created'}
+        ]
+      })
+    }
   }
 }
 
@@ -47,6 +51,11 @@ module.exports = {
       name: 'resource',
       description: 'specific connection resource name',
       hasValue: true
+    },
+    {
+      name: 'json',
+      description: 'print errors as styled JSON',
+      hasValue: false
     },
     regions.flag
   ],
