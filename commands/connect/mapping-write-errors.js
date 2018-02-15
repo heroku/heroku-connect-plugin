@@ -8,14 +8,14 @@ function * run (context, heroku) {
   context.region = yield regions.determineRegion(context, heroku)
   let mappingName = context.args.name
   let connection = yield api.withConnection(context, heroku)
-  let mapping = yield api.withMapping(connection, context.args.name)
+  let mapping = yield api.withMapping(connection, mappingName)
   let results = yield cli.action('Retrieving errors', co(function * () {
     let url = '/api/v3/mappings/' + mapping.id + '/errors'
     return yield api.request(context, 'GET', url)
   }))
   let errors = results.json
 
-  if (errors.count == 0) {
+  if (errors.count === 0) {
     cli.log('No write errors in the last 24 hours')
   } else {
     cli.table(errors.results, {
