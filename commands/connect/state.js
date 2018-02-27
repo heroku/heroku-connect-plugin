@@ -14,7 +14,6 @@ function * run (context, heroku) {
     } else {
       cli.table(connections, {
         columns: [
-          {key: 'app_name', label: 'App'},
           {key: 'db_key', label: 'Database'},
           {key: 'schema_name', label: 'Schema'},
           {key: 'state', label: 'State'}
