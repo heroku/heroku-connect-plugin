@@ -22,7 +22,6 @@ function * run (context, heroku) {
       cli.styledJSON(errors.results)
     } else {
       cli.table(errors.results, {
-        printHeader: true,
         columns: [
           {key: 'id', label: 'Trigger Log ID'},
           {key: 'table_name', label: 'Table Name'},
