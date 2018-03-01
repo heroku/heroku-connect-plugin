@@ -45,7 +45,7 @@ function * run (context, heroku) {
       args.environment = context.flags.environment
     }
 
-    if (context.flags.environment == 'custom' && context.flags.domain) {
+    if (context.flags.environment === 'custom' && context.flags.domain) {
       args.domain = context.flags.domain
     }
 
