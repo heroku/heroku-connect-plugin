@@ -16,7 +16,7 @@ describe('connect:state', () => {
     let resourceName = 'abcd-ef01'
     let password = 's3cr3t3'
     let api = nock('https://connect-us.heroku.com:443', {
-      reqheaders: {
+      headers: {
         'content-type': 'application/json',
         'authorization': `Bearer ${password}`,
         'heroku-client': 'cli'
