@@ -37,7 +37,6 @@ describe('connect:sf:auth', () => {
       app: appName,
       flags: {
         resource: resourceName,
-        login: undefined,
         region: 'us'
       },
       auth: {
