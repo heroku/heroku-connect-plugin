@@ -11,7 +11,7 @@ exports.commands = [
   require('./commands/connect/export'),
   require('./commands/connect/pause'),
   require('./commands/connect/resume'),
-  require('./commands/connect/restart'),
+  require('./commands/connect/recover'),
   require('./commands/connect/sf-auth'),
   require('./commands/connect/db-set'),
   require('./commands/connect/diagnose'),
