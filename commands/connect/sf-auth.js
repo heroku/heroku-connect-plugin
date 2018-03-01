@@ -41,6 +41,14 @@ function * run (context, heroku) {
       'next': `http://localhost:${LOCAL_PORT}`
     }
 
+    if (context.flags.environment) {
+      args.environment = context.flags.environment
+    }
+
+    if (context.flags.environment == 'custom' && context.flags.domain) {
+      args.domain = context.flags.domain
+    }
+
     let response = yield api.request(context, 'POST', url, args)
     redir = response.json.redirect
 
@@ -59,6 +67,8 @@ module.exports = {
   help: 'Opens a browser to authorize a connection to a Salesforce Org',
   flags: [
     {name: 'callback', char: 'c', description: 'final callback URL', hasValue: true},
+    {name: 'environment', char: 'e', description: '"production", "sandbox", or "custom" [defaults to "production"]', hasValue: true},
+    {name: 'domain', char: 'd', description: 'specify a custom login domain (if using a "custom" environment)', hasValue: true},
     {name: 'resource', description: 'specific connection resource name', hasValue: true},
     regions.flag
   ],
