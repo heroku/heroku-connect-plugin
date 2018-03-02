@@ -5,18 +5,11 @@ const cli = require('heroku-cli-util')
 
 module.exports = {
   topic: 'connect',
-  command: 'mapping:write-errors',
-  description: 'Display the last 24 hours of write errors on this mapping',
+  command: 'write-errors',
+  description: 'Display the last 24 hours of write errors on this connection',
   examples: [
-    `$ heroku connect:mapping:write-errors -a myapp --resource herokuconnect-twisted-123 Account`,
-    `$ heroku connect:mapping:write-errors -a myapp --resource herokuconnect-twisted-123 --region tokyo Account`
-  ],
-  args: [
-    {
-      name: 'name',
-      optional: false,
-      description: 'Name of the mapping to retrieve errors for'
-    }
+    `$ heroku connect:write-errors -a myapp --resource herokuconnect-twisted-123`,
+    `$ heroku connect:write-errors -a myapp --resource herokuconnect-twisted-123 --region tokyo`
   ],
   flags: [
     {
