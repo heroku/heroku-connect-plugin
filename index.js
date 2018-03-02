@@ -1,8 +1,14 @@
 'use strict'
-exports.topics = [{
-  name: 'connect',
-  description: 'manage connections for Heroku Connect'
-}]
+exports.topics = [
+  {
+    name: 'connect',
+    description: 'manage connections for Heroku Connect'
+  },
+  {
+    name: 'connect:mapping',
+    description: 'manage mappings on a Heroku Connect addon'
+  }
+]
 
 exports.commands = [
   require('./commands/connect/info'),

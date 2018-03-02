@@ -5,8 +5,8 @@ const cli = require('heroku-cli-util')
 const co = require('co')
 
 module.exports = {
-  topic: 'connect',
-  command: 'mapping:state',
+  topic: 'connect:mapping',
+  command: 'state',
   description: 'return a mapping state',
   help: 'return a mapping state',
   args: [
