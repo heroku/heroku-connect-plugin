@@ -5,10 +5,10 @@ const cli = require('heroku-cli-util')
 const co = require('co')
 
 module.exports = {
-  topic: 'connect',
-  command: 'mapping:delete',
-  description: 'delete an existing mapping',
-  help: 'delete an existing mapping',
+  topic: 'connect:mapping',
+  command: 'delete',
+  description: 'Delete an existing mapping',
+  help: 'Delete an existing mapping',
   args: [
     {name: 'mapping'}
   ],

@@ -5,10 +5,10 @@ const cli = require('heroku-cli-util')
 const co = require('co')
 
 module.exports = {
-  topic: 'connect',
-  command: 'mapping:reload',
-  description: "reload a mapping's data from Salesforce",
-  help: "reload a mapping's data from Salesforce",
+  topic: 'connect:mapping',
+  command: 'reload',
+  description: "Reload a mapping's data from Salesforce",
+  help: "Reload a mapping's data from Salesforce",
   args: [
     {name: 'mapping'}
   ],

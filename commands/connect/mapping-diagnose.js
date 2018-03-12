@@ -6,8 +6,8 @@ const co = require('co')
 const diagnose = require('./diagnose')
 
 module.exports = {
-  topic: 'connect',
-  command: 'mapping:diagnose',
+  topic: 'connect:mapping',
+  command: 'diagnose',
   description: 'Display diagnostic information about a mapping',
   help: 'Checks a mapping for common configuration errors. ',
   args: [
