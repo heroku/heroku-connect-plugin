@@ -54,7 +54,7 @@ module.exports = {
         default: context.flags.schema || 'salesforce',
         when: !context.flags.schema
       }
-    ], co.wrap(function * (answers) {
+    ]).then(co.wrap(function * (answers) {
       for (let key in answers) {
         data[key] = answers[key]
       }
