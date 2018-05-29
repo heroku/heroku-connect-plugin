@@ -1,0 +1,18 @@
+---
+version: 2
+jobs:
+  node-latest:
+    docker:
+      - image: node:latest
+    working_directory: ~/cli
+    steps:
+      - checkout
+      - run: |
+          yarn
+          yarn test
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - node-latest
