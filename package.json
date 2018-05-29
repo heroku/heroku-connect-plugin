@@ -19,6 +19,11 @@
     "test": "mocha && standard",
     "style-fix": "standard --fix"
   },
+  "files": [
+    "/index.js",
+    "/lib",
+    "/commands"
+  ],
   "dependencies": {
     "co": "4.6.0",
     "heroku-cli-util": "^8.0.0",
