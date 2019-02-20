@@ -49,6 +49,10 @@ function * run (context, heroku) {
       args.domain = context.flags.domain
     }
 
+    if (context.flags.api_version) {
+      args.api_version = context.flags.api_version
+    }
+
     let response = yield api.request(context, 'POST', url, args)
     redir = response.json.redirect
 
@@ -69,6 +73,7 @@ module.exports = {
     {name: 'callback', char: 'c', description: 'final callback URL', hasValue: true},
     {name: 'environment', char: 'e', description: '"production", "sandbox", or "custom" [defaults to "production"]', hasValue: true},
     {name: 'domain', char: 'd', description: 'specify a custom login domain (if using a "custom" environment)', hasValue: true},
+    {name: 'api_version', char: 'v', description: 'specify a Salesforce API version to use [defaults to the latest supported]', hasValue: true},
     {name: 'resource', description: 'specific connection resource name', hasValue: true},
     regions.flag
   ],

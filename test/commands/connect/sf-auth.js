@@ -22,6 +22,7 @@ describe('connect:sf:auth', () => {
     let resourceName = 'abcd-ef01'
     let connectionId = '123'
     let password = 's3cr3t3'
+    let api_version = '45'
     let apiWithPort = nock('https://connect-us.heroku.com:443')
       .get('/api/v3/connections')
       .query({deep: true, app: appName, resource_name: resourceName})
@@ -29,13 +30,15 @@ describe('connect:sf:auth', () => {
     let apiWithoutPort = nock('https://connect-us.heroku.com')
       .post('/api/v3/connections/' + connectionId + '/authorize_url', {
         environment: 'production',
-        next: 'http://localhost:18000'
+        next: 'http://localhost:18000',
+        api_version: api_version,
       })
       .reply(201, {redirect: 'redirect-uri'})
 
     return sfAuthCmd.run({
       app: appName,
       flags: {
+        api_version: api_version,
         resource: resourceName,
         region: 'us'
       },
