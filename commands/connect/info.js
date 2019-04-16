@@ -20,11 +20,10 @@ module.exports = {
     let connections = yield api.withUserConnections(context, context.app, context.flags, true, heroku)
 
     if (connections.length === 0) {
-      throw new Error('No connection(s) found')
+      cli.error('No connection(s) found')
     } else {
       connections.forEach(function (connection) {
         api.connection_info(connection, true)
-        console.log('')
       })
     }
   }))
