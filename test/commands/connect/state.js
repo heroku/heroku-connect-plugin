@@ -6,13 +6,6 @@ const nock = require('nock')
 const expect = require('unexpected')
 const stateCmd = require('../../../commands/connect/state')
 
-const axios = require('axios')
-const httpAdapter = require('axios/lib/adapters/http')
-const host = 'http://localhost:80'
-
-axios.defaults.host = host
-axios.defaults.adapter = httpAdapter
-
 const password = 's3cr3t3'
 const headers = {
   'content-type': 'application/json',
