@@ -46,10 +46,10 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = yield regions.determineRegion(context, heroku)
     let mappingResults
     let didDisplayAnything = false
     let connection = yield api.withConnection(context, heroku)
+    context.region = connection.region_url
     let results = yield cli.action('Diagnosing connection', co(function * () {
       let url = '/api/v3/connections/' + connection.id + '/validations'
       return yield api.request(context, 'GET', url)
@@ -57,13 +57,13 @@ module.exports = {
 
     cli.log() // Blank line to separate each section
     cli.styledHeader(`Connection: ${connection.name || connection.internal_name}`)
-    if (shouldDisplay(results.json, context.flags)) {
+    if (shouldDisplay(results.data, context.flags)) {
       didDisplayAnything = true
-      displayResults(results.json, context.flags)
+      displayResults(results.data, context.flags)
     }
 
-    for (let objectName in results.json.mappings) {
-      mappingResults = results.json.mappings[objectName]
+    for (let objectName in results.data.mappings) {
+      mappingResults = results.data.mappings[objectName]
       if (shouldDisplay(mappingResults, context.flags)) {
         didDisplayAnything = true
         cli.log() // Blank line to separate each section

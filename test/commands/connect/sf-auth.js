@@ -33,7 +33,9 @@ describe('connect:sf:auth', () => {
       .query({app: appName, resource_name: resourceName})
       .reply(200, {results: [
         {
-          detail_url: 'https://hc-virginia-qa.herokai.com/connections/1234'
+          detail_url: 'https://connect-us.heroku.com/connections/1234',
+          region_url: 'https://connect-us.heroku.com',
+          id: 1234
         }
       ]})
 
@@ -44,7 +46,7 @@ describe('connect:sf:auth', () => {
       schema_name: 'salesforce'
     }
 
-    let connectionDetailApi = nock('https://hc-virginia-qa.herokai.com/', {headers})
+    let connectionDetailApi = nock('https://connect-us.heroku.com', {headers})
       .get('/connections/1234')
       .query({deep: true})
       .reply(200, connectionData)
