@@ -17,11 +17,11 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = yield regions.determineRegion(context, heroku)
     let connection, response
 
     yield cli.action('fetching configuration', co(function * () {
       connection = yield api.withConnection(context, heroku)
+      context.region = connection.region_url
       let url = '/api/v3/connections/' + connection.id + '/actions/export'
       response = yield api.request(context, 'GET', url)
     }))
@@ -31,7 +31,7 @@ module.exports = {
     yield cli.action('writing configuration to file', {
       'success': fName
     }, co(function * () {
-      fs.writeFileSync(fName, JSON.stringify(response.json, null, 4))
+      fs.writeFileSync(fName, JSON.stringify(response.data, null, 4))
     }))
   }))
 }
