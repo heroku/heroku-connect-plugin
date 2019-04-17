@@ -9,7 +9,7 @@ let fetchKeys = co.wrap(function * (appName, context) {
   let url = '/api/v3/apps/' + appName
   let response = yield api.request(context, 'GET', url)
   let keys = []// new Array(response.json.db_keys.length);
-  response.json.db_keys.forEach(function (key) {
+  response.data.db_keys.forEach(function (key) {
     keys.push({
       name: `${key.name} (${key.addon.plan})`,
       value: key.name
@@ -32,13 +32,13 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = yield regions.determineRegion(context, heroku)
     let data = {
       db_key: context.flags.db,
       schema_name: context.flags.schema
     }
 
     let connection = yield api.withConnection(context, heroku)
+    context.region = connection.region_url
 
     inquirer.prompt([
       {
