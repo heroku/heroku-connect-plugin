@@ -19,14 +19,14 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = yield regions.determineRegion(context, heroku)
     yield cli.action(`initiating reload of ${context.args.mapping}`, co(function * () {
       let connection = yield api.withConnection(context, heroku)
+      context.region = connection.region_url
       let mapping = yield api.withMapping(connection, context.args.mapping)
 
       let response = yield api.request(context, 'POST', '/api/v3/mappings/' + mapping.id + '/actions/reload')
-      if (response.statusCode !== 202) {
-        throw new Error(response.json.message || 'unknown error')
+      if (response.status !== 202) {
+        throw new Error(response.data.message || 'unknown error')
       }
     }))
   }))
