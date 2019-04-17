@@ -20,10 +20,10 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = yield regions.determineRegion(context, heroku)
     let fName = context.args.file
     yield cli.action(`uploading ${fName}`, co(function * () {
       let connection = yield api.withConnection(context, heroku)
+      context.region = connection.region_url
       let url = '/api/v3/connections/' + connection.id + '/actions/import'
       let data = JSON.parse(fs.readFileSync(fName, 'utf8'))
       yield api.request(context, 'POST', url, data)
