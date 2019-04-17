@@ -19,8 +19,8 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = yield regions.determineRegion(context, heroku)
     let connection = yield api.withConnection(context, heroku)
+    context.region = connection.region_url
     let mapping = yield api.withMapping(connection, context.args.mapping)
 
     console.log(mapping.state)
