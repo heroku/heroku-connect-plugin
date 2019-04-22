@@ -16,7 +16,7 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "test": "mocha && standard",
+    "test": "CONNECT_ADDON=connectqa mocha && standard",
     "style-fix": "standard --fix"
   },
   "files": [
