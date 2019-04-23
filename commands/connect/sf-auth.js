@@ -1,6 +1,5 @@
 'use strict'
 const api = require('../../lib/connect/api.js')
-const regions = require('../../lib/connect/regions.js')
 const cli = require('heroku-cli-util')
 const co = require('co')
 const http = require('http')
@@ -68,8 +67,7 @@ module.exports = {
     {name: 'callback', char: 'c', description: 'final callback URL', hasValue: true},
     {name: 'environment', char: 'e', description: '"production", "sandbox", or "custom" [defaults to "production"]', hasValue: true},
     {name: 'domain', char: 'd', description: 'specify a custom login domain (if using a "custom" environment)', hasValue: true},
-    {name: 'resource', description: 'specific connection resource name', hasValue: true},
-    regions.flag
+    {name: 'resource', description: 'specific connection resource name', hasValue: true}
   ],
   needsApp: true,
   needsAuth: true,

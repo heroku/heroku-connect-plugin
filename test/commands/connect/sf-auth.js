@@ -61,8 +61,7 @@ describe('connect:sf:auth', () => {
     return sfAuthCmd.run({
       app: appName,
       flags: {
-        resource: resourceName,
-        region: 'us'
+        resource: resourceName
       },
       auth: {
         password: password

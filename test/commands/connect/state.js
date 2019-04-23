@@ -45,8 +45,7 @@ describe('connect:state', () => {
     return stateCmd.run({
       app: appName,
       flags: {
-        resource: resourceName,
-        region: 'us'
+        resource: resourceName
       },
       auth: {
         password
@@ -92,8 +91,7 @@ describe('connect:state', () => {
       app: appName,
       flags: {
         resource: resourceName,
-        json: true,
-        region: 'us'
+        json: true
       },
       auth: {
         password

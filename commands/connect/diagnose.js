@@ -1,6 +1,5 @@
 'use strict'
 const api = require('../../lib/connect/api.js')
-const regions = require('../../lib/connect/regions.js')
 const cli = require('heroku-cli-util')
 const co = require('co')
 
@@ -40,8 +39,7 @@ module.exports = {
   help: 'Checks a connection for common configuration errors. ',
   flags: [
     {name: 'resource', description: 'specific connection resource name', hasValue: true},
-    {name: 'verbose', char: 'v', description: 'display passed and skipped check information as well'},
-    regions.flag
+    {name: 'verbose', char: 'v', description: 'display passed and skipped check information as well'}
   ],
   needsApp: true,
   needsAuth: true,

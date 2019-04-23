@@ -1,6 +1,5 @@
 'use strict'
 const api = require('../../lib/connect/api.js')
-const regions = require('../../lib/connect/regions.js')
 const cli = require('heroku-cli-util')
 const co = require('co')
 
@@ -10,8 +9,7 @@ module.exports = {
   description: 'Pause a connection',
   help: 'Pauses an active connection',
   flags: [
-    {name: 'resource', description: 'specific connection resource name', hasValue: true},
-    regions.flag
+    {name: 'resource', description: 'specific connection resource name', hasValue: true}
   ],
   needsApp: true,
   needsAuth: true,

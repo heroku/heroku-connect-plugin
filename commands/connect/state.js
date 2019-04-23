@@ -1,6 +1,5 @@
 'use strict'
 const api = require('../../lib/connect/api.js')
-const regions = require('../../lib/connect/regions.js')
 const cli = require('heroku-cli-util')
 const co = require('co')
 
@@ -27,8 +26,7 @@ module.exports = {
   help: 'returns the state key of the selected connections',
   flags: [
     {name: 'resource', description: 'specific connection resource name', hasValue: true},
-    {name: 'json', description: 'print output as json', hasValue: false},
-    regions.flag
+    {name: 'json', description: 'print output as json', hasValue: false}
   ],
   needsApp: true,
   needsAuth: true,
