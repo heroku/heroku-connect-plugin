@@ -21,6 +21,6 @@ module.exports = {
     context.region = connection.region_url
     let mapping = yield api.withMapping(connection, context.args.mapping)
 
-    console.log(mapping.state)
+    cli.log(mapping.state)
   }))
 }
