@@ -21,7 +21,21 @@ module.exports = {
       cli.error('No connection(s) found')
     } else {
       connections.forEach(function (connection) {
-        api.connection_info(connection, true)
+        cli.styledHeader(`Connection [${connection.id}] / ${connection.resource_name} (${connection.state})`)
+        cli.log()
+        if (connection.mappings.length > 0) {
+          cli.table(
+            connection.mappings, {
+              columns: [
+                { key: 'object_name', label: 'Object Name' },
+                { key: 'state', label: 'State' }
+              ]
+            }
+          )
+        } else {
+          cli.log('No mappings')
+        }
+        cli.log()
       })
     }
   }))
