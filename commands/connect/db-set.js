@@ -1,6 +1,5 @@
 'use strict'
 const api = require('../../lib/connect/api.js')
-const regions = require('../../lib/connect/regions.js')
 const cli = require('heroku-cli-util')
 const co = require('co')
 const inquirer = require('inquirer')
@@ -9,7 +8,7 @@ let fetchKeys = co.wrap(function * (appName, context) {
   let url = '/api/v3/apps/' + appName
   let response = yield api.request(context, 'GET', url)
   let keys = []// new Array(response.json.db_keys.length);
-  response.json.db_keys.forEach(function (key) {
+  response.data.db_keys.forEach(function (key) {
     keys.push({
       name: `${key.name} (${key.addon.plan})`,
       value: key.name
@@ -26,19 +25,18 @@ module.exports = {
   flags: [
     {name: 'resource', description: 'specific connection resource name', hasValue: true},
     {name: 'db', description: 'Database config var name', hasValue: true},
-    {name: 'schema', description: 'Database schema name', hasValue: true},
-    regions.flag
+    {name: 'schema', description: 'Database schema name', hasValue: true}
   ],
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    context.region = yield regions.determineRegion(context, heroku)
     let data = {
       db_key: context.flags.db,
       schema_name: context.flags.schema
     }
 
     let connection = yield api.withConnection(context, heroku)
+    context.region = connection.region_url
 
     inquirer.prompt([
       {

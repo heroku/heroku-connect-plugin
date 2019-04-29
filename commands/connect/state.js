@@ -1,29 +1,20 @@
 'use strict'
 const api = require('../../lib/connect/api.js')
-const regions = require('../../lib/connect/regions.js')
 const cli = require('heroku-cli-util')
 const co = require('co')
 
 function * run (context, heroku) {
-  context.region = yield regions.determineRegion(context, heroku)
   let connections = yield api.withUserConnections(context, context.app, context.flags, heroku)
 
-  if (!context.flags.resource) {
-    if (context.flags.json) {
-      cli.styledJSON(connections)
-    } else {
-      cli.table(connections, {
-        columns: [
-          {key: 'db_key', label: 'Database'},
-          {key: 'schema_name', label: 'Schema'},
-          {key: 'state', label: 'State'}
-        ]
-      })
-    }
+  if (context.flags.json) {
+    cli.styledJSON(connections)
   } else {
-    // Retrieving a single resource
-    connections.forEach(function (connection) {
-      cli.log(connection.state)
+    cli.table(connections, {
+      columns: [
+        {key: 'db_key', label: 'Database'},
+        {key: 'schema_name', label: 'Schema'},
+        {key: 'state', label: 'State'}
+      ]
     })
   }
 }
@@ -35,7 +26,7 @@ module.exports = {
   help: 'returns the state key of the selected connections',
   flags: [
     {name: 'resource', description: 'specific connection resource name', hasValue: true},
-    regions.flag
+    {name: 'json', description: 'print output as json', hasValue: false}
   ],
   needsApp: true,
   needsAuth: true,

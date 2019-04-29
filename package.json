@@ -16,7 +16,7 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "test": "mocha && standard",
+    "test": "CONNECT_ADDON=connectqa mocha && standard",
     "style-fix": "standard --fix"
   },
   "files": [
@@ -25,6 +25,7 @@
     "/commands"
   ],
   "dependencies": {
+    "axios": "^0.18.0",
     "co": "4.6.0",
     "heroku-cli-util": "^8.0.0",
     "heroku-client": "^3.0.6",
