@@ -98,7 +98,8 @@ describe('connect:info', () => {
       .then(() => {
         expect(cli.stdout, 'to be empty')
       })
-      .then(() => expect(cli.stderr, 'to contain', 'No connection(s) found'))
+      .then(() => expect(cli.stderr, 'to contain', 'No connection found'))
+      .then(() => expect(cli.stderr, 'to contain', `heroku addons:open connectqa -a fake-app`))
       .then(() => discoveryApi.done())
   })
 })
