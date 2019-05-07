@@ -18,7 +18,11 @@ module.exports = {
     let connections = yield api.withUserConnections(context, context.app, context.flags, true, heroku)
 
     if (connections.length === 0) {
-      cli.error('No connection(s) found')
+      const instanceName = process.env['CONNECT_ADDON'] === 'connectqa' ? 'connectqa' : 'herokuconnect'
+      cli.error('No connection found. You may need to use addons:open to make it accessible to the CLI.')
+      cli.error('')
+      cli.error('For Example:')
+      cli.error(`heroku addons:open ${instanceName} -a ${context.app}`)
     } else {
       connections.forEach(function (connection) {
         cli.styledHeader(`Connection [${connection.id}] / ${connection.resource_name} (${connection.state})`)
