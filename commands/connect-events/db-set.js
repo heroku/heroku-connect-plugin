@@ -59,7 +59,8 @@ module.exports = {
 
       yield cli.action('setting database parameters', co(function * () {
         let url = '/api/v3/kafka-connections/' + connection.id
-        yield api.request(context, 'PATCH', url, data)
+        cli.log(`posting patch to ${url}`, data)
+        yield api.request(context, 'PUT', url, data)
       }))
 
       cli.styledHash(data)
