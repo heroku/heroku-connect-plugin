@@ -13,7 +13,7 @@ exports.topics = [
     description: 'manage connections for Heroku Connect Events Pilot'
   },
   {
-    name: 'connect-events:streams',
+    name: 'connect-events:stream',
     description: 'manage mappings on a Heroku Connect Events Pilot addon'
   }
 ]
