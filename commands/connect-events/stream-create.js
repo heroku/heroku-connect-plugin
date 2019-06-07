@@ -5,9 +5,9 @@ const co = require('co')
 
 module.exports = {
   topic: 'connect-events:stream',
-  command: 'add',
-  description: 'Add a stream',
-  help: 'Add a stream',
+  command: 'create',
+  description: 'Create a stream',
+  help: 'Create a stream',
   args: [
     {name: 'stream'}
   ],
@@ -17,7 +17,7 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    yield cli.action('adding stream', co(function * () {
+    yield cli.action('creating stream', co(function * () {
       let connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
       context.region = connection.region_url
       let response = yield api.request(

@@ -46,5 +46,5 @@ exports.commands = [
   require('./commands/connect-events/db-set'),
   require('./commands/connect-events/stream-state'),
   require('./commands/connect-events/stream-delete'),
-  require('./commands/connect-events/stream-add')
+  require('./commands/connect-events/stream-create')
 ]
