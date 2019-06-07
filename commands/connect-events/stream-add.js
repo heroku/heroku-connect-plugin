@@ -21,10 +21,10 @@ module.exports = {
       let connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
       context.region = connection.region_url
       let response = yield api.request(
-        context, 'POST', `/api/v3/kafka-connection/${connection.id}/streams`,
+        context, 'POST', `/api/v3/kafka-connections/${connection.id}/streams`,
         {'object_name': context.args.stream}
       )
-      if (response.status !== 204) {
+      if (response.status !== 201) {
         throw new Error(response.data.message || 'unknown error')
       }
     }))
