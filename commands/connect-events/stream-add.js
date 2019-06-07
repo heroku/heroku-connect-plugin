@@ -12,14 +12,13 @@ module.exports = {
     {name: 'stream'}
   ],
   flags: [
-    {name: 'resource', description: 'specific connection resource name', hasValue: true},
-    {name: 'confirm', hasValue: true}
+    {name: 'resource', description: 'specific connection resource name', hasValue: true}
   ],
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
     yield cli.action('adding stream', co(function * () {
-      let connection = yield api.withConnection(context, heroku)
+      let connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
       context.region = connection.region_url
       let response = yield api.request(
         context, 'POST', `/api/v3/kafka-connection/${connection.id}/streams`,
