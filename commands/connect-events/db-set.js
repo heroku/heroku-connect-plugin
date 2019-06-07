@@ -5,7 +5,7 @@ const co = require('co')
 const inquirer = require('inquirer')
 
 let fetchKeys = co.wrap(function * (appName, context) {
-  let url = '/api/v3/apps/' + appName
+  let url = `/api/v3/apps/${appName}`
   let response = yield api.request(context, 'GET', url)
   let keys = []// new Array(response.json.db_keys.length);
   response.data.db_keys.forEach(function (key) {
@@ -58,8 +58,7 @@ module.exports = {
       }
 
       yield cli.action('setting database parameters', co(function * () {
-        let url = '/api/v3/kafka-connections/' + connection.id
-        cli.log(`posting patch to ${url}`, data)
+        let url = `/api/v3/kafka-connections/${connection.id}`
         yield api.request(context, 'PUT', url, data)
       }))
 
