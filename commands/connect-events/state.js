@@ -4,14 +4,14 @@ const cli = require('heroku-cli-util')
 const co = require('co')
 
 function * run (context, heroku) {
-  let connections = yield api.withUserConnections(context, context.app, context.flags, heroku, api.ADDON_TYPE_EVENTS)
+  let connections = yield api.withUserConnections(context, context.app, context.flags, heroku, true, api.ADDON_TYPE_EVENTS)
 
   if (context.flags.json) {
     cli.styledJSON(connections)
   } else {
     cli.table(connections, {
       columns: [
-        {key: 'db_key', label: 'Database'},
+        {key: 'db_key', label: 'Kafka'},
         {key: 'schema_name', label: 'Schema'},
         {key: 'state', label: 'State'}
       ]

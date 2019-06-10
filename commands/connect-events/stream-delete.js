@@ -23,7 +23,7 @@ module.exports = {
     yield cli.action('deleting stream', co(function * () {
       let connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
       context.region = connection.region_url
-      let stream = yield api.withStream(connection, context.args.stream)
+      let stream = yield api.withStream(context, connection, context.args.stream)
       let response = yield api.request(context, 'DELETE', `/api/v3/streams/${stream.id}`)
       if (response.status !== 204) {
         throw new Error(response.data.message || 'unknown error')

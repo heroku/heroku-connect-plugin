@@ -19,7 +19,7 @@ module.exports = {
   run: cli.command(co.wrap(function * (context, heroku) {
     let connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
     context.region = connection.region_url
-    let stream = yield api.withStream(connection, context.args.stream)
+    let stream = yield api.withStream(context, connection, context.args.stream)
 
     cli.log(stream.state)
   }))
