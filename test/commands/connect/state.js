@@ -76,6 +76,7 @@ describe('connect:state', () => {
       ]})
 
     const connectionData = {
+      detail_url: 'https://hc-virginia-qa.herokai.com/connections/1234',
       id: 1234,
       db_key: 'DATABASE_URL',
       state: 'IDLE',
