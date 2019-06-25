@@ -81,7 +81,14 @@ describe('connect:info', () => {
   it('returns an error message if no connections are found', () => {
     let appName = 'fake-app'
     let resourceName = 'abcd-ef01'
+    let check = nock('https://hc-central-qa.herokai.com/', {headers})
+      .post('/auth/fake-app')
+      .reply(200, {results: []})
     let discoveryApi = nock('https://hc-central-qa.herokai.com/', {headers})
+      .get('/connections')
+      .query({app: appName, resource_name: resourceName})
+      .reply(200, {results: []})
+    let discoveryApi2 = nock('https://hc-central-qa.herokai.com/', {headers})
       .get('/connections')
       .query({app: appName, resource_name: resourceName})
       .reply(200, {results: []})
@@ -101,5 +108,7 @@ describe('connect:info', () => {
       .then(() => expect(cli.stderr, 'to contain', 'No connection found'))
       .then(() => expect(cli.stderr, 'to contain', `heroku addons:open connectqa -a fake-app`))
       .then(() => discoveryApi.done())
+      .then(() => discoveryApi2.done())
+      .then(() => check.done())
   })
 })
