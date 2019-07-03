@@ -10,12 +10,21 @@ module.exports = {
   description: 'display connection information',
   help: 'display connection information',
   flags: [
-    {name: 'resource', description: 'specific connection resource name', hasValue: true}
+    {name: 'resource', description: 'specific connection resource name', hasValue: true},
+    {name: 'check-for-new', char: 'c', description: 'check for access to any new connections', hasValue: false}
   ],
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    let connections = yield api.withUserConnections(context, context.app, context.flags, true, heroku)
+    var connections
+    if (context.flags['check-for-new']) {
+      connections = yield api.requestAppAccess(context, context.app, context.flags, true, heroku)
+    } else {
+      connections = yield api.withUserConnections(context, context.app, context.flags, true, heroku)
+      if (connections.length === 0) {
+        connections = yield api.requestAppAccess(context, context.app, context.flags, true, heroku)
+      }
+    }
 
     if (connections.length === 0) {
       const instanceName = process.env['CONNECT_ADDON'] === 'connectqa' ? 'connectqa' : 'herokuconnect'
