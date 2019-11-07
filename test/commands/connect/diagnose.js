@@ -12,7 +12,7 @@ const headers = {
   'heroku-client': 'cli'
 }
 
-describe.only('connect:diagnose', () => {
+describe('connect:diagnose', () => {
   // prevent stdout/stderr from displaying
   // redirects to cli.stdout/cli.stderr instead
   beforeEach(() => cli.mockConsole())
