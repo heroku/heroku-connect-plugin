@@ -55,41 +55,7 @@ describe('connect:diagnose', () => {
       .reply(202)
       .get('/api/v3/connections/1234/validations/456')
       .reply(200, {
-        // data: {
-        passes: [
-          {
-            rule_id: 'NUM_MAPPINGS_WITHIN_LIMIT',
-            display_name: 'Number of Mappings',
-            status: 'PASSED',
-            message: 'Connection has no more than 100 mappings.',
-            doc_url:
-                'https://devcenter.heroku.com/articles/heroku-connect-diagnose#check-number-of-mappings'
-          },
-          {
-            rule_id: 'HEROKU_POSTGRES_REQUIRED',
-            display_name: 'Heroku Postgres',
-            status: 'PASSED',
-            message: 'Database is a Heroku Postgres addon.',
-            doc_url:
-                'https://devcenter.heroku.com/articles/heroku-connect-diagnose#check-heroku-postgres'
-          },
-          {
-            rule_id: 'REGIONS_SHOULD_MATCH',
-            display_name: 'Data Locality',
-            status: 'PASSED',
-            message: "Connection and app are both in the 'eu' region.",
-            doc_url:
-                'https://devcenter.heroku.com/articles/heroku-connect-diagnose#check-data-locality'
-          },
-          {
-            rule_id: 'SHOULD_HAVE_VALID_SF_PERMISSIONS',
-            display_name: 'View/Modify All Data',
-            status: 'PASSED',
-            message: 'Salesforce user has appropriate permissions.',
-            doc_url:
-                'https://devcenter.heroku.com/articles/heroku-connect-diagnose#check-view-modify-all-data'
-          }
-        ],
+        passes: [],
         warnings: [
           {
             rule_id: 'MUST_USE_RECENT_API_VERSION',
@@ -110,17 +76,7 @@ describe('connect:diagnose', () => {
           }
         ],
         errors: [],
-        skips: [
-          {
-            rule_id: 'PAID_PLAN_MUST_HAVE_PAID_DATABASE',
-            display_name: 'Database Plan',
-            status: 'SKIPPED',
-            message: 'Not applicable for the demo plan.',
-            doc_url:
-                'https://devcenter.heroku.com/articles/heroku-connect-diagnose#check-database-plan'
-          }
-        ]
-        // }
+        skips: []
       })
 
     return cmd
