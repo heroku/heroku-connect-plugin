@@ -32,7 +32,7 @@ function displayResult (label, color, displayMessages) {
   }
 }
 
-function timeout(duration) {
+function timeout (duration) {
   return new Promise(resolve => {
     setTimeout(resolve, duration)
   })
@@ -57,7 +57,7 @@ module.exports = {
     let results = yield cli.action('Diagnosing connection', co(function * () {
       let url = '/api/v3/connections/' + connection.id + '/validations'
       try {
-        let { data: { result_url: resultUrl }} = yield api.request(context, 'POST', url)
+        let {data: {result_url: resultUrl}} = yield api.request(context, 'POST', url)
 
         while (true) {
           let response = yield api.request(context, 'GET', resultUrl)
@@ -68,7 +68,7 @@ module.exports = {
 
           yield timeout(500)
         }
-      } catch(err) {
+      } catch (err) {
         cli.error(err)
       }
     }))
