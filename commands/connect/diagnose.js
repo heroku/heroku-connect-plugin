@@ -59,12 +59,20 @@ module.exports = {
       try {
         let {data: {result_url: resultUrl}} = yield api.request(context, 'POST', url)
 
+        let i = 0
+
         while (true) {
+          if (i > 600) {
+            cli.error('There was an issue retrieving validations')
+            break
+          }
           let response = yield api.request(context, 'GET', resultUrl)
 
           if (response.status === 200) {
             return response.data
           }
+
+          i++
 
           yield timeout(500)
         }
