@@ -9,8 +9,9 @@ let fetchKeys = co.wrap(function * (appName, context) {
   let response = yield api.request(context, 'GET', url)
   let keys = []// new Array(response.json.db_keys.length);
   response.data.db_keys.forEach(function (key) {
+    const plan = (key.addon ? key.addon.plan : null) || 'Unknown Plan'
     keys.push({
-      name: `${key.name} (${key.addon.plan})`,
+      name: `${key.name} (${plan})`,
       value: key.name
     })
   })
