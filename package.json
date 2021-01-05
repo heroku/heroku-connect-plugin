@@ -25,7 +25,7 @@
     "/commands"
   ],
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "co": "4.6.0",
     "heroku-cli-util": "^8.0.0",
     "heroku-client": "^3.0.6",
