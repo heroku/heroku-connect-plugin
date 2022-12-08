@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [node-latest]
+        node-version: [lts/*]
         os: [ubuntu-latest]
 
     steps:
