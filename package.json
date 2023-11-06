@@ -27,7 +27,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "co": "4.6.0",
-    "heroku-cli-util": "^8.0.0",
+    "heroku-cli-util": "^8.0.12",
     "heroku-client": "^3.0.6",
     "heroku-pg": "^2.9.0",
     "inquirer": "^5.1.0"
