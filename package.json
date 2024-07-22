@@ -30,7 +30,7 @@
     "heroku-cli-util": "^8.0.0",
     "heroku-client": "^3.0.6",
     "heroku-pg": "^2.9.0",
-    "inquirer": "^5.1.0"
+    "inquirer": "^10.1.0"
   },
   "devDependencies": {
     "mocha": "^7.0.0",
