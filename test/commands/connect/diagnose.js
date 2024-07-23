@@ -18,9 +18,9 @@ describe('connect:diagnose', () => {
   beforeEach(() => cli.mockConsole())
 
   it('runs validations with polling', () => {
-    let appName = 'fake-app'
+    const appName = 'fake-app'
 
-    let discoveryApi = nock('https://hc-central-qa.herokai.com/', { headers })
+    const discoveryApi = nock('https://hc-central-qa.herokai.com/', { headers })
       .get('/connections')
       .query({ app: appName })
       .reply(200, {
@@ -40,12 +40,12 @@ describe('connect:diagnose', () => {
       region_url: 'https://hc-virginia-qa.herokai.com/'
     }
 
-    let connectionDetailApi = nock('https://hc-virginia-qa.herokai.com/', { headers })
+    const connectionDetailApi = nock('https://hc-virginia-qa.herokai.com/', { headers })
       .get('/connections/1234')
       .query({ deep: true })
       .reply(200, connectionData)
 
-    let connectionValidationApi = nock('https://hc-virginia-qa.herokai.com/', { headers })
+    const connectionValidationApi = nock('https://hc-virginia-qa.herokai.com/', { headers })
       .post('/api/v3/connections/1234/validations')
       .reply(202, {
         result_url: 'https://hc-virginia-qa.herokai.com/api/v3/connections/1234/validations/456'

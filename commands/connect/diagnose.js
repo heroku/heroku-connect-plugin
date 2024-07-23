@@ -44,20 +44,20 @@ module.exports = {
   description: 'Display diagnostic information about a connection',
   help: 'Checks a connection for common configuration errors. ',
   flags: [
-    {name: 'resource', description: 'specific connection resource name', hasValue: true},
-    {name: 'verbose', char: 'v', description: 'display passed and skipped check information as well'}
+    { name: 'resource', description: 'specific connection resource name', hasValue: true },
+    { name: 'verbose', char: 'v', description: 'display passed and skipped check information as well' }
   ],
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
     let mappingResults
     let didDisplayAnything = false
-    let connection = yield api.withConnection(context, heroku)
+    const connection = yield api.withConnection(context, heroku)
     context.region = connection.region_url
-    let results = yield cli.action('Diagnosing connection', co(function * () {
-      let url = '/api/v3/connections/' + connection.id + '/validations'
+    const results = yield cli.action('Diagnosing connection', co(function * () {
+      const url = '/api/v3/connections/' + connection.id + '/validations'
       try {
-        let {data: {result_url: resultUrl}} = yield api.request(context, 'POST', url)
+        const { data: { result_url: resultUrl } } = yield api.request(context, 'POST', url)
 
         let i = 0
 
@@ -66,7 +66,7 @@ module.exports = {
             cli.error('There was an issue retrieving validations')
             break
           }
-          let response = yield api.request(context, 'GET', resultUrl)
+          const response = yield api.request(context, 'GET', resultUrl)
 
           if (response.status === 200) {
             return response.data
@@ -88,7 +88,7 @@ module.exports = {
       displayResults(results, context.flags)
     }
 
-    for (let objectName in results.mappings) {
+    for (const objectName in results.mappings) {
       mappingResults = results.mappings[objectName]
       if (shouldDisplay(mappingResults, context.flags)) {
         didDisplayAnything = true
@@ -99,7 +99,7 @@ module.exports = {
     }
 
     if (!didDisplayAnything && !context.flags.verbose) {
-      cli.log(cli.color['green']('Everything appears to be fine'))
+      cli.log(cli.color.green('Everything appears to be fine'))
     }
   })),
 

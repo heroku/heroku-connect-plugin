@@ -9,11 +9,11 @@ module.exports = {
   description: 'Delete an existing mapping',
   help: 'Delete an existing mapping',
   args: [
-    {name: 'mapping'}
+    { name: 'mapping' }
   ],
   flags: [
-    {name: 'resource', description: 'specific connection resource name', hasValue: true},
-    {name: 'confirm', hasValue: true}
+    { name: 'resource', description: 'specific connection resource name', hasValue: true },
+    { name: 'confirm', hasValue: true }
   ],
   needsApp: true,
   needsAuth: true,
@@ -21,10 +21,10 @@ module.exports = {
     yield cli.confirmApp(context.app, context.flags.confirm)
 
     yield cli.action('deleting mapping', co(function * () {
-      let connection = yield api.withConnection(context, heroku)
+      const connection = yield api.withConnection(context, heroku)
       context.region = connection.region_url
-      let mapping = yield api.withMapping(connection, context.args.mapping)
-      let response = yield api.request(context, 'DELETE', '/api/v3/mappings/' + mapping.id)
+      const mapping = yield api.withMapping(connection, context.args.mapping)
+      const response = yield api.request(context, 'DELETE', '/api/v3/mappings/' + mapping.id)
       if (response.status !== 204) {
         throw new Error(response.data.message || 'unknown error')
       }

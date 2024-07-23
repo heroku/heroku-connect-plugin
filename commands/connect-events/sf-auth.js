@@ -11,8 +11,8 @@ function callbackServer () {
     // Create a local server that can receive the user after authoriztion is complete
     http.createServer(function (request, response) {
       // Notify the user that the the authorization is complete
-      response.writeHead(200, {'Content-Type': 'text/html'})
-      let res = '<html><body><h3>Authorization complete</h3><p>You may close this window and return to the terminal to continue.</p></body></html>'
+      response.writeHead(200, { 'Content-Type': 'text/html' })
+      const res = '<html><body><h3>Authorization complete</h3><p>You may close this window and return to the terminal to continue.</p></body></html>'
       response.end(res)
 
       // Shut down the server so the command can exit
@@ -28,15 +28,15 @@ function callbackServer () {
 function * run (context, heroku) {
   let redir
   yield cli.action('fetching authorizing URL', co(function * () {
-    let connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
+    const connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
     context.region = connection.region_url
 
-    let url = `/api/v3/kafka-connections/${connection.id}/authorize_url`
-    let args = {
-      'environment': 'production',
+    const url = `/api/v3/kafka-connections/${connection.id}/authorize_url`
+    const args = {
+      environment: 'production',
       // Redirect to the local server created in callbackServer(), so the CLI
       // can respond immediately after successful authorization
-      'next': `http://localhost:${LOCAL_PORT}`
+      next: `http://localhost:${LOCAL_PORT}`
     }
 
     if (context.flags.environment) {
@@ -47,7 +47,7 @@ function * run (context, heroku) {
       args.domain = context.flags.domain
     }
 
-    let response = yield api.request(context, 'POST', url, args)
+    const response = yield api.request(context, 'POST', url, args)
     redir = response.data.redirect
 
     yield cli.open(redir)
@@ -64,10 +64,10 @@ module.exports = {
   description: 'Authorize access to Salesforce for your connection',
   help: 'Opens a browser to authorize a connection to a Salesforce Org',
   flags: [
-    {name: 'callback', char: 'c', description: 'final callback URL', hasValue: true},
-    {name: 'environment', char: 'e', description: '"production", "sandbox", or "custom" [defaults to "production"]', hasValue: true},
-    {name: 'domain', char: 'd', description: 'specify a custom login domain (if using a "custom" environment)', hasValue: true},
-    {name: 'resource', description: 'specific connection resource name', hasValue: true}
+    { name: 'callback', char: 'c', description: 'final callback URL', hasValue: true },
+    { name: 'environment', char: 'e', description: '"production", "sandbox", or "custom" [defaults to "production"]', hasValue: true },
+    { name: 'domain', char: 'd', description: 'specify a custom login domain (if using a "custom" environment)', hasValue: true },
+    { name: 'resource', description: 'specific connection resource name', hasValue: true }
   ],
   needsApp: true,
   needsAuth: true,

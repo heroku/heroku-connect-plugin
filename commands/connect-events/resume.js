@@ -9,15 +9,15 @@ module.exports = {
   description: 'Resume a connection',
   help: 'Resumes a paused connection',
   flags: [
-    {name: 'resource', description: 'specific connection resource name', hasValue: true}
+    { name: 'resource', description: 'specific connection resource name', hasValue: true }
   ],
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
     cli.action('resuming connection', co(function * () {
-      let connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
+      const connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
       context.region = connection.region_url
-      let url = `/api/v3/kafka-connections/${connection.id}/actions/resume`
+      const url = `/api/v3/kafka-connections/${connection.id}/actions/resume`
       yield api.request(context, 'POST', url)
     }))
   }))

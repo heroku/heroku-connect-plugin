@@ -9,7 +9,7 @@ const infoCmd = require('../../../commands/connect/info')
 const password = 's3cr3t3'
 const headers = {
   'content-type': 'application/json',
-  'authorization': `Bearer ${password}`,
+  authorization: `Bearer ${password}`,
   'heroku-client': 'cli'
 }
 
@@ -19,16 +19,18 @@ describe('connect:info', () => {
   beforeEach(() => cli.mockConsole())
 
   it('retrieves info about connection, given an app name and resource name', () => {
-    let appName = 'fake-app'
-    let resourceName = 'abcd-ef01'
-    let discoveryApi = nock('https://hc-central-qa.herokai.com/', {headers})
+    const appName = 'fake-app'
+    const resourceName = 'abcd-ef01'
+    const discoveryApi = nock('https://hc-central-qa.herokai.com/', { headers })
       .get('/connections')
-      .query({app: appName, resource_name: resourceName})
-      .reply(200, {results: [
-        {
-          detail_url: 'https://hc-virginia-qa.herokai.com/connections/1234'
-        }
-      ]})
+      .query({ app: appName, resource_name: resourceName })
+      .reply(200, {
+        results: [
+          {
+            detail_url: 'https://hc-virginia-qa.herokai.com/connections/1234'
+          }
+        ]
+      })
 
     const connectionData = {
       id: 1234,
@@ -50,9 +52,9 @@ describe('connect:info', () => {
       ]
     }
 
-    let connectionDetailApi = nock('https://hc-virginia-qa.herokai.com/', {headers})
+    const connectionDetailApi = nock('https://hc-virginia-qa.herokai.com/', { headers })
       .get('/connections/1234')
-      .query({deep: true})
+      .query({ deep: true })
       .reply(200, connectionData)
 
     return infoCmd.run({
@@ -79,19 +81,19 @@ describe('connect:info', () => {
   })
 
   it('returns an error message if no connections are found', () => {
-    let appName = 'fake-app'
-    let resourceName = 'abcd-ef01'
-    let check = nock('https://hc-central-qa.herokai.com/', {headers})
+    const appName = 'fake-app'
+    const resourceName = 'abcd-ef01'
+    const check = nock('https://hc-central-qa.herokai.com/', { headers })
       .post('/auth/fake-app')
-      .reply(200, {results: []})
-    let discoveryApi = nock('https://hc-central-qa.herokai.com/', {headers})
+      .reply(200, { results: [] })
+    const discoveryApi = nock('https://hc-central-qa.herokai.com/', { headers })
       .get('/connections')
-      .query({app: appName, resource_name: resourceName})
-      .reply(200, {results: []})
-    let discoveryApi2 = nock('https://hc-central-qa.herokai.com/', {headers})
+      .query({ app: appName, resource_name: resourceName })
+      .reply(200, { results: [] })
+    const discoveryApi2 = nock('https://hc-central-qa.herokai.com/', { headers })
       .get('/connections')
-      .query({app: appName, resource_name: resourceName})
-      .reply(200, {results: []})
+      .query({ app: appName, resource_name: resourceName })
+      .reply(200, { results: [] })
 
     return infoCmd.run({
       app: appName,
@@ -106,7 +108,7 @@ describe('connect:info', () => {
         expect(cli.stdout, 'to be empty')
       })
       .then(() => expect(cli.stderr, 'to contain', 'No connection found'))
-      .then(() => expect(cli.stderr, 'to contain', `heroku addons:open connectqa -a fake-app`))
+      .then(() => expect(cli.stderr, 'to contain', 'heroku addons:open connectqa -a fake-app'))
       .then(() => discoveryApi.done())
       .then(() => discoveryApi2.done())
       .then(() => check.done())

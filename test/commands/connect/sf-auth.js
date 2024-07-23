@@ -10,7 +10,7 @@ const sfAuthCmd = require('../../../commands/connect/sf-auth')
 const password = 's3cr3t3'
 const headers = {
   'content-type': 'application/json',
-  'authorization': `Bearer ${password}`,
+  authorization: `Bearer ${password}`,
   'heroku-client': 'cli'
 }
 
@@ -25,19 +25,21 @@ describe('connect:sf:auth', () => {
   beforeEach(() => sinon.stub(cli, 'open').resolves(true))
 
   it('authenticates the user to Salesforce', () => {
-    let appName = 'fake-app'
-    let resourceName = 'abcd-ef01'
-    let connectionId = '1234'
-    let discoveryApi = nock('https://hc-central-qa.herokai.com/', {headers})
+    const appName = 'fake-app'
+    const resourceName = 'abcd-ef01'
+    const connectionId = '1234'
+    const discoveryApi = nock('https://hc-central-qa.herokai.com/', { headers })
       .get('/connections')
-      .query({app: appName, resource_name: resourceName})
-      .reply(200, {results: [
-        {
-          detail_url: 'https://connect-us.heroku.com/connections/1234',
-          region_url: 'https://connect-us.heroku.com',
-          id: 1234
-        }
-      ]})
+      .query({ app: appName, resource_name: resourceName })
+      .reply(200, {
+        results: [
+          {
+            detail_url: 'https://connect-us.heroku.com/connections/1234',
+            region_url: 'https://connect-us.heroku.com',
+            id: 1234
+          }
+        ]
+      })
 
     const connectionData = {
       id: 1234,
@@ -46,17 +48,17 @@ describe('connect:sf:auth', () => {
       schema_name: 'salesforce'
     }
 
-    let connectionDetailApi = nock('https://connect-us.heroku.com', {headers})
+    const connectionDetailApi = nock('https://connect-us.heroku.com', { headers })
       .get('/connections/1234')
-      .query({deep: true})
+      .query({ deep: true })
       .reply(200, connectionData)
 
-    let apiWithoutPort = nock('https://connect-us.heroku.com')
+    const apiWithoutPort = nock('https://connect-us.heroku.com')
       .post('/api/v3/connections/' + connectionId + '/authorize_url', {
         environment: 'production',
         next: 'http://localhost:18000'
       })
-      .reply(201, {redirect: 'redirect-uri'})
+      .reply(201, { redirect: 'redirect-uri' })
 
     return sfAuthCmd.run({
       app: appName,
