@@ -36,7 +36,7 @@ exports.commands = [
   require('./commands/connect/mapping-write-errors'),
   require('./commands/connect/write-errors'),
 
-// Connect Events
+  // Connect Events
   require('./commands/connect-events/info'),
   require('./commands/connect-events/state'),
   require('./commands/connect-events/pause'),

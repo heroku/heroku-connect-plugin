@@ -9,20 +9,20 @@ module.exports = {
   description: 'Create a stream',
   help: 'Create a stream',
   args: [
-    {name: 'stream'}
+    { name: 'stream' }
   ],
   flags: [
-    {name: 'resource', description: 'specific connection resource name', hasValue: true}
+    { name: 'resource', description: 'specific connection resource name', hasValue: true }
   ],
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
     yield cli.action('creating stream', co(function * () {
-      let connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
+      const connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
       context.region = connection.region_url
-      let response = yield api.request(
+      const response = yield api.request(
         context, 'POST', `/api/v3/kafka-connections/${connection.id}/streams`,
-        {'object_name': context.args.stream}
+        { object_name: context.args.stream }
       )
       if (response.status !== 201) {
         throw new Error(response.data.message || 'unknown error')

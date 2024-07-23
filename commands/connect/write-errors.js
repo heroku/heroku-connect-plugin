@@ -7,7 +7,7 @@ module.exports = {
   command: 'write-errors',
   description: 'Display the last 24 hours of write errors on this connection',
   examples: [
-    `$ heroku connect:write-errors -a myapp --resource herokuconnect-twisted-123`
+    '$ heroku connect:write-errors -a myapp --resource herokuconnect-twisted-123'
   ],
   flags: [
     {

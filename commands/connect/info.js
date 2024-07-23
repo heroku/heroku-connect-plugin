@@ -10,13 +10,13 @@ module.exports = {
   description: 'display connection information',
   help: 'display connection information',
   flags: [
-    {name: 'resource', description: 'specific connection resource name', hasValue: true},
-    {name: 'check-for-new', char: 'c', description: 'check for access to any new connections', hasValue: false}
+    { name: 'resource', description: 'specific connection resource name', hasValue: true },
+    { name: 'check-for-new', char: 'c', description: 'check for access to any new connections', hasValue: false }
   ],
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    var connections
+    let connections
     if (context.flags['check-for-new']) {
       connections = yield api.requestAppAccess(context, context.app, context.flags, true, heroku)
     } else {
@@ -27,7 +27,7 @@ module.exports = {
     }
 
     if (connections.length === 0) {
-      const instanceName = process.env['CONNECT_ADDON'] === 'connectqa' ? 'connectqa' : 'herokuconnect'
+      const instanceName = process.env.CONNECT_ADDON === 'connectqa' ? 'connectqa' : 'herokuconnect'
       cli.error('No connection found. You may need to use addons:open to make it accessible to the CLI.')
       cli.error('')
       cli.error('For Example:')

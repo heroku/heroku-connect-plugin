@@ -10,20 +10,20 @@ module.exports = {
   description: 'Display diagnostic information about a mapping',
   help: 'Checks a mapping for common configuration errors. ',
   args: [
-    {name: 'mapping'}
+    { name: 'mapping' }
   ],
   flags: [
-    {name: 'resource', description: 'specific connection resource name', hasValue: true},
-    {name: 'verbose', char: 'v', description: 'display passed and skipped check information as well'}
+    { name: 'resource', description: 'specific connection resource name', hasValue: true },
+    { name: 'verbose', char: 'v', description: 'display passed and skipped check information as well' }
   ],
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    let connection = yield api.withConnection(context, heroku)
+    const connection = yield api.withConnection(context, heroku)
     context.region = connection.region_url
-    let mapping = yield api.withMapping(connection, context.args.mapping)
-    let results = yield cli.action('Diagnosing mapping', co(function * () {
-      let url = '/api/v3/mappings/' + mapping.id + '/validations'
+    const mapping = yield api.withMapping(connection, context.args.mapping)
+    const results = yield cli.action('Diagnosing mapping', co(function * () {
+      const url = '/api/v3/mappings/' + mapping.id + '/validations'
       return yield api.request(context, 'GET', url)
     }))
     cli.log() // Blank line to separate each section

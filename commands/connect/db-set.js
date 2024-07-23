@@ -4,10 +4,10 @@ const cli = require('heroku-cli-util')
 const co = require('co')
 const inquirer = require('inquirer')
 
-let fetchKeys = co.wrap(function * (appName, context) {
-  let url = '/api/v3/apps/' + appName
-  let response = yield api.request(context, 'GET', url)
-  let keys = []// new Array(response.json.db_keys.length);
+const fetchKeys = co.wrap(function * (appName, context) {
+  const url = '/api/v3/apps/' + appName
+  const response = yield api.request(context, 'GET', url)
+  const keys = []// new Array(response.json.db_keys.length);
   response.data.db_keys.forEach(function (key) {
     const plan = (key.addon ? key.addon.plan : null) || 'Unknown Plan'
     keys.push({
@@ -24,19 +24,19 @@ module.exports = {
   description: 'Set database parameters',
   help: "Set a connection's database config var and schema name",
   flags: [
-    {name: 'resource', description: 'specific connection resource name', hasValue: true},
-    {name: 'db', description: 'Database config var name', hasValue: true},
-    {name: 'schema', description: 'Database schema name', hasValue: true}
+    { name: 'resource', description: 'specific connection resource name', hasValue: true },
+    { name: 'db', description: 'Database config var name', hasValue: true },
+    { name: 'schema', description: 'Database schema name', hasValue: true }
   ],
   needsApp: true,
   needsAuth: true,
   run: cli.command(co.wrap(function * (context, heroku) {
-    let data = {
+    const data = {
       db_key: context.flags.db,
       schema_name: context.flags.schema
     }
 
-    let connection = yield api.withConnection(context, heroku)
+    const connection = yield api.withConnection(context, heroku)
     context.region = connection.region_url
 
     inquirer.prompt([
@@ -54,12 +54,12 @@ module.exports = {
         when: !context.flags.schema
       }
     ]).then(co.wrap(function * (answers) {
-      for (let key in answers) {
+      for (const key in answers) {
         data[key] = answers[key]
       }
 
       yield cli.action('setting database parameters', co(function * () {
-        let url = '/api/v3/connections/' + connection.id
+        const url = '/api/v3/connections/' + connection.id
         yield api.request(context, 'PATCH', url, data)
       }))
 
