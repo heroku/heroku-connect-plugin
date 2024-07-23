@@ -1,6 +1,6 @@
 'use strict'
 const api = require('../../lib/connect/api.js')
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 const co = require('co')
 const fs = require('fs')
 
