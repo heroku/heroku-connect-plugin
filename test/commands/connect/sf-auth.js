@@ -1,7 +1,7 @@
 'use strict'
 /* globals describe beforeEach it */
 
-const cli = require('heroku-cli-util')
+const cli = require('@heroku/heroku-cli-util')
 const nock = require('nock')
 const expect = require('unexpected')
 const sinon = require('sinon')
