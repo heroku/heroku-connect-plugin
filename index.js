@@ -35,6 +35,7 @@ exports.commands = [
   require('./commands/connect/mapping-diagnose'),
   require('./commands/connect/mapping-write-errors'),
   require('./commands/connect/write-errors'),
+  require('./commands/connect/schema-diff'),
 
   // Connect Events
   require('./commands/connect-events/info'),
