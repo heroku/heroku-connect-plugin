@@ -66,7 +66,7 @@ describe('connect:sf:auth', () => {
         resource: resourceName
       },
       auth: {
-        password: password
+        password
       }
     }, {})
       .then(() => expect(

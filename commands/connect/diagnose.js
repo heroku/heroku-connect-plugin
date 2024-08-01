@@ -104,5 +104,5 @@ module.exports = {
   })),
 
   // Additional exports for code sharing
-  displayResults: displayResults
+  displayResults
 }
