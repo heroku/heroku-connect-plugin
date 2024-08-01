@@ -29,7 +29,7 @@
     "axios": "^0.27.2",
     "co": "4.6.0",
     "heroku-client": "^3.0.6",
-    "inquirer": "^5.1.0"
+    "inquirer": "^10.1.6"
   },
   "devDependencies": {
     "mocha": "^10.7.0",
