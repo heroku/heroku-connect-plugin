@@ -18,7 +18,7 @@ module.exports = {
     needsApp: true,
     needsAuth: true,
     run: cli.command(co.wrap(function * (context, heroku) {
-      let connection, response, url
+      let connection, url
       connection = yield api.withConnection(context, heroku)
       url = '/api/v3/connections/' + connection.id + '/schema-diff'
 
@@ -32,17 +32,39 @@ module.exports = {
       
       url += `?target_version=${target_version}`;
       }
-      yield cli.action('comparing schemas', co(function * () {
+
+
+
+
+     const results = yield cli.action('comparing schemas', co(function * () {
         
         context.region = connection.region_url
         
-        response = yield api.request(context, 'GET', url)
-        if (response) {
-            console.log('Schema difference:', response.data);
+        const response = yield api.request(context, 'GET', url)
+        if (response.status === 200) {
+            return response.data
           } else {
-            console.error('Failed to process the request');
+            cli.error(err);
           }
       }))
+
+      cli.log() // Blank line to separate each section
+      cli.styledHeader(`Connection: ${connection.name || connection.internal_name}`)
+      cli.log("Current API Version: "+ results["current_api_version"])
+      cli.log("Target API Version: "+ results["target_api_version"])
+      cli.log()
+    cli.table(results["mappings"], {
+        columns: [
+          { key: "name", label: 'Object Name'},
+          { key: "result_message", label: 'Schema Difference Output'},
+          { key: "fields_have_changed", label: 'Fields Have Changed' , format: changed => changed ? cli.color.yellow('true') : cli.color.green('false') },
+        ]
+      });
+      cli.log() // Blank line to separate each section
+
+    
+
+
 
     }))
   }
