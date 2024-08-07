@@ -4,7 +4,7 @@ const cli = require('@heroku/heroku-cli-util')
 const co = require('co')
 
 function isFloat(value) {
-    return !isNaN(value) && parseFloat(value) == value && !Number.isInteger(parseFloat(value));
+    return !isNaN(parseFloat(value)) && isFinite(value);
   }
 
 module.exports = {
@@ -26,15 +26,12 @@ module.exports = {
         const target_version = context.args.target_version;
 
       if (!isFloat(target_version)) {
-        console.error('The provided argument is not a valid float number');
+        console.error('The provided argument is not a valid float number1');
         process.exit(1);
       }
       
       url += `?target_version=${target_version}`;
       }
-
-
-
 
      const results = yield cli.action('comparing schemas', co(function * () {
         
@@ -61,10 +58,6 @@ module.exports = {
         ]
       });
       cli.log() // Blank line to separate each section
-
-    
-
-
 
     }))
   }
