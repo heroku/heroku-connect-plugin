@@ -2970,10 +2970,10 @@ typed-array-length@^1.0.6:
     is-typed-array "^1.1.13"
     possible-typed-array-names "^1.0.0"
 
-ukkonen@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.npmjs.org/ukkonen/-/ukkonen-1.4.0.tgz"
-  integrity sha512-g8SLGxflI0/VNH2C8j66KcfJXrU5StJglRQBYPNiChXFlOrqqYM1icOykOAAUgTeBpktaEuCm9hjpPinQ080PA==
+ukkonen@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/ukkonen/-/ukkonen-2.1.0.tgz#7af741397e603462290aa5d4e65e514f400b29f7"
+  integrity sha512-unACtiJBMpL5Q+JKEBYtB88DVClP4Ch42NFkuj7Ck7jcJ4UKkkfvvfGQ2WeaMeuq7OIGLkbm0X7YN+TGP9C5bw==
 
 unbox-primitive@^1.0.2:
   version "1.0.2"
@@ -2995,10 +2995,10 @@ unexpected-bluebird@2.9.34-longstack2:
   resolved "https://registry.npmjs.org/unexpected-bluebird/-/unexpected-bluebird-2.9.34-longstack2.tgz"
   integrity sha1-SaysdTsFVt7WAlIQ7pYYIwfSssk=
 
-unexpected@^12.0.5:
-  version "12.0.5"
-  resolved "https://registry.npmjs.org/unexpected/-/unexpected-12.0.5.tgz"
-  integrity sha512-RMC8kmcK33rk6imnRZuMAhCsvjQzTnM8QV3mzC/T1QJ0H7sKcFKVcGsQ215/T1pxTr3jKs6xupHpLqtlqH9Rvw==
+unexpected@^13.2.1:
+  version "13.2.1"
+  resolved "https://registry.yarnpkg.com/unexpected/-/unexpected-13.2.1.tgz#d21d0dcc633e0ff00754ebdcf6925ac3f9c66799"
+  integrity sha512-6rWjexbMV4DICp8xeKHKql5JTC5No7Mz55wei2YcXGkqBAtAgfzIhFLzbDohRzN/lNtwG6+NuIvMI/0giQXOvA==
   dependencies:
     array-changes "3.0.1"
     array-changes-async "3.0.1"
@@ -3006,7 +3006,7 @@ unexpected@^12.0.5:
     diff "^5.0.0"
     greedy-interval-packer "1.2.0"
     magicpen "^6.2.4"
-    ukkonen "^1.4.0"
+    ukkonen "^2.1.0"
     unexpected-bluebird "2.9.34-longstack2"
 
 uri-js@^4.2.2:
