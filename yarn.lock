@@ -2062,10 +2062,10 @@ mocha@^10.7.0:
     yargs-parser "^20.2.9"
     yargs-unparser "^2.0.0"
 
-mockdate@^2.0.1:
-  version "2.0.2"
-  resolved "https://registry.npmjs.org/mockdate/-/mockdate-2.0.2.tgz"
-  integrity sha1-WuDA6vj+I+AJzQH5iJtCxPY0rxI=
+mockdate@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/mockdate/-/mockdate-3.0.5.tgz#789be686deb3149e7df2b663d2bc4392bc3284fb"
+  integrity sha512-iniQP4rj1FhBdBYS/+eQv7j1tadJ9lJtdzgOpvsOHng/GbcDh2Fhdeq+ZRldrPYdXvCyfFUmFeEwEGXZB5I/AQ==
 
 ms@2.1.2:
   version "2.1.2"
