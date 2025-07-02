@@ -1,6 +1,6 @@
 {
   "name": "@heroku-cli/heroku-connect-plugin",
-  "description": "Heroku Connect plugin for Heroku CLI",
+  "description": "Heroku Connect CLI plugin",
   "version": "0.11.3",
   "author": "Heroku",
   "repository": {
@@ -13,7 +13,7 @@
   "keywords": [
     "heroku-plugin"
   ],
-  "license": "ISC",
+  "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
     "test": "CONNECT_ADDON=connectqa mocha && standard",
