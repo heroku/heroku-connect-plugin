@@ -1,6 +1,6 @@
-# Contributing Guide For Heroku Connect CLI Plugin
+# Contributing Guide For Heroku Connect CLI plugin
 
-This page lists the operational governance model of this project, as well as the recommendations and requirements for how to best contribute to the Heroku Connect CLI Plugin. We strive to obey these as best as possible. As always, thanks for contributing – we hope these guidelines make it easier and shed some light on our approach and processes.
+This page lists the operational governance model of this project, as well as the recommendations and requirements for how to best contribute to the Heroku Connect CLI plugin. We strive to obey these as best as possible. As always, thanks for contributing – we hope these guidelines make it easier and shed some light on our approach and processes.
 
 # Governance Model
 ## Published but not supported
@@ -64,4 +64,4 @@ If you're new to our project and looking for some way to make your first contrib
 > **NOTE**: Be sure to [sync your fork](https://help.github.com/articles/syncing-a-fork/) before making a pull request.
 
 # License
-By contributing your code, you agree to license your contribution under the terms of our project [LICENSE](LICENSE.md) and to sign the [Salesforce CLA](https://cla.salesforce.com/sign-cla)
+By contributing your code, you agree to license your contribution under the terms of our project [LICENSE](LICENSE) and to sign the [Salesforce CLA](https://cla.salesforce.com/sign-cla)
