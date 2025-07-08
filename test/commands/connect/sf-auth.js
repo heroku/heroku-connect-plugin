@@ -1,5 +1,5 @@
 'use strict'
-/* globals describe beforeEach it */
+/* globals describe beforeEach afterEach it */
 
 const cli = require('@heroku/heroku-cli-util')
 const nock = require('nock')
@@ -15,14 +15,20 @@ const headers = {
 }
 
 describe('connect:sf:auth', () => {
-  // prevent stdout/stderr from displaying
-  // redirects to cli.stdout/cli.stderr instead
-  beforeEach(() => cli.mockConsole())
-  // Stub out the callbackServer we create for SF Authentication
-  beforeEach(() => sinon.stub(sfAuthCmd, 'callbackServer').resolves(true))
-  beforeEach(() => sinon.stub(cli, 'action').resolves(true))
-  // Stub out the helper to open a URL in a browser
-  beforeEach(() => sinon.stub(cli, 'open').resolves(true))
+  beforeEach(function () {
+    // prevent stdout/stderr from displaying
+    // redirects to cli.stdout/cli.stderr instead
+    cli.mockConsole()
+    // Stub out the callbackServer we create for SF Authentication
+    sinon.stub(sfAuthCmd, 'callbackServer').resolves(true)
+    sinon.stub(cli, 'action').resolves(true)
+    // Stub out the helper to open a URL in a browser
+    sinon.stub(cli, 'open').resolves(true)
+  })
+
+  afterEach(function () {
+    sinon.restore()
+  })
 
   it('authenticates the user to Salesforce', () => {
     const appName = 'fake-app'

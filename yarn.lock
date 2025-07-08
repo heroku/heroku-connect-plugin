@@ -45,7 +45,7 @@
     supports-color "^5.5.0"
     tslib "^1.9.3"
 
-"@heroku/heroku-cli-util@^8.0.14":
+"@heroku/heroku-cli-util@^8.0.15":
   version "8.0.15"
   resolved "https://registry.yarnpkg.com/@heroku/heroku-cli-util/-/heroku-cli-util-8.0.15.tgz#46515dbf51f10cb31be32c889cce278c69970c12"
   integrity sha512-A2mzdRj6T1Tq8wB0TH9SR9laufW/i+dDuoi3aHUsiLq2w2y27+e3QrOYuqc8ambdj3PJHot3L9EA/p36CnNY1w==
@@ -134,7 +134,7 @@
   dependencies:
     type-detect "4.0.8"
 
-"@sinonjs/fake-timers@^13.0.1", "@sinonjs/fake-timers@^13.0.2":
+"@sinonjs/fake-timers@^13.0.1", "@sinonjs/fake-timers@^13.0.5":
   version "13.0.5"
   resolved "https://registry.yarnpkg.com/@sinonjs/fake-timers/-/fake-timers-13.0.5.tgz#36b9dbc21ad5546486ea9173d6bea063eb1717d5"
   integrity sha512-36/hTbH2uaWuGVERyC6da9YwGWnzUZXuPro/F2LfsdOsLnCojz/iSH8MxUt/FD2S5XBSVPhmArFUXcpCQ2Hkiw==
@@ -1965,7 +1965,7 @@ json5@^1.0.2:
 
 just-extend@^6.2.0:
   version "6.2.0"
-  resolved "https://registry.npmjs.org/just-extend/-/just-extend-6.2.0.tgz"
+  resolved "https://registry.yarnpkg.com/just-extend/-/just-extend-6.2.0.tgz#b816abfb3d67ee860482e7401564672558163947"
   integrity sha512-cYofQu2Xpom82S6qD778jBDpwvvy39s1l/hrYij2u9AMdQcGRpaBu6kY4mVhuno5kJVi1DAz4aiphA2WI1/OAw==
 
 keyv@^4.0.0, keyv@^4.5.3:
@@ -2776,12 +2776,12 @@ signal-exit@^4.0.1:
   integrity sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==
 
 sinon@^19.0.2:
-  version "19.0.2"
-  resolved "https://registry.yarnpkg.com/sinon/-/sinon-19.0.2.tgz#944cf771d22236aa84fc1ab70ce5bffc3a215dad"
-  integrity sha512-euuToqM+PjO4UgXeLETsfQiuoyPXlqFezr6YZDFwHR3t4qaX0fZUe1MfPMznTL5f8BWrVS89KduLdMUsxFCO6g==
+  version "19.0.5"
+  resolved "https://registry.yarnpkg.com/sinon/-/sinon-19.0.5.tgz#64fd2f84786a043f721246c40b36bef4c4b76b3c"
+  integrity sha512-r15s9/s+ub/d4bxNXqIUmwp6imVSdTorIRaxoecYjqTVLZ8RuoXr/4EDGwIBo6Waxn7f2gnURX9zuhAfCwaF6Q==
   dependencies:
     "@sinonjs/commons" "^3.0.1"
-    "@sinonjs/fake-timers" "^13.0.2"
+    "@sinonjs/fake-timers" "^13.0.5"
     "@sinonjs/samsam" "^8.0.1"
     diff "^7.0.0"
     nise "^6.1.1"
