@@ -3,6 +3,7 @@
   "description": "Heroku Connect CLI plugin",
   "version": "0.11.3",
   "author": "Heroku",
+  "homepage": "https://github.com/heroku/heroku-connect-plugin",
   "repository": {
     "type": "git",
     "url": "https://github.com/heroku/heroku-connect-plugin.git"
@@ -11,32 +12,77 @@
     "url": "https://github.com/heroku/heroku-connect-plugin/issues"
   },
   "keywords": [
-    "heroku-plugin"
+    "heroku-plugin",
+    "oclif"
   ],
+  "engines": {
+    "node": ">= 20"
+  },
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
-    "test": "CONNECT_ADDON=connectqa mocha && standard",
-    "style-fix": "standard --fix"
+    "build": "rm -rf dist && tsc -b && oclif manifest && oclif readme && mv oclif.manifest.json ./dist/oclif.manifest.json && cp README.md ./dist/README.md",
+    "build:dev": "rm -rf dist && tsc -b --sourcemap && oclif manifest && oclif readme && mv oclif.manifest.json ./dist/oclif.manifest.json && cp README.md ./dist/README.md",
+    "lint": "eslint . --ext .ts --config .eslintrc.json",
+    "lint:fix": "eslint . --ext .ts --config .eslintrc.json --fix",
+    "posttest": "yarn lint",
+    "test": "nyc mocha --forbid-only",
+    "test:local": "nyc mocha",
+    "version": "oclif readme && git add README.md"
   },
   "files": [
-    "/index.js",
-    "/lib",
-    "/commands"
+    "/dist"
   ],
+  "oclif": {
+    "bin": "heroku",
+    "commands": "./dist/commands",
+    "devPlugins": [
+      "@oclif/plugin-help"
+    ],
+    "topics": {
+      "connect": {
+        "description": "manage Heroku Connect"
+      }
+    }
+  },
   "dependencies": {
+    "@heroku-cli/color": "^2",
+    "@heroku-cli/command": "^11.5.0",
+    "@heroku-cli/schema": "^1.0.25",
     "@heroku/heroku-cli-util": "^8.0.15",
-    "axios": "^0.27.2",
-    "co": "4.6.0",
-    "heroku-client": "^3.0.6",
-    "inquirer": "^5.1.0"
+    "@oclif/core": "^2.16.0",
+    "@oclif/plugin-help": "^5",
+    "axios": "^0.30",
+    "inquirer": "^9.1.7",
+    "printf": "^0.6.1",
+    "tsheredoc": "^1"
   },
   "devDependencies": {
-    "mocha": "^11.0.1",
+    "@heroku/http-call": "^5.4.0",
+    "@oclif/test": "^2.3.28",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^22.13.10",
+    "@types/sinon": "^17.0.1",
+    "@typescript-eslint/eslint-plugin": "^6.18.0",
+    "@typescript-eslint/parser": "^6",
+    "chai": "^4",
+    "eslint": "^8.57.1",
+    "eslint-config-oclif": "^5.0.0",
+    "eslint-config-oclif-typescript": "^1.0.1",
+    "eslint-import-resolver-typescript": "^3.6.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-mocha": "^10",
+    "mocha": "^10",
     "mockdate": "^3.0.5",
     "nock": "^13.5.4",
+    "np": "^10.2.0",
+    "nyc": "^15",
+    "oclif": "^4.14.36",
     "sinon": "^19.0.2",
-    "standard": "^17.1.0",
+    "stdout-stderr": "^0",
+    "strip-ansi": "^6",
+    "ts-node": "^10",
+    "typescript": "^5",
     "unexpected": "^13.2.1"
   }
 }
