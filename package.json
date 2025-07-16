@@ -41,11 +41,21 @@
     ],
     "topics": {
       "connect": {
-        "description": "manage Heroku Connect"
+        "description": "manage connections for Heroku Connect"
+      },
+      "connect:mapping": {
+        "description": "manage mappings on a Heroku Connect addon"
+      },
+      "connect-events": {
+        "description": "manage connections for Heroku Connect Events Pilot"
+      },
+      "connect-events:stream": {
+        "description": "manage mappings on a Heroku Connect Events Pilot addon"
       }
     }
   },
   "dependencies": {
+    "@heroku/http-call": "^5.5.0",
     "@heroku-cli/color": "^2",
     "@heroku-cli/command": "^11.5.0",
     "@heroku-cli/schema": "^1.0.25",
@@ -58,7 +68,6 @@
     "tsheredoc": "^1"
   },
   "devDependencies": {
-    "@heroku/http-call": "^5.4.0",
     "@oclif/test": "^2.3.28",
     "@types/mocha": "^10.0.1",
     "@types/node": "^22.13.10",
@@ -82,7 +91,6 @@
     "stdout-stderr": "^0",
     "strip-ansi": "^6",
     "ts-node": "^10",
-    "typescript": "^5",
-    "unexpected": "^13.2.1"
+    "typescript": "^5"
   }
 }

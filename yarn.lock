@@ -886,7 +886,7 @@
     tslib "^1.9.0"
     tunnel-agent "^0.6.0"
 
-"@heroku/http-call@^5.4.0", "@heroku/http-call@^5.5.0":
+"@heroku/http-call@^5.5.0":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@heroku/http-call/-/http-call-5.5.0.tgz#46716bf03e0bec3b5bb65654c1fa1f90b5b74127"
   integrity sha512-fHeprmOuBqrfUlRmSjUvuY7blagZ5GDtqWAdGqUeVNfiXdZBul7Q/O8wJMqvqwyR9GjU8gq0Hl1U+J5jThcOcA==
@@ -2464,11 +2464,6 @@ ansi-regex@^6.0.1:
   resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-6.1.0.tgz#95ec409c69619d6cb1b8b34f14b660ef28ebd654"
   integrity sha512-7HSX4QQb4CspciLpVFwyRe79O3xsIZDDLER21kERQ71oaPodF8jL725AgJMFAYbooIqolJoRLuM81SpeUkpkvA==
 
-ansi-styles@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/ansi-styles/-/ansi-styles-2.0.0.tgz"
-  integrity sha1-QysmFi/qG2PIeIlqvIzFVI8lBj4=
-
 ansi-styles@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-2.2.1.tgz#b432dd3358b634cf75e1e4664368240533c1ddbe"
@@ -2561,20 +2556,6 @@ array-buffer-byte-length@^1.0.2:
     call-bound "^1.0.3"
     is-array-buffer "^3.0.5"
 
-array-changes-async@3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/array-changes-async/-/array-changes-async-3.0.1.tgz"
-  integrity sha512-WNHLhMOTzntixkBxNm/MiWCNKuC4FMYXk6DKuzZUbkWXAe0Xomwv40SEUicfOuHHtW7Ue661Mc5AJA0AOfqApg==
-  dependencies:
-    arraydiff-async "0.2.0"
-
-array-changes@3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/array-changes/-/array-changes-3.0.1.tgz"
-  integrity sha512-UYXV+qUaTKJO3GUBVfD6b9Mu7wUzDvpfovZKtbxNJApwRUifgrJMidvE+/rbqV3wCffly5HXcbOW3/7shmmEag==
-  dependencies:
-    arraydiff-papandreou "0.1.1-patch1"
-
 array-includes@^3.1.9:
   version "3.1.9"
   resolved "https://registry.yarnpkg.com/array-includes/-/array-includes-3.1.9.tgz#1f0ccaa08e90cdbc3eb433210f903ad0f17c3f3a"
@@ -2653,16 +2634,6 @@ arraybuffer.prototype.slice@^1.0.4:
     es-errors "^1.3.0"
     get-intrinsic "^1.2.6"
     is-array-buffer "^3.0.4"
-
-arraydiff-async@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.npmjs.org/arraydiff-async/-/arraydiff-async-0.2.0.tgz"
-  integrity sha1-uwUouY6BS3AvAfSWvHO+w+V/QIY=
-
-arraydiff-papandreou@0.1.1-patch1:
-  version "0.1.1-patch1"
-  resolved "https://registry.npmjs.org/arraydiff-papandreou/-/arraydiff-papandreou-0.1.1-patch1.tgz"
-  integrity sha1-ApAnC/27Sy762LdIJjitWnIQkhA=
 
 assertion-error@^1.1.0:
   version "1.1.0"
@@ -3224,11 +3195,6 @@ color-convert@^2.0.1:
   dependencies:
     color-name "~1.1.4"
 
-color-diff@0.1.7:
-  version "0.1.7"
-  resolved "https://registry.npmjs.org/color-diff/-/color-diff-0.1.7.tgz"
-  integrity sha1-bbeM2UgqjkWdQIIer0tQMoPcuOI=
-
 color-name@1.1.3:
   version "1.1.3"
   resolved "https://registry.npmjs.org/color-name/-/color-name-1.1.3.tgz"
@@ -3534,15 +3500,6 @@ delayed-stream@~1.0.0:
   resolved "https://registry.yarnpkg.com/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
   integrity sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==
 
-detect-indent@3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/detect-indent/-/detect-indent-3.0.1.tgz"
-  integrity sha1-ncXl3bzu+DJXZLlFGwK8bVQIT3U=
-  dependencies:
-    get-stdin "^4.0.1"
-    minimist "^1.1.0"
-    repeating "^1.1.0"
-
 detect-indent@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/detect-indent/-/detect-indent-7.0.1.tgz#cbb060a12842b9c4d333f1cac4aa4da1bb66bc25"
@@ -3558,7 +3515,7 @@ diff@^4.0.1:
   resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
   integrity sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
 
-diff@^5.0.0, diff@^5.2.0:
+diff@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-5.2.0.tgz#26ded047cd1179b78b9537d5ef725503ce1ae531"
   integrity sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==
@@ -4591,11 +4548,6 @@ get-proto@^1.0.1:
     dunder-proto "^1.0.1"
     es-object-atoms "^1.0.0"
 
-get-stdin@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.npmjs.org/get-stdin/-/get-stdin-4.0.1.tgz"
-  integrity sha1-uWjGsKBDhDJJAui/Gl3zJXmkUP4=
-
 get-stdin@^9.0.0:
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/get-stdin/-/get-stdin-9.0.0.tgz#3983ff82e03d56f1b2ea0d3e60325f39d703a575"
@@ -4806,11 +4758,6 @@ graphemer@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/graphemer/-/graphemer-1.4.0.tgz#fb2f1d55e0e3a1849aeffc90c4fa0dd53a0e66c6"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
-
-greedy-interval-packer@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/greedy-interval-packer/-/greedy-interval-packer-1.2.0.tgz"
-  integrity sha1-1toR82Ybt5eBLaeKHqUQZ4oqhzk=
 
 has-ansi@^2.0.0:
   version "2.0.0"
@@ -5340,13 +5287,6 @@ is-finalizationregistry@^1.1.0:
   integrity sha512-1pC6N8qWJbWoPtEjgcL2xyhQOP491EQjeUo3qTKcmV8YSDDJrOepfG8pcC7h/QgnQHYSv0mJ3Z/ZWxmatVrysg==
   dependencies:
     call-bound "^1.0.3"
-
-is-finite@^1.0.0:
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/is-finite/-/is-finite-1.0.2.tgz"
-  integrity sha1-zGZ3aVYCvlUO8R6LSqYwU0K20Ko=
-  dependencies:
-    number-is-nan "^1.0.0"
 
 is-fullwidth-code-point@^1.0.0:
   version "1.0.0"
@@ -6044,14 +5984,6 @@ lru-cache@^5.1.1:
   dependencies:
     yallist "^3.0.2"
 
-magicpen@^6.2.4:
-  version "6.2.4"
-  resolved "https://registry.npmjs.org/magicpen/-/magicpen-6.2.4.tgz"
-  integrity sha512-rT4JcgakSrmR9/qPY/EsDSvKH4+nQuFfSQ34Djnj0Zx9jJ+c3REOz+K3CITvRZcmAcCFM6jJO7wSiHlMEXYy3A==
-  dependencies:
-    ansi-styles "2.0.0"
-    color-diff "0.1.7"
-
 make-dir@^3.0.0, make-dir@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-3.1.0.tgz#415e967046b3a7f1d185277d84aa58203726a13f"
@@ -6179,7 +6111,7 @@ minimatch@^9.0.0, minimatch@^9.0.5:
   dependencies:
     brace-expansion "^2.0.1"
 
-minimist@^1.1.0, minimist@^1.2.0, minimist@^1.2.6:
+minimist@^1.2.0, minimist@^1.2.6:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
@@ -7187,13 +7119,6 @@ release-zalgo@^1.0.0:
   integrity sha512-gUAyHVHPPC5wdqX/LG4LWtRYtgjxyX78oanFNTMMyFEfOqdC54s3eE82imuWKbOeqYht2CrNf64Qb8vgmmtZGA==
   dependencies:
     es6-error "^4.0.1"
-
-repeating@^1.1.0:
-  version "1.1.3"
-  resolved "https://registry.npmjs.org/repeating/-/repeating-1.1.3.tgz"
-  integrity sha1-PUEUIYh3U3SU+X93+Xhfq4EPpKw=
-  dependencies:
-    is-finite "^1.0.0"
 
 require-directory@^2.1.1:
   version "2.1.1"
@@ -8222,11 +8147,6 @@ typescript@^5:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.8.3.tgz#92f8a3e5e3cf497356f4178c34cd65a7f5e8440e"
   integrity sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==
 
-ukkonen@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/ukkonen/-/ukkonen-2.1.0.tgz#7af741397e603462290aa5d4e65e514f400b29f7"
-  integrity sha512-unACtiJBMpL5Q+JKEBYtB88DVClP4Ch42NFkuj7Ck7jcJ4UKkkfvvfGQ2WeaMeuq7OIGLkbm0X7YN+TGP9C5bw==
-
 unbox-primitive@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/unbox-primitive/-/unbox-primitive-1.0.2.tgz"
@@ -8256,25 +8176,6 @@ undici-types@~7.8.0:
   version "7.8.0"
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-7.8.0.tgz#de00b85b710c54122e44fbfd911f8d70174cd294"
   integrity sha512-9UJ2xGDvQ43tYyVMpuHlsgApydB8ZKfVYTsLDhXkFL/6gfkp+U8xTGdh8pMJv1SpZna0zxG1DwsKZsreLbXBxw==
-
-unexpected-bluebird@2.9.34-longstack2:
-  version "2.9.34-longstack2"
-  resolved "https://registry.npmjs.org/unexpected-bluebird/-/unexpected-bluebird-2.9.34-longstack2.tgz"
-  integrity sha1-SaysdTsFVt7WAlIQ7pYYIwfSssk=
-
-unexpected@^13.2.1:
-  version "13.2.1"
-  resolved "https://registry.yarnpkg.com/unexpected/-/unexpected-13.2.1.tgz#d21d0dcc633e0ff00754ebdcf6925ac3f9c66799"
-  integrity sha512-6rWjexbMV4DICp8xeKHKql5JTC5No7Mz55wei2YcXGkqBAtAgfzIhFLzbDohRzN/lNtwG6+NuIvMI/0giQXOvA==
-  dependencies:
-    array-changes "3.0.1"
-    array-changes-async "3.0.1"
-    detect-indent "3.0.1"
-    diff "^5.0.0"
-    greedy-interval-packer "1.2.0"
-    magicpen "^6.2.4"
-    ukkonen "^2.1.0"
-    unexpected-bluebird "2.9.34-longstack2"
 
 unicorn-magic@^0.1.0:
   version "0.1.0"
