@@ -27,7 +27,57 @@ USAGE
 ```
 # Commands
 <!-- commands -->
+* [`heroku connect:mapping:write-errors NAME`](#heroku-connectmappingwrite-errors-name)
+* [`heroku connect:write-errors`](#heroku-connectwrite-errors)
 
+## `heroku connect:mapping:write-errors NAME`
+
+display the last 24 hours of write errors on this mapping
+
+```
+USAGE
+  $ heroku connect:mapping:write-errors NAME -a <value> [--resource <value>] [--json] [-r <value>]
+
+ARGUMENTS
+  NAME  name of the mapping to retrieve errors for
+
+FLAGS
+  -a, --app=<value>       (required) app to run command against
+  -r, --remote=<value>    git remote of target app
+      --json              print errors as styled JSON
+      --resource=<value>  specific connection resource name
+
+DESCRIPTION
+  display the last 24 hours of write errors on this mapping
+
+EXAMPLES
+  $ heroku connect:mapping:write-errors -a myapp --resource herokuconnect-twisted-123 Account
+```
+
+_See code: [src/commands/connect/mapping/write-errors.ts](https://github.com/heroku/heroku-connect-plugin/blob/v0.11.3/src/commands/connect/mapping/write-errors.ts)_
+
+## `heroku connect:write-errors`
+
+display the last 24 hours of write errors on this connection
+
+```
+USAGE
+  $ heroku connect:write-errors -a <value> [--resource <value>] [--json] [-r <value>]
+
+FLAGS
+  -a, --app=<value>       (required) app to run command against
+  -r, --remote=<value>    git remote of target app
+      --json              print errors as styled JSON
+      --resource=<value>  specific connection resource name
+
+DESCRIPTION
+  display the last 24 hours of write errors on this connection
+
+EXAMPLES
+  $ heroku connect:write-errors -a myapp --resource herokuconnect-twisted-123
+```
+
+_See code: [src/commands/connect/write-errors.ts](https://github.com/heroku/heroku-connect-plugin/blob/v0.11.3/src/commands/connect/write-errors.ts)_
 <!-- commandsstop -->
 
 # Examples
