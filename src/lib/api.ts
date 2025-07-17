@@ -13,7 +13,7 @@ import {
 } from './types'
 
 export async function withUserConnections(heroku: APIClient, appName: string, resourceName?: string, addonType?: AddonType): Promise<ConnectionWithDetails[]> {
-  const {body: searchResponse} = await Discovery.searchConnections(heroku, appName, resourceName, addonType)
+  const searchResponse = await Discovery.searchConnections(heroku, appName, resourceName, addonType)
   const connections = searchResponse.results
 
   if (connections.length === 0) {
@@ -21,10 +21,10 @@ export async function withUserConnections(heroku: APIClient, appName: string, re
   }
 
   const fetchConnectionDetailFuncs = connections.map(async connection => {
-    const {body: response} = await getDetails(heroku, connection)
+    const connectionDetails = await getDetails(heroku, connection)
     const mergedDetails: ConnectionWithDetails = {
       ...connection,
-      ...response,
+      ...connectionDetails,
     }
 
     return mergedDetails
@@ -35,7 +35,7 @@ export async function withUserConnections(heroku: APIClient, appName: string, re
 }
 
 export async function withConnection(heroku: APIClient, appName: string, resourceName?: string, addonType?: AddonType): Promise<ConnectionWithDetails> {
-  const {body: searchResponse} = await Discovery.searchConnections(heroku, appName, resourceName, addonType)
+  const searchResponse = await Discovery.searchConnections(heroku, appName, resourceName, addonType)
   const connections = searchResponse.results
 
   if (connections.length === 0) {
@@ -44,10 +44,10 @@ export async function withConnection(heroku: APIClient, appName: string, resourc
     throw new Error("Multiple connections found. Please use '--resource' to specify a single connection by resource name. Use 'connect:info' to list the resource names.")
   } else {
     const match = connections[0]
-    const {body: matchDetailResponse} = await getDetails(heroku, match)
+    const matchDetails = await getDetails(heroku, match)
     const matchWithDetails: ConnectionWithDetails = {
       ...match,
-      ...matchDetailResponse,
+      ...matchDetails,
     }
 
     return matchWithDetails
@@ -89,9 +89,10 @@ export async function withStream(heroku: APIClient, connection: ConnectionWithDe
 }
 
 async function getStreams(heroku: APIClient, connection: ConnectionWithDetails): Promise<Stream[]> {
-  const detail_url = new URL(connection.detail_url)
-  const {body: streams} = await heroku.get<Stream[]>(`${detail_url.pathname}/streams`, {
-    hostname: detail_url.hostname,
+  const regionUrl = new URL(connection.region_url)
+  const detailUrl = connection.detail_url
+  const {body: streams} = await heroku.get<Stream[]>(`${detailUrl}/streams`, {
+    hostname: regionUrl.hostname,
     headers: {
       Accept: 'application/json',
       'Heroku-Client': 'cli',
@@ -111,7 +112,7 @@ export async function withStreams(heroku: APIClient, connections: ConnectionWith
 
 export async function requestAppAccess(heroku: APIClient, appName: string, addonType?: AddonType): Promise<void> {
   await Discovery.requestAppAccess(heroku, appName, addonType)
-  await withUserConnections(heroku, appName, undefined, addonType)
+  await exports.withUserConnections(heroku, appName, undefined, addonType)
 }
 
 export async function getWriteErrors(heroku: APIClient, connection: ConnectionWithDetails, mappingName?: string, json?: boolean): Promise<void> {
@@ -127,7 +128,7 @@ export async function getWriteErrors(heroku: APIClient, connection: ConnectionWi
   }
 
   ux.action.start(action)
-  const {body: errors} = await heroku.get<WriteErrorsResponse>(url, {
+  const {body: errorsResponse} = await heroku.get<WriteErrorsResponse>(url, {
     hostname: new URL(connection.region_url).hostname,
     headers: {
       Accept: 'application/json',
@@ -136,12 +137,12 @@ export async function getWriteErrors(heroku: APIClient, connection: ConnectionWi
   })
   ux.action.stop()
 
-  if (errors.count === 0) {
+  if (errorsResponse.count === 0) {
     ux.log(color.green('No write errors in the last 24 hours'))
   } else if (json) {
-    ux.styledJSON(errors.results)
+    ux.styledJSON(errorsResponse.results)
   } else {
-    ux.table(errors.results, {
+    ux.table(errorsResponse.results, {
       id: {header: 'Trigger Log ID'},
       table_name: {header: 'Table Name'},
       record_id: {header: 'Table ID'},

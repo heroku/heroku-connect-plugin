@@ -99,8 +99,6 @@ export interface CellInfo {
   label: string
 }
 
-// Connections
-
 export interface SearchConnectionsResponse {
   results: Connection[]
   regions: Record<string, RegionInfo>
@@ -110,7 +108,16 @@ export interface SearchConnectionsResponse {
   count: number
 }
 
-// Connection details
+export interface RequestAppAccessResponse {
+  user: {
+    id: string
+    email: string
+  }
+  connections: Connection[]
+  regions: Record<string, RegionInfo>
+  cells: Record<string, CellInfo>
+}
+
 export interface SfInfo {
   username: string | null
   organization_id: string | null
@@ -158,9 +165,9 @@ export interface Urls {
 export interface ProfilePerms {
   type: string
   Id: string
-  PermissionsModifyAllData: boolean
-  PermissionsViewAllData: boolean
-  PermissionsViewAllUsers: boolean
+  PermissionsModifyAllData: string
+  PermissionsViewAllData: string
+  PermissionsViewAllUsers: string
 }
 
 export interface UserInfo {
@@ -190,6 +197,7 @@ export interface UserInfo {
   active: boolean
   user_type: string
   language: string
+  locale: string
   utcOffset: number
   last_modified_date: string | null
   profile_perms: ProfilePerms

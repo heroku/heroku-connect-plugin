@@ -55,7 +55,6 @@
     }
   },
   "dependencies": {
-    "@heroku/http-call": "^5.5.0",
     "@heroku-cli/color": "^2",
     "@heroku-cli/command": "^11.5.0",
     "@heroku-cli/schema": "^1.0.25",
