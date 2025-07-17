@@ -24,10 +24,12 @@
     "indent": ["error", 2, {"MemberExpression": 1}],
     "mocha/no-mocha-arrows": "warn",
     "mocha/no-exports": "warn",
+    "prefer-arrow-callback": "off",
+    "mocha/prefer-arrow-callback": "error",
     "mocha/no-setup-in-describe": "warn",
     "no-await-in-loop": "off", // Perfect legit to use await in loops, we should leave it off
     "no-constant-condition": ["error", {"checkLoops": false }],
-    "node/no-missing-import": "off",
+    "n/no-missing-import": "off",
     "unicorn/filename-case": "off",
     "unicorn/import-style": "off",
     "unicorn/no-abusive-eslint-disable": "off",
