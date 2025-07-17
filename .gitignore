@@ -20,3 +20,4 @@ pnpm-lock.yaml
 .jshint*
 coverage
 .nyc_output
+.editorconfig

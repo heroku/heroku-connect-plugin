@@ -21,8 +21,8 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf dist && tsc -b && oclif manifest && oclif readme && mv oclif.manifest.json ./dist/oclif.manifest.json && cp README.md ./dist/README.md",
-    "build:dev": "rm -rf dist && tsc -b --sourcemap && oclif manifest && oclif readme && mv oclif.manifest.json ./dist/oclif.manifest.json && cp README.md ./dist/README.md",
+    "build": "rm -rf dist && tsc -b && oclif manifest && oclif readme",
+    "build:dev": "rm -rf dist && tsc -b --sourcemap && oclif manifest && oclif readme",
     "lint": "eslint . --ext .ts --config .eslintrc.json",
     "lint:fix": "eslint . --ext .ts --config .eslintrc.json --fix",
     "posttest": "yarn lint",
@@ -31,7 +31,9 @@
     "version": "oclif readme && git add README.md"
   },
   "files": [
-    "/dist"
+    "/dist",
+    "oclif.manifest.json",
+    "README.md"
   ],
   "oclif": {
     "bin": "heroku",
