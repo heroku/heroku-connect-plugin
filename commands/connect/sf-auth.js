@@ -16,7 +16,7 @@ function callbackServer () {
       response.end(res)
 
       // Shut down the server so the command can exit
-      request.connection.destroy()
+      request.socket.destroy()
       this.close()
 
       // Return control to the main command
@@ -55,7 +55,7 @@ function * run (context, heroku) {
 
   cli.log("\nIf your browser doesn't open, please copy the following URL to proceed:\n" + redir + '\n')
 
-  yield cli.action('waiting for authorization', callbackServer())
+  yield cli.action('waiting for authorization', module.exports.callbackServer())
 }
 
 module.exports = {
@@ -71,5 +71,6 @@ module.exports = {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(run))
+  run: cli.command(co.wrap(run)),
+  callbackServer
 }
