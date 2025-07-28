@@ -31,6 +31,9 @@
     "heroku-client": "^3.0.6",
     "inquirer": "^5.1.0"
   },
+  "overrides": {
+    "cross-spawn": "^6.0.6"
+  },
   "devDependencies": {
     "mocha": "^11.0.1",
     "mockdate": "^3.0.5",
