@@ -37,8 +37,8 @@
   "devDependencies": {
     "mocha": "^11.0.1",
     "mockdate": "^3.0.5",
-    "nock": "^13.5.4",
-    "sinon": "^19.0.2",
+    "nock": "^14.0.10",
+    "sinon": "^21.0.0",
     "standard": "^17.1.0",
     "unexpected": "^13.2.1"
   }
