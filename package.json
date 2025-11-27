@@ -29,7 +29,7 @@
     "axios": "^1.12.0",
     "co": "4.6.0",
     "heroku-client": "^3.0.6",
-    "inquirer": "^5.1.0"
+    "inquirer": "^8.2.7"
   },
   "overrides": {
     "cross-spawn": "^6.0.6"
