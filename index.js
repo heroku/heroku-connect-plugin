@@ -9,6 +9,10 @@ exports.topics = [
     description: 'manage mappings on a Heroku Connect addon'
   },
   {
+    name: 'connect:notifications',
+    description: 'manage notifications on a Heroku Connect addon'
+  },
+  {
     name: 'connect-events',
     description: 'manage connections for Heroku Connect Events Pilot'
   },
@@ -34,6 +38,7 @@ exports.commands = [
   require('./commands/connect/mapping-reload'),
   require('./commands/connect/mapping-diagnose'),
   require('./commands/connect/mapping-write-errors'),
+  require('./commands/connect/notifications'),
   require('./commands/connect/write-errors'),
 
   // Connect Events
