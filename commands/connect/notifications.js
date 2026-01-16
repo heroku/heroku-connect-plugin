@@ -30,7 +30,7 @@ module.exports = {
   flags: [
     { name: 'after', description: 'start date for notifications', hasValue: true },
     { name: 'before', description: 'end date for notifications', hasValue: true },
-    { name: 'event-type', description: 'type of event to filter by', hasValue: true},
+    { name: 'event-type', description: 'type of event to filter by', hasValue: true },
     { name: 'resource', description: 'specific connection resource name', hasValue: true }
   ],
   needsApp: true,
