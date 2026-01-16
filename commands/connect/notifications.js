@@ -43,7 +43,7 @@ module.exports = {
       page_size: 1000,
       after: context.flags.after,
       before: context.flags.before,
-      event_type: context.flags['event-type'],
+      event_type: context.flags['event-type']
     }
 
     const response = yield api.request(context, 'GET', '/api/v3/connections/' + connection.id + '/notifications', null, params)
