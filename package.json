@@ -41,5 +41,10 @@
     "sinon": "^21.0.0",
     "standard": "^17.1.0",
     "unexpected": "^13.2.1"
+  },
+  "standard": {
+    "ignore": [
+      "workflows-repo/**"
+    ]
   }
 }
