@@ -46,5 +46,8 @@
     "ignore": [
       "workflows-repo/**"
     ]
+  },
+  "resolutions": {
+    "serialize-javascript": "^7.0.3"
   }
 }
