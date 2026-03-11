@@ -1,20 +1,19 @@
 import * as api from '../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
-import co from 'co'
 import inquirer from 'inquirer'
 
-const fetchKeys = co.wrap(function * (appName, context) {
+async function fetchKeys (appName, context) {
   const url = `/api/v3/apps/${appName}`
-  const response = yield api.request(context, 'GET', url)
-  const keys = []// new Array(response.json.db_keys.length);
+  const response = await api.request(context, 'GET', url)
+  const keys = []
   response.data.db_keys.forEach(function (key) {
     keys.push({
       name: `${key.name} (${key.addon.plan})`,
       value: key.name
     })
   })
-  return yield Promise.resolve(keys)
-})
+  return keys
+}
 
 export default {
   topic: 'connect-events',
@@ -28,21 +27,21 @@ export default {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
+  run: cli.command(async function (context, heroku) {
     const data = {
       db_key: context.flags.db,
       schema_name: context.flags.schema
     }
 
-    const connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
+    const connection = await api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
     context.region = connection.region_url
 
-    inquirer.prompt([
+    const answers = await inquirer.prompt([
       {
         name: 'db_key',
         type: 'list',
         message: "Select the config var that points to the database you'd like to use",
-        choices: yield fetchKeys(connection.app_name, context),
+        choices: await fetchKeys(connection.app_name, context),
         when: !context.flags.db
       },
       {
@@ -51,17 +50,17 @@ export default {
         default: context.flags.schema || 'salesforce',
         when: !context.flags.schema
       }
-    ]).then(co.wrap(function * (answers) {
-      for (const key in answers) {
-        data[key] = answers[key]
-      }
+    ])
 
-      yield cli.action('setting database parameters', co(function * () {
-        const url = `/api/v3/kafka-connections/${connection.id}`
-        yield api.request(context, 'PUT', url, data)
-      }))
+    for (const key in answers) {
+      data[key] = answers[key]
+    }
 
-      cli.styledHash(data)
-    }))
-  }))
+    await cli.action('setting database parameters', (async function () {
+      const url = `/api/v3/kafka-connections/${connection.id}`
+      await api.request(context, 'PUT', url, data)
+    })())
+
+    cli.styledHash(data)
+  })
 }

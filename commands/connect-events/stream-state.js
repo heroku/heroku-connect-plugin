@@ -1,6 +1,5 @@
 import * as api from '../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
-import co from 'co'
 
 export default {
   topic: 'connect-events:stream',
@@ -15,11 +14,11 @@ export default {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
-    const connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
+  run: cli.command(async function (context, heroku) {
+    const connection = await api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
     context.region = connection.region_url
-    const stream = yield api.withStream(context, connection, context.args.stream)
+    const stream = await api.withStream(context, connection, context.args.stream)
 
     cli.log(stream.state)
-  }))
+  })
 }

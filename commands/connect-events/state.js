@@ -1,9 +1,8 @@
 import * as api from '../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
-import co from 'co'
 
-function * run (context, heroku) {
-  const connections = yield api.withUserConnections(context, context.app, context.flags, heroku, true, api.ADDON_TYPE_EVENTS)
+async function run (context, heroku) {
+  const connections = await api.withUserConnections(context, context.app, context.flags, heroku, true, api.ADDON_TYPE_EVENTS)
 
   if (context.flags.json) {
     cli.styledJSON(connections)
@@ -29,5 +28,5 @@ export default {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(run))
+  run: cli.command(run)
 }

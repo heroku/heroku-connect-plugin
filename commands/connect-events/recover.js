@@ -1,6 +1,5 @@
 import * as api from '../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
-import co from 'co'
 
 export default {
   topic: 'connect-events',
@@ -13,12 +12,12 @@ export default {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
-    yield cli.action('recovering connection', co(function * () {
-      const connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
+  run: cli.command(async function (context, heroku) {
+    await cli.action('recovering connection', (async function () {
+      const connection = await api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
       context.region = connection.region_url
       const url = `/api/v3/kafka-connections/${connection.id}/actions/recover`
-      yield api.request(context, 'POST', url)
-    }))
-  }))
+      await api.request(context, 'POST', url)
+    })())
+  })
 }

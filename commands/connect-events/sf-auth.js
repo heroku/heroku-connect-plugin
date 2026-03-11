@@ -1,6 +1,5 @@
 import * as api from '../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
-import co from 'co'
 import http from 'http'
 
 const LOCAL_PORT = 18000
@@ -24,10 +23,10 @@ function callbackServer () {
   })
 }
 
-function * run (context, heroku) {
+async function run (context, heroku) {
   let redir
-  yield cli.action('fetching authorizing URL', co(function * () {
-    const connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
+  await cli.action('fetching authorizing URL', (async function () {
+    const connection = await api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
     context.region = connection.region_url
 
     const url = `/api/v3/kafka-connections/${connection.id}/authorize_url`
@@ -46,15 +45,15 @@ function * run (context, heroku) {
       args.domain = context.flags.domain
     }
 
-    const response = yield api.request(context, 'POST', url, args)
+    const response = await api.request(context, 'POST', url, args)
     redir = response.data.redirect
 
-    yield cli.open(redir)
-  }))
+    await cli.open(redir)
+  })())
 
   cli.log("\nIf your browser doesn't open, please copy the following URL to proceed:\n" + redir + '\n')
 
-  yield cli.action('waiting for authorization', callbackServer())
+  await cli.action('waiting for authorization', callbackServer())
 }
 
 export default {
@@ -70,5 +69,5 @@ export default {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(run))
+  run: cli.command(run)
 }
