@@ -84,7 +84,7 @@ export default class ConnectDiagnose extends Command {
       } catch (err) {
         cli.error(err)
       }
-    }.bind(this))())
+    })())
 
     cli.log() // Blank line to separate each section
     cli.styledHeader(`Connection: ${connection.name || connection.internal_name}`)

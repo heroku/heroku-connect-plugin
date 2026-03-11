@@ -1,5 +1,4 @@
 import * as api from '../../../lib/connect/api.js'
-import cli from '@heroku/heroku-cli-util'
 import { Command, flags } from '@heroku-cli/command'
 
 export default class NotificationsAcknowledge extends Command {
