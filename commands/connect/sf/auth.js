@@ -1,4 +1,4 @@
-import * as api from '../../lib/connect/api.js'
+import * as api from '../../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
 import http from 'http'
 

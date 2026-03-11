@@ -1,14 +1,15 @@
-import * as api from '../../lib/connect/api.js'
+import * as api from '../../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
 import inquirer from 'inquirer'
 
 async function fetchKeys (appName, context) {
-  const url = `/api/v3/apps/${appName}`
+  const url = '/api/v3/apps/' + appName
   const response = await api.request(context, 'GET', url)
-  const keys = []
+  const keys = []// new Array(response.json.db_keys.length);
   response.data.db_keys.forEach(function (key) {
+    const plan = (key.addon ? key.addon.plan : null) || 'Unknown Plan'
     keys.push({
-      name: `${key.name} (${key.addon.plan})`,
+      name: `${key.name} (${plan})`,
       value: key.name
     })
   })
@@ -16,7 +17,7 @@ async function fetchKeys (appName, context) {
 }
 
 export default {
-  topic: 'connect-events',
+  topic: 'connect',
   command: 'db:set',
   description: 'Set database parameters',
   help: "Set a connection's database config var and schema name",
@@ -33,7 +34,7 @@ export default {
       schema_name: context.flags.schema
     }
 
-    const connection = await api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
+    const connection = await api.withConnection(context, heroku)
     context.region = connection.region_url
 
     const answers = await inquirer.prompt([
@@ -57,8 +58,8 @@ export default {
     }
 
     await cli.action('setting database parameters', (async function () {
-      const url = `/api/v3/kafka-connections/${connection.id}`
-      await api.request(context, 'PUT', url, data)
+      const url = '/api/v3/connections/' + connection.id
+      await api.request(context, 'PATCH', url, data)
     })())
 
     cli.styledHash(data)
