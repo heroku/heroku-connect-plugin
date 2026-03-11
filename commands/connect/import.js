@@ -1,6 +1,5 @@
 import * as api from '../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
-import co from 'co'
 import fs from 'fs'
 
 export default {
@@ -16,14 +15,14 @@ export default {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
+  run: cli.command(async function (context, heroku) {
     const fName = context.args.file
-    yield cli.action(`uploading ${fName}`, co(function * () {
-      const connection = yield api.withConnection(context, heroku)
+    await cli.action(`uploading ${fName}`, (async function () {
+      const connection = await api.withConnection(context, heroku)
       context.region = connection.region_url
       const url = '/api/v3/connections/' + connection.id + '/actions/import'
       const data = JSON.parse(fs.readFileSync(fName, 'utf8'))
-      yield api.request(context, 'POST', url, data)
-    }))
-  }))
+      await api.request(context, 'POST', url, data)
+    })())
+  })
 }

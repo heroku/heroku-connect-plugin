@@ -1,6 +1,5 @@
 import * as api from '../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
-import co from 'co'
 import fs from 'fs'
 
 export default {
@@ -13,22 +12,22 @@ export default {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
+  run: cli.command(async function (context, heroku) {
     let connection, response
 
-    yield cli.action('fetching configuration', co(function * () {
-      connection = yield api.withConnection(context, heroku)
+    await cli.action('fetching configuration', (async function () {
+      connection = await api.withConnection(context, heroku)
       context.region = connection.region_url
       const url = '/api/v3/connections/' + connection.id + '/actions/export'
-      response = yield api.request(context, 'GET', url)
-    }))
+      response = await api.request(context, 'GET', url)
+    })())
 
     const fName = connection.app_name + '-' + (connection.resource_name || '') + '.json'
 
-    yield cli.action('writing configuration to file', {
+    await cli.action('writing configuration to file', {
       success: fName
-    }, co(function * () {
+    }, (async function () {
       fs.writeFileSync(fName, JSON.stringify(response.data, null, 4))
-    }))
-  }))
+    })())
+  })
 }

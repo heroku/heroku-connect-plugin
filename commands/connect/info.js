@@ -1,6 +1,5 @@
 import * as api from '../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
-import co from 'co'
 
 export default {
   topic: 'connect',
@@ -14,14 +13,14 @@ export default {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
+  run: cli.command(async function (context, heroku) {
     let connections
     if (context.flags['check-for-new']) {
-      connections = yield api.requestAppAccess(context, context.app, context.flags, true, heroku)
+      connections = await api.requestAppAccess(context, context.app, context.flags, true, heroku)
     } else {
-      connections = yield api.withUserConnections(context, context.app, context.flags, true, heroku)
+      connections = await api.withUserConnections(context, context.app, context.flags, true, heroku)
       if (connections.length === 0) {
-        connections = yield api.requestAppAccess(context, context.app, context.flags, true, heroku)
+        connections = await api.requestAppAccess(context, context.app, context.flags, true, heroku)
       }
     }
 
@@ -50,5 +49,5 @@ export default {
         cli.log()
       })
     }
-  }))
+  })
 }

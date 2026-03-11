@@ -1,6 +1,5 @@
 import * as api from '../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
-import co from 'co'
 
 function displayResults (results, flags) {
   results.errors.forEach(displayResult('RED', 'red'))
@@ -48,15 +47,15 @@ const diagnoseCmd = {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
+  run: cli.command(async function (context, heroku) {
     let mappingResults
     let didDisplayAnything = false
-    const connection = yield api.withConnection(context, heroku)
+    const connection = await api.withConnection(context, heroku)
     context.region = connection.region_url
-    const results = yield cli.action('Diagnosing connection', co(function * () {
+    const results = await cli.action('Diagnosing connection', (async function () {
       const url = '/api/v3/connections/' + connection.id + '/validations'
       try {
-        const { data: { result_url: resultUrl } } = yield api.request(context, 'POST', url)
+        const { data: { result_url: resultUrl } } = await api.request(context, 'POST', url)
 
         let i = 0
 
@@ -65,7 +64,7 @@ const diagnoseCmd = {
             cli.error('There was an issue retrieving validations')
             break
           }
-          const response = yield api.request(context, 'GET', resultUrl)
+          const response = await api.request(context, 'GET', resultUrl)
 
           if (response.status === 200) {
             return response.data
@@ -73,12 +72,12 @@ const diagnoseCmd = {
 
           i++
 
-          yield timeout(500)
+          await timeout(500)
         }
       } catch (err) {
         cli.error(err)
       }
-    }))
+    })())
 
     cli.log() // Blank line to separate each section
     cli.styledHeader(`Connection: ${connection.name || connection.internal_name}`)
@@ -100,7 +99,7 @@ const diagnoseCmd = {
     if (!didDisplayAnything && !context.flags.verbose) {
       cli.log(cli.color.green('Everything appears to be fine'))
     }
-  })),
+  }),
 
   // Additional exports for code sharing
   displayResults

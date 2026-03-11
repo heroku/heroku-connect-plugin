@@ -1,6 +1,5 @@
 import * as api from '../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
-import co from 'co'
 
 export default {
   topic: 'connect:mapping',
@@ -15,16 +14,16 @@ export default {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
-    yield cli.action(`initiating reload of ${context.args.mapping}`, co(function * () {
-      const connection = yield api.withConnection(context, heroku)
+  run: cli.command(async function (context, heroku) {
+    await cli.action(`initiating reload of ${context.args.mapping}`, (async function () {
+      const connection = await api.withConnection(context, heroku)
       context.region = connection.region_url
-      const mapping = yield api.withMapping(connection, context.args.mapping)
+      const mapping = await api.withMapping(connection, context.args.mapping)
 
-      const response = yield api.request(context, 'POST', '/api/v3/mappings/' + mapping.id + '/actions/reload')
+      const response = await api.request(context, 'POST', '/api/v3/mappings/' + mapping.id + '/actions/reload')
       if (response.status !== 202) {
         throw new Error(response.data.message || 'unknown error')
       }
-    }))
-  }))
+    })())
+  })
 }

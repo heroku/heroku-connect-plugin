@@ -1,6 +1,5 @@
 import * as api from '../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
-import co from 'co'
 
 export default {
   topic: 'connect:mapping',
@@ -16,17 +15,17 @@ export default {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
-    yield cli.confirmApp(context.app, context.flags.confirm)
+  run: cli.command(async function (context, heroku) {
+    await cli.confirmApp(context.app, context.flags.confirm)
 
-    yield cli.action('deleting mapping', co(function * () {
-      const connection = yield api.withConnection(context, heroku)
+    await cli.action('deleting mapping', (async function () {
+      const connection = await api.withConnection(context, heroku)
       context.region = connection.region_url
-      const mapping = yield api.withMapping(connection, context.args.mapping)
-      const response = yield api.request(context, 'DELETE', '/api/v3/mappings/' + mapping.id)
+      const mapping = await api.withMapping(connection, context.args.mapping)
+      const response = await api.request(context, 'DELETE', '/api/v3/mappings/' + mapping.id)
       if (response.status !== 204) {
         throw new Error(response.data.message || 'unknown error')
       }
-    }))
-  }))
+    })())
+  })
 }

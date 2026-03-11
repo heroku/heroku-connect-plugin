@@ -1,6 +1,5 @@
 import * as api from '../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
-import co from 'co'
 
 function formatDate (date) {
   if (!date) return ''
@@ -34,8 +33,8 @@ export default {
   ],
   needsApp: true,
   needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
-    const connection = yield api.withConnection(context, heroku)
+  run: cli.command(async function (context, heroku) {
+    const connection = await api.withConnection(context, heroku)
     context.region = connection.region_url
 
     const params = {
@@ -45,7 +44,7 @@ export default {
       event_type: context.flags['event-type']
     }
 
-    const response = yield api.request(context, 'GET', '/api/v3/connections/' + connection.id + '/notifications', null, params)
+    const response = await api.request(context, 'GET', '/api/v3/connections/' + connection.id + '/notifications', null, params)
     cli.table(response.data.results, {
       columns: [
         { key: 'event_type', label: 'Event Type' },
@@ -53,5 +52,5 @@ export default {
         { key: 'created_at', label: 'Created At (MM/DD/YYYY HH:MM AM/PM)', format: formatDate }
       ]
     })
-  }))
+  })
 }
