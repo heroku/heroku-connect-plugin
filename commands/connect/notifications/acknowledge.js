@@ -1,21 +1,23 @@
 import * as api from '../../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
+import { Command, flags } from '@heroku-cli/command'
 
-export default {
-  topic: 'connect:notifications',
-  command: 'acknowledge',
-  description: 'Acknowledges notifications matching the given criteria',
-  help: 'Finds and acknowledges notifications matching the given criteria',
-  flags: [
-    { name: 'after', description: 'start date for notifications', hasValue: true },
-    { name: 'before', description: 'end date for notifications', hasValue: true },
-    { name: 'event-type', description: 'type of event to filter by', hasValue: true },
-    { name: 'resource', description: 'specific connection resource name', hasValue: true }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(async function (context, heroku) {
-    const connection = await api.withConnection(context, heroku)
+export default class NotificationsAcknowledge extends Command {
+  static description = 'Acknowledges notifications matching the given criteria'
+
+  static flags = {
+    app: flags.app({ required: true }),
+    after: flags.string({ description: 'start date for notifications' }),
+    before: flags.string({ description: 'end date for notifications' }),
+    'event-type': flags.string({ description: 'type of event to filter by' }),
+    resource: flags.string({ description: 'specific connection resource name' })
+  }
+
+  async run () {
+    const { args, flags } = await this.parse(NotificationsAcknowledge)
+    const context = { app: flags.app, flags, args, auth: { password: this.heroku.auth } }
+
+    const connection = await api.withConnection(context, this.heroku)
     context.region = connection.region_url
 
     const params = {
@@ -29,5 +31,5 @@ export default {
     if (response.status !== 204) {
       throw new Error(response.data.message || 'unknown error')
     }
-  })
+  }
 }

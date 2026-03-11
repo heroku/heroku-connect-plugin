@@ -1,33 +1,29 @@
 import * as api from '../../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
+import { Command, flags } from '@heroku-cli/command'
+import { Args } from '@oclif/core'
 
-export default {
-  topic: 'connect:mapping',
-  command: 'write-errors',
-  description: 'Display the last 24 hours of write errors on this mapping',
-  examples: [
+export default class MappingWriteErrors extends Command {
+  static description = 'Display the last 24 hours of write errors on this mapping'
+
+  static examples = [
     '$ heroku connect:mapping:write-errors -a myapp --resource herokuconnect-twisted-123 Account'
-  ],
-  args: [
-    {
-      name: 'name',
-      optional: false,
-      description: 'Name of the mapping to retrieve errors for'
-    }
-  ],
-  flags: [
-    {
-      name: 'resource',
-      description: 'specific connection resource name',
-      hasValue: true
-    },
-    {
-      name: 'json',
-      description: 'print errors as styled JSON',
-      hasValue: false
-    }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(api.getWriteErrors)
+  ]
+
+  static args = {
+    name: Args.string({ description: 'Name of the mapping to retrieve errors for', required: true })
+  }
+
+  static flags = {
+    app: flags.app({ required: true }),
+    resource: flags.string({ description: 'specific connection resource name' }),
+    json: flags.boolean({ description: 'print errors as styled JSON' })
+  }
+
+  async run () {
+    const { args, flags } = await this.parse(MappingWriteErrors)
+    const context = { app: flags.app, flags, args, auth: { password: this.heroku.auth } }
+
+    await api.getWriteErrors(context, this.heroku)
+  }
 }

@@ -1,6 +1,7 @@
 import * as api from '../../../lib/connect/api.js'
 import cli from '@heroku/heroku-cli-util'
 import inquirer from 'inquirer'
+import { Command, flags } from '@heroku-cli/command'
 
 async function fetchKeys (appName, context) {
   const url = '/api/v3/apps/' + appName
@@ -16,25 +17,26 @@ async function fetchKeys (appName, context) {
   return keys
 }
 
-export default {
-  topic: 'connect',
-  command: 'db:set',
-  description: 'Set database parameters',
-  help: "Set a connection's database config var and schema name",
-  flags: [
-    { name: 'resource', description: 'specific connection resource name', hasValue: true },
-    { name: 'db', description: 'Database config var name', hasValue: true },
-    { name: 'schema', description: 'Database schema name', hasValue: true }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(async function (context, heroku) {
+export default class DbSet extends Command {
+  static description = 'Set database parameters'
+
+  static flags = {
+    app: flags.app({ required: true }),
+    resource: flags.string({ description: 'specific connection resource name' }),
+    db: flags.string({ description: 'Database config var name' }),
+    schema: flags.string({ description: 'Database schema name' })
+  }
+
+  async run () {
+    const { args, flags } = await this.parse(DbSet)
+    const context = { app: flags.app, flags, args, auth: { password: this.heroku.auth } }
+
     const data = {
       db_key: context.flags.db,
       schema_name: context.flags.schema
     }
 
-    const connection = await api.withConnection(context, heroku)
+    const connection = await api.withConnection(context, this.heroku)
     context.region = connection.region_url
 
     const answers = await inquirer.prompt([
@@ -63,5 +65,5 @@ export default {
     })())
 
     cli.styledHash(data)
-  })
+  }
 }
