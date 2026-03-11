@@ -1,24 +1,33 @@
 import * as api from '../../../lib/connect/api.js'
+import { Command, flags } from '@heroku-cli/command'
+import { Args } from '@oclif/core'
 import cli from '@heroku/heroku-cli-util'
 
-export default {
-  topic: 'connect-events:stream',
-  command: 'state',
-  description: 'return a stream state',
-  help: 'return a stream state',
-  args: [
-    { name: 'stream' }
-  ],
-  flags: [
-    { name: 'resource', description: 'specific connection resource name', hasValue: true }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(async function (context, heroku) {
-    const connection = await api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
+export default class ConnectEventsStreamState extends Command {
+  static description = 'return a stream state'
+
+  static args = {
+    stream: Args.string()
+  }
+
+  static flags = {
+    app: flags.app({ required: true }),
+    resource: flags.string({ description: 'specific connection resource name' })
+  }
+
+  async run () {
+    const { args, flags } = await this.parse(ConnectEventsStreamState)
+    const context = {
+      app: flags.app,
+      flags,
+      args,
+      auth: { password: this.heroku.auth }
+    }
+
+    const connection = await api.withConnection(context, this.heroku, api.ADDON_TYPE_EVENTS)
     context.region = connection.region_url
-    const stream = await api.withStream(context, connection, context.args.stream)
+    const stream = await api.withStream(context, connection, args.stream)
 
     cli.log(stream.state)
-  })
+  }
 }

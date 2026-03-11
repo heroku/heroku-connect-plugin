@@ -1,4 +1,5 @@
 import * as api from '../../../lib/connect/api.js'
+import { Command, flags } from '@heroku-cli/command'
 import cli from '@heroku/heroku-cli-util'
 import inquirer from 'inquirer'
 
@@ -15,25 +16,30 @@ async function fetchKeys (appName, context) {
   return keys
 }
 
-export default {
-  topic: 'connect-events',
-  command: 'db:set',
-  description: 'Set database parameters',
-  help: "Set a connection's database config var and schema name",
-  flags: [
-    { name: 'resource', description: 'specific connection resource name', hasValue: true },
-    { name: 'db', description: 'Database config var name', hasValue: true },
-    { name: 'schema', description: 'Database schema name', hasValue: true }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(async function (context, heroku) {
-    const data = {
-      db_key: context.flags.db,
-      schema_name: context.flags.schema
+export default class ConnectEventsDbSet extends Command {
+  static description = 'Set database parameters'
+
+  static flags = {
+    app: flags.app({ required: true }),
+    resource: flags.string({ description: 'specific connection resource name' }),
+    db: flags.string({ description: 'Database config var name' }),
+    schema: flags.string({ description: 'Database schema name' })
+  }
+
+  async run () {
+    const { flags } = await this.parse(ConnectEventsDbSet)
+    const context = {
+      app: flags.app,
+      flags,
+      auth: { password: this.heroku.auth }
     }
 
-    const connection = await api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
+    const data = {
+      db_key: flags.db,
+      schema_name: flags.schema
+    }
+
+    const connection = await api.withConnection(context, this.heroku, api.ADDON_TYPE_EVENTS)
     context.region = connection.region_url
 
     const answers = await inquirer.prompt([
@@ -42,13 +48,13 @@ export default {
         type: 'list',
         message: "Select the config var that points to the database you'd like to use",
         choices: await fetchKeys(connection.app_name, context),
-        when: !context.flags.db
+        when: !flags.db
       },
       {
         name: 'schema_name',
         message: "Enter a schema name you'd like to use for the conneted data",
-        default: context.flags.schema || 'salesforce',
-        when: !context.flags.schema
+        default: flags.schema || 'salesforce',
+        when: !flags.schema
       }
     ])
 
@@ -62,5 +68,5 @@ export default {
     })())
 
     cli.styledHash(data)
-  })
+  }
 }

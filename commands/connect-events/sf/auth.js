@@ -1,10 +1,11 @@
 import * as api from '../../../lib/connect/api.js'
+import { Command, flags } from '@heroku-cli/command'
 import cli from '@heroku/heroku-cli-util'
 import http from 'http'
 
 const LOCAL_PORT = 18000
 
-function callbackServer () {
+export function callbackServer () {
   return new Promise(function (resolve, reject) {
     // Create a local server that can receive the user after authoriztion is complete
     http.createServer(function (request, response) {
@@ -56,18 +57,25 @@ async function run (context, heroku) {
   await cli.action('waiting for authorization', callbackServer())
 }
 
-export default {
-  topic: 'connect-events',
-  command: 'sf:auth',
-  description: 'Authorize access to Salesforce for your connection',
-  help: 'Opens a browser to authorize a connection to a Salesforce Org',
-  flags: [
-    { name: 'callback', char: 'c', description: 'final callback URL', hasValue: true },
-    { name: 'environment', char: 'e', description: '"production", "sandbox", or "custom" [defaults to "production"]', hasValue: true },
-    { name: 'domain', char: 'd', description: 'specify a custom login domain (if using a "custom" environment)', hasValue: true },
-    { name: 'resource', description: 'specific connection resource name', hasValue: true }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(run)
+export default class ConnectEventsSfAuth extends Command {
+  static description = 'Authorize access to Salesforce for your connection'
+
+  static flags = {
+    app: flags.app({ required: true }),
+    callback: flags.string({ char: 'c', description: 'final callback URL' }),
+    environment: flags.string({ char: 'e', description: '"production", "sandbox", or "custom" [defaults to "production"]' }),
+    domain: flags.string({ char: 'd', description: 'specify a custom login domain (if using a "custom" environment)' }),
+    resource: flags.string({ description: 'specific connection resource name' })
+  }
+
+  async run () {
+    const { flags } = await this.parse(ConnectEventsSfAuth)
+    const context = {
+      app: flags.app,
+      flags,
+      auth: { password: this.heroku.auth }
+    }
+
+    await run(context, this.heroku)
+  }
 }

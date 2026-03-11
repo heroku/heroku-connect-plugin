@@ -1,4 +1,5 @@
 import * as api from '../../lib/connect/api.js'
+import { Command, flags } from '@heroku-cli/command'
 import cli from '@heroku/heroku-cli-util'
 
 async function run (context, heroku) {
@@ -17,16 +18,23 @@ async function run (context, heroku) {
   }
 }
 
-export default {
-  topic: 'connect-events',
-  command: 'state',
-  description: 'return the connection(s) state',
-  help: 'returns the state key of the selected connections',
-  flags: [
-    { name: 'resource', description: 'specific connection resource name', hasValue: true },
-    { name: 'json', description: 'print output as json', hasValue: false }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(run)
+export default class ConnectEventsState extends Command {
+  static description = 'return the connection(s) state'
+
+  static flags = {
+    app: flags.app({ required: true }),
+    resource: flags.string({ description: 'specific connection resource name' }),
+    json: flags.boolean({ description: 'print output as json' })
+  }
+
+  async run () {
+    const { flags } = await this.parse(ConnectEventsState)
+    const context = {
+      app: flags.app,
+      flags,
+      auth: { password: this.heroku.auth }
+    }
+
+    await run(context, this.heroku)
+  }
 }
