@@ -1,26 +1,32 @@
-import * as api from '../../lib/connect/api.js'
+import { Command, flags } from '@heroku-cli/command'
 import cli from '@heroku/heroku-cli-util'
+import * as api from '../../lib/connect/api.js'
 
-export default {
-  topic: 'connect',
-  command: 'info',
-  default: false,
-  description: 'display connection information',
-  help: 'display connection information',
-  flags: [
-    { name: 'resource', description: 'specific connection resource name', hasValue: true },
-    { name: 'check-for-new', char: 'c', description: 'check for access to any new connections', hasValue: false }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(async function (context, heroku) {
+export default class ConnectInfo extends Command {
+  static description = 'display connection information'
+
+  static flags = {
+    app: flags.app({ required: true }),
+    resource: flags.string({ description: 'specific connection resource name' }),
+    'check-for-new': flags.boolean({ char: 'c', description: 'check for access to any new connections' })
+  }
+
+  async run () {
+    const { flags } = await this.parse(ConnectInfo)
+    const context = {
+      app: flags.app,
+      flags,
+      args: {},
+      auth: { password: this.heroku.auth }
+    }
+
     let connections
-    if (context.flags['check-for-new']) {
-      connections = await api.requestAppAccess(context, context.app, context.flags, true, heroku)
+    if (flags['check-for-new']) {
+      connections = await api.requestAppAccess(context, flags.app, flags, true, this.heroku)
     } else {
-      connections = await api.withUserConnections(context, context.app, context.flags, true, heroku)
+      connections = await api.withUserConnections(context, flags.app, flags, true, this.heroku)
       if (connections.length === 0) {
-        connections = await api.requestAppAccess(context, context.app, context.flags, true, heroku)
+        connections = await api.requestAppAccess(context, flags.app, flags, true, this.heroku)
       }
     }
 
@@ -29,7 +35,7 @@ export default {
       cli.error('No connection found. You may need to use addons:open to make it accessible to the CLI.')
       cli.error('')
       cli.error('For Example:')
-      cli.error(`heroku addons:open ${instanceName} -a ${context.app}`)
+      cli.error(`heroku addons:open ${instanceName} -a ${flags.app}`)
     } else {
       connections.forEach(function (connection) {
         cli.styledHeader(`Connection [${connection.id}] / ${connection.resource_name} (${connection.state})`)
@@ -49,5 +55,5 @@ export default {
         cli.log()
       })
     }
-  })
+  }
 }
