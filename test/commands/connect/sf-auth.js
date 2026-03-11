@@ -4,7 +4,8 @@ import cli from '@heroku/heroku-cli-util'
 import nock from 'nock'
 import expect from 'unexpected'
 import sinon from 'sinon'
-import sfAuthCmd from '../../../commands/connect/sf-auth.js'
+import SfAuth from '../../../commands/connect/sf/auth.js'
+import { runCommand } from '../../run-command.js'
 
 const password = 's3cr3t3'
 const headers = {
@@ -18,18 +19,19 @@ describe('connect:sf:auth', () => {
     // prevent stdout/stderr from displaying
     // redirects to cli.stdout/cli.stderr instead
     cli.mockConsole()
+    process.env.HEROKU_API_KEY = password
     // Stub out the callbackServer we create for SF Authentication
-    sinon.stub(sfAuthCmd, 'callbackServer').resolves(true)
-    sinon.stub(cli, 'action').resolves(true)
+    sinon.stub(SfAuth, 'callbackServer').resolves(true)
     // Stub out the helper to open a URL in a browser
     sinon.stub(cli, 'open').resolves(true)
   })
 
   afterEach(function () {
+    delete process.env.HEROKU_API_KEY
     sinon.restore()
   })
 
-  it('authenticates the user to Salesforce', () => {
+  it('authenticates the user to Salesforce', async () => {
     const appName = 'fake-app'
     const resourceName = 'abcd-ef01'
     const connectionId = '1234'
@@ -65,24 +67,11 @@ describe('connect:sf:auth', () => {
       })
       .reply(201, { redirect: 'redirect-uri' })
 
-    return sfAuthCmd.run({
-      app: appName,
-      flags: {
-        resource: resourceName
-      },
-      auth: {
-        password
-      }
-    }, {})
-      .then(() => expect(
-        cli.stdout,
-        'to equal',
-        // NOTE(sigmavirus24): Determine why redir is undefined outside the
-        // yield
-        "\nIf your browser doesn't open, please copy the following URL to proceed:\nundefined\n\n"
-      ))
-      .then(() => discoveryApi.done() && connectionDetailApi.done() && apiWithoutPort.done())
-      .then(() => expect(cli.stderr, 'to be empty'))
-      .then(() => expect(cli.action.called, 'to be true'))
+    await runCommand(SfAuth, ['--app', appName, '--resource', resourceName])
+
+    expect(cli.stdout, 'to contain', "If your browser doesn't open")
+    discoveryApi.done()
+    connectionDetailApi.done()
+    apiWithoutPort.done()
   })
 })

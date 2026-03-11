@@ -1,9 +1,10 @@
-/* globals describe beforeEach it */
+/* globals describe beforeEach afterEach it */
 
 import cli from '@heroku/heroku-cli-util'
 import nock from 'nock'
 import expect from 'unexpected'
-import cmd from '../../../commands/connect/diagnose.js'
+import ConnectDiagnose from '../../../commands/connect/diagnose.js'
+import { runCommand } from '../../run-command.js'
 
 const password = 's3cr3t3'
 const headers = {
@@ -15,9 +16,16 @@ const headers = {
 describe('connect:diagnose', () => {
   // prevent stdout/stderr from displaying
   // redirects to cli.stdout/cli.stderr instead
-  beforeEach(() => cli.mockConsole())
+  beforeEach(() => {
+    cli.mockConsole()
+    process.env.HEROKU_API_KEY = password
+  })
 
-  it('runs validations with polling', () => {
+  afterEach(() => {
+    delete process.env.HEROKU_API_KEY
+  })
+
+  it('runs validations with polling', async () => {
     const appName = 'fake-app'
 
     const discoveryApi = nock('https://hc-central-qa.herokai.com/', { headers })
@@ -79,16 +87,12 @@ describe('connect:diagnose', () => {
         skips: []
       })
 
-    return cmd
-      .run({
-        app: appName,
-        flags: {}
-      })
-      .then(() => {
-        expect(
-          cli.stdout,
-          'to contain',
-          `=== Connection: awesome-connection-1234
+    await runCommand(ConnectDiagnose, ['--app', appName])
+
+    expect(
+      cli.stdout,
+      'to contain',
+      `=== Connection: awesome-connection-1234
 YELLOW: Salesforce API Version
 The latest available Salesforce API version is 47.0. Your connection is using version 44.0. You should re-create your connection to use the latest version.
 https://devcenter.heroku.com/articles/heroku-connect-diagnose#check-salesforce-api-version
@@ -96,12 +100,9 @@ YELLOW: Configured Logging
 App does not have logging configured.
 https://devcenter.heroku.com/articles/heroku-connect-diagnose#check-configured-log-drain
 `
-        )
-      })
-      .then(() => {
-        discoveryApi.done()
-        connectionDetailApi.done()
-        connectionValidationApi.done()
-      })
+    )
+    discoveryApi.done()
+    connectionDetailApi.done()
+    connectionValidationApi.done()
   })
 })

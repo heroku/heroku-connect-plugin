@@ -27,6 +27,8 @@ export function callbackServer () {
 export default class SfAuth extends Command {
   static description = 'Authorize access to Salesforce for your connection'
 
+  static callbackServer = callbackServer
+
   static flags = {
     app: flags.app({ required: true }),
     callback: flags.string({ char: 'c', description: 'final callback URL' }),
@@ -68,6 +70,6 @@ export default class SfAuth extends Command {
 
     cli.log("\nIf your browser doesn't open, please copy the following URL to proceed:\n" + redir + '\n')
 
-    await cli.action('waiting for authorization', callbackServer())
+    await cli.action('waiting for authorization', SfAuth.callbackServer())
   }
 }

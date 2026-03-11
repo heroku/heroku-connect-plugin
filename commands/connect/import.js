@@ -1,4 +1,5 @@
-import { Command, flags, Args } from '@heroku-cli/command'
+import { Command, flags } from '@heroku-cli/command'
+import { Args } from '@oclif/core'
 import cli from '@heroku/heroku-cli-util'
 import * as api from '../../lib/connect/api.js'
 import fs from 'fs'
