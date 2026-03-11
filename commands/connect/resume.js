@@ -1,9 +1,8 @@
-'use strict'
-const api = require('../../lib/connect/api.js')
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
+import * as api from '../../lib/connect/api.js'
+import cli from '@heroku/heroku-cli-util'
+import co from 'co'
 
-module.exports = {
+export default {
   topic: 'connect',
   command: 'resume',
   description: 'Resume a connection',

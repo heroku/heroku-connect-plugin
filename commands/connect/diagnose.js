@@ -1,7 +1,6 @@
-'use strict'
-const api = require('../../lib/connect/api.js')
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
+import * as api from '../../lib/connect/api.js'
+import cli from '@heroku/heroku-cli-util'
+import co from 'co'
 
 function displayResults (results, flags) {
   results.errors.forEach(displayResult('RED', 'red'))
@@ -38,7 +37,7 @@ function timeout (duration) {
   })
 }
 
-module.exports = {
+const diagnoseCmd = {
   topic: 'connect',
   command: 'diagnose',
   description: 'Display diagnostic information about a connection',
@@ -106,3 +105,5 @@ module.exports = {
   // Additional exports for code sharing
   displayResults
 }
+
+export default diagnoseCmd

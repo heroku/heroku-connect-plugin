@@ -1,10 +1,9 @@
-'use strict'
-const api = require('../../lib/connect/api.js')
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
-const fs = require('fs')
+import * as api from '../../lib/connect/api.js'
+import cli from '@heroku/heroku-cli-util'
+import co from 'co'
+import fs from 'fs'
 
-module.exports = {
+export default {
   topic: 'connect',
   command: 'export',
   description: 'Export configuration from a connection',

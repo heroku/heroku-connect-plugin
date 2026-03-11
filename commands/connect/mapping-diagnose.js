@@ -1,10 +1,9 @@
-'use strict'
-const api = require('../../lib/connect/api.js')
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
-const diagnose = require('./diagnose')
+import * as api from '../../lib/connect/api.js'
+import cli from '@heroku/heroku-cli-util'
+import co from 'co'
+import diagnose from './diagnose.js'
 
-module.exports = {
+export default {
   topic: 'connect:mapping',
   command: 'diagnose',
   description: 'Display diagnostic information about a mapping',

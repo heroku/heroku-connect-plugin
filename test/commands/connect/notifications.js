@@ -1,10 +1,9 @@
-'use strict'
 /* globals describe beforeEach it */
 
-const cli = require('@heroku/heroku-cli-util')
-const nock = require('nock')
-const expect = require('unexpected')
-const notificationsCmd = require('../../../commands/connect/notifications')
+import cli from '@heroku/heroku-cli-util'
+import nock from 'nock'
+import expect from 'unexpected'
+import notificationsCmd from '../../../commands/connect/notifications.js'
 
 const password = 'b3b1b13be4249eaf'
 const headers = {

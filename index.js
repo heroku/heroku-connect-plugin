@@ -1,5 +1,34 @@
-'use strict'
-exports.topics = [
+import connectInfo from './commands/connect/info.js'
+import connectState from './commands/connect/state.js'
+import connectImport from './commands/connect/import.js'
+import connectExport from './commands/connect/export.js'
+import connectPause from './commands/connect/pause.js'
+import connectResume from './commands/connect/resume.js'
+import connectRecover from './commands/connect/recover.js'
+import connectSfAuth from './commands/connect/sf-auth.js'
+import connectDbSet from './commands/connect/db-set.js'
+import connectDiagnose from './commands/connect/diagnose.js'
+import connectMappingState from './commands/connect/mapping-state.js'
+import connectMappingDelete from './commands/connect/mapping-delete.js'
+import connectMappingReload from './commands/connect/mapping-reload.js'
+import connectMappingDiagnose from './commands/connect/mapping-diagnose.js'
+import connectMappingWriteErrors from './commands/connect/mapping-write-errors.js'
+import connectNotifications from './commands/connect/notifications.js'
+import connectNotificationsAcknowledge from './commands/connect/notifications-acknowledge.js'
+import connectWriteErrors from './commands/connect/write-errors.js'
+
+import eventsInfo from './commands/connect-events/info.js'
+import eventsState from './commands/connect-events/state.js'
+import eventsPause from './commands/connect-events/pause.js'
+import eventsResume from './commands/connect-events/resume.js'
+import eventsRecover from './commands/connect-events/recover.js'
+import eventsSfAuth from './commands/connect-events/sf-auth.js'
+import eventsDbSet from './commands/connect-events/db-set.js'
+import eventsStreamState from './commands/connect-events/stream-state.js'
+import eventsStreamDelete from './commands/connect-events/stream-delete.js'
+import eventsStreamCreate from './commands/connect-events/stream-create.js'
+
+export const topics = [
   {
     name: 'connect',
     description: 'manage connections for Heroku Connect'
@@ -22,35 +51,35 @@ exports.topics = [
   }
 ]
 
-exports.commands = [
-  require('./commands/connect/info'),
-  require('./commands/connect/state'),
-  require('./commands/connect/import'),
-  require('./commands/connect/export'),
-  require('./commands/connect/pause'),
-  require('./commands/connect/resume'),
-  require('./commands/connect/recover'),
-  require('./commands/connect/sf-auth'),
-  require('./commands/connect/db-set'),
-  require('./commands/connect/diagnose'),
-  require('./commands/connect/mapping-state'),
-  require('./commands/connect/mapping-delete'),
-  require('./commands/connect/mapping-reload'),
-  require('./commands/connect/mapping-diagnose'),
-  require('./commands/connect/mapping-write-errors'),
-  require('./commands/connect/notifications'),
-  require('./commands/connect/notifications-acknowledge'),
-  require('./commands/connect/write-errors'),
+export const commands = [
+  connectInfo,
+  connectState,
+  connectImport,
+  connectExport,
+  connectPause,
+  connectResume,
+  connectRecover,
+  connectSfAuth,
+  connectDbSet,
+  connectDiagnose,
+  connectMappingState,
+  connectMappingDelete,
+  connectMappingReload,
+  connectMappingDiagnose,
+  connectMappingWriteErrors,
+  connectNotifications,
+  connectNotificationsAcknowledge,
+  connectWriteErrors,
 
   // Connect Events
-  require('./commands/connect-events/info'),
-  require('./commands/connect-events/state'),
-  require('./commands/connect-events/pause'),
-  require('./commands/connect-events/resume'),
-  require('./commands/connect-events/recover'),
-  require('./commands/connect-events/sf-auth'),
-  require('./commands/connect-events/db-set'),
-  require('./commands/connect-events/stream-state'),
-  require('./commands/connect-events/stream-delete'),
-  require('./commands/connect-events/stream-create')
+  eventsInfo,
+  eventsState,
+  eventsPause,
+  eventsResume,
+  eventsRecover,
+  eventsSfAuth,
+  eventsDbSet,
+  eventsStreamState,
+  eventsStreamDelete,
+  eventsStreamCreate
 ]

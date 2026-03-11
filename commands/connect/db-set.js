@@ -1,8 +1,7 @@
-'use strict'
-const api = require('../../lib/connect/api.js')
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
-const inquirer = require('inquirer')
+import * as api from '../../lib/connect/api.js'
+import cli from '@heroku/heroku-cli-util'
+import co from 'co'
+import inquirer from 'inquirer'
 
 const fetchKeys = co.wrap(function * (appName, context) {
   const url = '/api/v3/apps/' + appName
@@ -18,7 +17,7 @@ const fetchKeys = co.wrap(function * (appName, context) {
   return yield Promise.resolve(keys)
 })
 
-module.exports = {
+export default {
   topic: 'connect',
   command: 'db:set',
   description: 'Set database parameters',

@@ -1,7 +1,6 @@
-'use strict'
-const api = require('../../lib/connect/api.js')
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
+import * as api from '../../lib/connect/api.js'
+import cli from '@heroku/heroku-cli-util'
+import co from 'co'
 
 function * run (context, heroku) {
   const connections = yield api.withUserConnections(context, context.app, context.flags, heroku, true, api.ADDON_TYPE_EVENTS)
@@ -19,7 +18,7 @@ function * run (context, heroku) {
   }
 }
 
-module.exports = {
+export default {
   topic: 'connect-events',
   command: 'state',
   description: 'return the connection(s) state',

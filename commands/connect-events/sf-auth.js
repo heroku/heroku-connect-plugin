@@ -1,8 +1,7 @@
-'use strict'
-const api = require('../../lib/connect/api.js')
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
-const http = require('http')
+import * as api from '../../lib/connect/api.js'
+import cli from '@heroku/heroku-cli-util'
+import co from 'co'
+import http from 'http'
 
 const LOCAL_PORT = 18000
 
@@ -58,7 +57,7 @@ function * run (context, heroku) {
   yield cli.action('waiting for authorization', callbackServer())
 }
 
-module.exports = {
+export default {
   topic: 'connect-events',
   command: 'sf:auth',
   description: 'Authorize access to Salesforce for your connection',
