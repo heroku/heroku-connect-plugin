@@ -24,7 +24,7 @@ export function callbackServer () {
   })
 }
 
-async function run (context, heroku) {
+async function authenticate (context, heroku) {
   let redir
   await cli.action('fetching authorizing URL', (async function () {
     const connection = await api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
@@ -76,6 +76,6 @@ export default class ConnectEventsSfAuth extends Command {
       auth: { password: this.heroku.auth }
     }
 
-    await run(context, this.heroku)
+    await authenticate(context, this.heroku)
   }
 }

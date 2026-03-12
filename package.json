@@ -23,7 +23,8 @@
   },
   "files": [
     "/commands",
-    "/lib"
+    "/lib",
+    "oclif.manifest.json"
   ],
   "oclif": {
     "bin": "heroku",
