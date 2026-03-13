@@ -1,10 +1,10 @@
-'use strict'
-/* globals describe beforeEach it */
+/* globals describe beforeEach afterEach it */
 
-const cli = require('@heroku/heroku-cli-util')
-const nock = require('nock')
-const expect = require('unexpected')
-const acknowledgeCmd = require('../../../commands/connect/notifications-acknowledge')
+import cli from '@heroku/heroku-cli-util'
+import nock from 'nock'
+import expect from 'unexpected'
+import Acknowledge from '../../../commands/connect/notifications/acknowledge.js'
+import { runCommand } from '../../run-command.js'
 
 const password = '584151d78d318185'
 const headers = {
@@ -14,9 +14,16 @@ const headers = {
 }
 
 describe('connect:notifications:acknowledge', () => {
-  beforeEach(() => cli.mockConsole())
+  beforeEach(() => {
+    cli.mockConsole()
+    process.env.HEROKU_API_KEY = password
+  })
 
-  it('acknowledges notifications successfully', () => {
+  afterEach(() => {
+    delete process.env.HEROKU_API_KEY
+  })
+
+  it('acknowledges notifications successfully', async () => {
     const appName = 'fake-app'
     const resourceName = 'connectqa-chocolate-12345'
 
@@ -48,25 +55,16 @@ describe('connect:notifications:acknowledge', () => {
       })
       .reply(204)
 
-    return acknowledgeCmd.run({
-      app: appName,
-      flags: {},
-      auth: {
-        password
-      }
-    }, {})
-      .then(() => {
-        expect(cli.stdout, 'to be empty')
-        expect(cli.stderr, 'to be empty')
-      })
-      .then(() => {
-        discoveryApi.done()
-        connectionDetailApi.done()
-        acknowledgeApi.done()
-      })
+    await runCommand(Acknowledge, ['--app', appName])
+
+    expect(cli.stdout, 'to be empty')
+    expect(cli.stderr, 'to be empty')
+    discoveryApi.done()
+    connectionDetailApi.done()
+    acknowledgeApi.done()
   })
 
-  it('acknowledges notifications with filters', () => {
+  it('acknowledges notifications with filters', async () => {
     const appName = 'fake-app'
     const resourceName = 'connectqa-chocolate-12345'
 
@@ -101,29 +99,16 @@ describe('connect:notifications:acknowledge', () => {
       })
       .reply(204)
 
-    return acknowledgeCmd.run({
-      app: appName,
-      flags: {
-        after: '2024-01-01',
-        before: '2024-01-31',
-        'event-type': 'mapping-error'
-      },
-      auth: {
-        password
-      }
-    }, {})
-      .then(() => {
-        expect(cli.stdout, 'to be empty')
-        expect(cli.stderr, 'to be empty')
-      })
-      .then(() => {
-        discoveryApi.done()
-        connectionDetailApi.done()
-        acknowledgeApi.done()
-      })
+    await runCommand(Acknowledge, ['--app', appName, '--after', '2024-01-01', '--before', '2024-01-31', '--event-type', 'mapping-error'])
+
+    expect(cli.stdout, 'to be empty')
+    expect(cli.stderr, 'to be empty')
+    discoveryApi.done()
+    connectionDetailApi.done()
+    acknowledgeApi.done()
   })
 
-  it('handles API errors correctly', () => {
+  it('handles API errors correctly', async () => {
     const appName = 'fake-app'
     const resourceName = 'connectqa-chocolate-12345'
 
@@ -157,27 +142,19 @@ describe('connect:notifications:acknowledge', () => {
         message: 'Invalid request parameters'
       })
 
-    return acknowledgeCmd.run({
-      app: appName,
-      flags: {},
-      auth: {
-        password
-      }
-    }, {})
-      .then(() => {
-        throw new Error('Expected command to throw an error')
-      })
-      .catch((error) => {
-        expect(error.message, 'to contain', '400')
-      })
-      .then(() => {
-        discoveryApi.done()
-        connectionDetailApi.done()
-        acknowledgeApi.done()
-      })
+    try {
+      await runCommand(Acknowledge, ['--app', appName])
+      throw new Error('Expected command to throw an error')
+    } catch (error) {
+      expect(error.message, 'to contain', '400')
+    }
+
+    discoveryApi.done()
+    connectionDetailApi.done()
+    acknowledgeApi.done()
   })
 
-  it('handles non-204 status codes with generic error', () => {
+  it('handles non-204 status codes with generic error', async () => {
     const appName = 'fake-app'
     const resourceName = 'connectqa-chocolate-12345'
 
@@ -209,23 +186,15 @@ describe('connect:notifications:acknowledge', () => {
       })
       .reply(500)
 
-    return acknowledgeCmd.run({
-      app: appName,
-      flags: {},
-      auth: {
-        password
-      }
-    }, {})
-      .then(() => {
-        throw new Error('Expected command to throw an error')
-      })
-      .catch((error) => {
-        expect(error.message, 'to contain', '500')
-      })
-      .then(() => {
-        discoveryApi.done()
-        connectionDetailApi.done()
-        acknowledgeApi.done()
-      })
+    try {
+      await runCommand(Acknowledge, ['--app', appName])
+      throw new Error('Expected command to throw an error')
+    } catch (error) {
+      expect(error.message, 'to contain', '500')
+    }
+
+    discoveryApi.done()
+    connectionDetailApi.done()
+    acknowledgeApi.done()
   })
 })

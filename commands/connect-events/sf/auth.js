@@ -1,12 +1,11 @@
-'use strict'
-const api = require('../../lib/connect/api.js')
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
-const http = require('http')
+import * as api from '../../../lib/connect/api.js'
+import { Command, flags } from '@heroku-cli/command'
+import cli from '@heroku/heroku-cli-util'
+import http from 'http'
 
 const LOCAL_PORT = 18000
 
-function callbackServer () {
+export function callbackServer () {
   return new Promise(function (resolve, reject) {
     // Create a local server that can receive the user after authoriztion is complete
     http.createServer(function (request, response) {
@@ -25,10 +24,10 @@ function callbackServer () {
   })
 }
 
-function * run (context, heroku) {
+async function authenticate (context, heroku) {
   let redir
-  yield cli.action('fetching authorizing URL', co(function * () {
-    const connection = yield api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
+  await cli.action('fetching authorizing URL', (async function () {
+    const connection = await api.withConnection(context, heroku, api.ADDON_TYPE_EVENTS)
     context.region = connection.region_url
 
     const url = `/api/v3/kafka-connections/${connection.id}/authorize_url`
@@ -47,29 +46,36 @@ function * run (context, heroku) {
       args.domain = context.flags.domain
     }
 
-    const response = yield api.request(context, 'POST', url, args)
+    const response = await api.request(context, 'POST', url, args)
     redir = response.data.redirect
 
-    yield cli.open(redir)
-  }))
+    await cli.open(redir)
+  })())
 
   cli.log("\nIf your browser doesn't open, please copy the following URL to proceed:\n" + redir + '\n')
 
-  yield cli.action('waiting for authorization', callbackServer())
+  await cli.action('waiting for authorization', callbackServer())
 }
 
-module.exports = {
-  topic: 'connect-events',
-  command: 'sf:auth',
-  description: 'Authorize access to Salesforce for your connection',
-  help: 'Opens a browser to authorize a connection to a Salesforce Org',
-  flags: [
-    { name: 'callback', char: 'c', description: 'final callback URL', hasValue: true },
-    { name: 'environment', char: 'e', description: '"production", "sandbox", or "custom" [defaults to "production"]', hasValue: true },
-    { name: 'domain', char: 'd', description: 'specify a custom login domain (if using a "custom" environment)', hasValue: true },
-    { name: 'resource', description: 'specific connection resource name', hasValue: true }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(co.wrap(run))
+export default class ConnectEventsSfAuth extends Command {
+  static description = 'Authorize access to Salesforce for your connection'
+
+  static flags = {
+    app: flags.app({ required: true }),
+    callback: flags.string({ char: 'c', description: 'final callback URL' }),
+    environment: flags.string({ char: 'e', description: '"production", "sandbox", or "custom" [defaults to "production"]' }),
+    domain: flags.string({ char: 'd', description: 'specify a custom login domain (if using a "custom" environment)' }),
+    resource: flags.string({ description: 'specific connection resource name' })
+  }
+
+  async run () {
+    const { flags } = await this.parse(ConnectEventsSfAuth)
+    const context = {
+      app: flags.app,
+      flags,
+      auth: { password: this.heroku.auth }
+    }
+
+    await authenticate(context, this.heroku)
+  }
 }

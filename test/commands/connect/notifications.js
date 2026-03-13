@@ -1,10 +1,10 @@
-'use strict'
-/* globals describe beforeEach it */
+/* globals describe beforeEach afterEach it */
 
-const cli = require('@heroku/heroku-cli-util')
-const nock = require('nock')
-const expect = require('unexpected')
-const notificationsCmd = require('../../../commands/connect/notifications')
+import cli from '@heroku/heroku-cli-util'
+import nock from 'nock'
+import expect from 'unexpected'
+import Notifications, { formatDate, truncateMessage } from '../../../commands/connect/notifications/index.js'
+import { runCommand } from '../../run-command.js'
 
 const password = 'b3b1b13be4249eaf'
 const headers = {
@@ -14,9 +14,16 @@ const headers = {
 }
 
 describe('connect:notifications', () => {
-  beforeEach(() => cli.mockConsole())
+  beforeEach(() => {
+    cli.mockConsole()
+    process.env.HEROKU_API_KEY = password
+  })
 
-  it('retrieves unacknowledged notifications for a connection', () => {
+  afterEach(() => {
+    delete process.env.HEROKU_API_KEY
+  })
+
+  it('retrieves unacknowledged notifications for a connection', async () => {
     const appName = 'fake-app'
     const resourceName = 'connectqa-chocolate-12345'
 
@@ -65,29 +72,20 @@ describe('connect:notifications', () => {
       })
       .reply(200, notificationsData)
 
-    return notificationsCmd.run({
-      app: appName,
-      flags: {},
-      auth: {
-        password
-      }
-    }, {})
-      .then(() => {
-        expect(cli.stdout, 'to contain', 'mapping-error')
-        expect(cli.stdout, 'to contain', 'Failed to sync Account records due to validatio...')
-        expect(cli.stdout, 'to contain', 'postgres')
-        expect(cli.stdout, 'to contain', 'Database cannot connect')
-        expect(cli.stdout, 'to contain', '01/15/2024')
-      })
-      .then(() => expect(cli.stderr, 'to be empty'))
-      .then(() => {
-        discoveryApi.done()
-        connectionDetailApi.done()
-        notificationsApi.done()
-      })
+    await runCommand(Notifications, ['--app', appName])
+
+    expect(cli.stdout, 'to contain', 'mapping-error')
+    expect(cli.stdout, 'to contain', 'Failed to sync Account records due to validatio...')
+    expect(cli.stdout, 'to contain', 'postgres')
+    expect(cli.stdout, 'to contain', 'Database cannot connect')
+    expect(cli.stdout, 'to contain', '01/15/2024')
+    expect(cli.stderr, 'to be empty')
+    discoveryApi.done()
+    connectionDetailApi.done()
+    notificationsApi.done()
   })
 
-  it('applies filters when provided', () => {
+  it('applies filters when provided', async () => {
     const appName = 'fake-app'
     const resourceName = 'connectqa-chocolate-12345'
 
@@ -131,30 +129,17 @@ describe('connect:notifications', () => {
         ]
       })
 
-    return notificationsCmd.run({
-      app: appName,
-      flags: {
-        after: '2024-01-01',
-        before: '2024-01-31',
-        'event-type': 'mapping-error'
-      },
-      auth: {
-        password
-      }
-    }, {})
-      .then(() => {
-        expect(cli.stdout, 'to contain', 'mapping-error')
-        expect(cli.stdout, 'to contain', 'Failed to sync Account records due to validatio...')
-      })
-      .then(() => expect(cli.stderr, 'to be empty'))
-      .then(() => {
-        discoveryApi.done()
-        connectionDetailApi.done()
-        notificationsApi.done()
-      })
+    await runCommand(Notifications, ['--app', appName, '--after', '2024-01-01', '--before', '2024-01-31', '--event-type', 'mapping-error'])
+
+    expect(cli.stdout, 'to contain', 'mapping-error')
+    expect(cli.stdout, 'to contain', 'Failed to sync Account records due to validatio...')
+    expect(cli.stderr, 'to be empty')
+    discoveryApi.done()
+    connectionDetailApi.done()
+    notificationsApi.done()
   })
 
-  it('handles empty notifications response', () => {
+  it('handles empty notifications response', async () => {
     const appName = 'fake-app'
     const resourceName = 'connectqa-chocolate-12345'
 
@@ -186,37 +171,26 @@ describe('connect:notifications', () => {
       })
       .reply(200, { results: [] })
 
-    return notificationsCmd.run({
-      app: appName,
-      flags: {},
-      auth: {
-        password
-      }
-    }, {})
-      .then(() => {
-        expect(cli.stdout, 'to contain', 'Event Type')
-        expect(cli.stdout, 'to contain', 'Message')
-        expect(cli.stdout, 'to contain', 'Created At')
-      })
-      .then(() => expect(cli.stderr, 'to be empty'))
-      .then(() => {
-        discoveryApi.done()
-        connectionDetailApi.done()
-        notificationsApi.done()
-      })
+    await runCommand(Notifications, ['--app', appName])
+
+    expect(cli.stdout, 'to contain', 'Event Type')
+    expect(cli.stdout, 'to contain', 'Message')
+    expect(cli.stdout, 'to contain', 'Created At')
+    expect(cli.stderr, 'to be empty')
+    discoveryApi.done()
+    connectionDetailApi.done()
+    notificationsApi.done()
   })
 })
 
 describe('notifications helper functions', () => {
   it('formatDate formats dates correctly', () => {
-    const { formatDate } = notificationsCmd
     expect(formatDate('2024-01-15T10:30:00Z'), 'to equal', '01/15/2024, 10:30 AM')
     expect(formatDate(null), 'to equal', '')
     expect(formatDate(undefined), 'to equal', '')
   })
 
   it('truncateMessage truncates long messages', () => {
-    const { truncateMessage } = notificationsCmd
     expect(truncateMessage('Short message'), 'to equal', 'Short message')
     expect(truncateMessage('This is a very long message that should be truncated because it exceeds the maximum length'), 'to equal', 'This is a very long message that should be trun...')
     expect(truncateMessage('Exactly fifty characters in this message here!'), 'to equal', 'Exactly fifty characters in this message here!')

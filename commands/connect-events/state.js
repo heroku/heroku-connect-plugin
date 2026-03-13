@@ -1,10 +1,9 @@
-'use strict'
-const api = require('../../lib/connect/api.js')
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
+import * as api from '../../lib/connect/api.js'
+import { Command, flags } from '@heroku-cli/command'
+import cli from '@heroku/heroku-cli-util'
 
-function * run (context, heroku) {
-  const connections = yield api.withUserConnections(context, context.app, context.flags, heroku, true, api.ADDON_TYPE_EVENTS)
+async function run (context, heroku) {
+  const connections = await api.withUserConnections(context, context.app, context.flags, heroku, true, api.ADDON_TYPE_EVENTS)
 
   if (context.flags.json) {
     cli.styledJSON(connections)
@@ -19,16 +18,23 @@ function * run (context, heroku) {
   }
 }
 
-module.exports = {
-  topic: 'connect-events',
-  command: 'state',
-  description: 'return the connection(s) state',
-  help: 'returns the state key of the selected connections',
-  flags: [
-    { name: 'resource', description: 'specific connection resource name', hasValue: true },
-    { name: 'json', description: 'print output as json', hasValue: false }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(co.wrap(run))
+export default class ConnectEventsState extends Command {
+  static description = 'return the connection(s) state'
+
+  static flags = {
+    app: flags.app({ required: true }),
+    resource: flags.string({ description: 'specific connection resource name' }),
+    json: flags.boolean({ description: 'print output as json' })
+  }
+
+  async run () {
+    const { flags } = await this.parse(ConnectEventsState)
+    const context = {
+      app: flags.app,
+      flags,
+      auth: { password: this.heroku.auth }
+    }
+
+    await run(context, this.heroku)
+  }
 }

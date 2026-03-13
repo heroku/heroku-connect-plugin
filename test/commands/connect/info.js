@@ -1,10 +1,10 @@
-'use strict'
-/* globals describe beforeEach it */
+/* globals describe beforeEach afterEach it */
 
-const cli = require('@heroku/heroku-cli-util')
-const nock = require('nock')
-const expect = require('unexpected')
-const infoCmd = require('../../../commands/connect/info')
+import cli from '@heroku/heroku-cli-util'
+import nock from 'nock'
+import expect from 'unexpected'
+import ConnectInfo from '../../../commands/connect/info.js'
+import { runCommand } from '../../run-command.js'
 
 const password = 's3cr3t3'
 const headers = {
@@ -16,9 +16,16 @@ const headers = {
 describe('connect:info', () => {
   // prevent stdout/stderr from displaying
   // redirects to cli.stdout/cli.stderr instead
-  beforeEach(() => cli.mockConsole())
+  beforeEach(() => {
+    cli.mockConsole()
+    process.env.HEROKU_API_KEY = password
+  })
 
-  it('retrieves info about connection, given an app name and resource name', () => {
+  afterEach(() => {
+    delete process.env.HEROKU_API_KEY
+  })
+
+  it('retrieves info about connection, given an app name and resource name', async () => {
     const appName = 'fake-app'
     const resourceName = 'abcd-ef01'
     const discoveryApi = nock('https://hc-central-qa.herokai.com/', { headers })
@@ -57,30 +64,19 @@ describe('connect:info', () => {
       .query({ deep: true })
       .reply(200, connectionData)
 
-    return infoCmd.run({
-      app: appName,
-      flags: {
-        resource: resourceName
-      },
-      auth: {
-        password
-      }
-    }, {})
-      .then(() => {
-        expect(cli.stdout, 'to contain', connectionData.resource_name)
-        expect(cli.stdout, 'to contain', connectionData.mappings[0].object_name)
-        expect(cli.stdout, 'to contain', connectionData.mappings[0].state)
-        expect(cli.stdout, 'to contain', connectionData.mappings[1].object_name)
-        expect(cli.stdout, 'to contain', connectionData.mappings[1].state)
-      })
-      .then(() => expect(cli.stderr, 'to be empty'))
-      .then(() => {
-        discoveryApi.done()
-        connectionDetailApi.done()
-      })
+    await runCommand(ConnectInfo, ['--app', appName, '--resource', resourceName])
+
+    expect(cli.stdout, 'to contain', connectionData.resource_name)
+    expect(cli.stdout, 'to contain', connectionData.mappings[0].object_name)
+    expect(cli.stdout, 'to contain', connectionData.mappings[0].state)
+    expect(cli.stdout, 'to contain', connectionData.mappings[1].object_name)
+    expect(cli.stdout, 'to contain', connectionData.mappings[1].state)
+    expect(cli.stderr, 'to be empty')
+    discoveryApi.done()
+    connectionDetailApi.done()
   })
 
-  it('returns an error message if no connections are found', () => {
+  it('returns an error message if no connections are found', async () => {
     const appName = 'fake-app'
     const resourceName = 'abcd-ef01'
     const check = nock('https://hc-central-qa.herokai.com/', { headers })
@@ -95,22 +91,13 @@ describe('connect:info', () => {
       .query({ app: appName, resource_name: resourceName })
       .reply(200, { results: [] })
 
-    return infoCmd.run({
-      app: appName,
-      flags: {
-        resource: resourceName
-      },
-      auth: {
-        password
-      }
-    }, {})
-      .then(() => {
-        expect(cli.stdout, 'to be empty')
-      })
-      .then(() => expect(cli.stderr, 'to contain', 'No connection found'))
-      .then(() => expect(cli.stderr, 'to contain', 'heroku addons:open connectqa -a fake-app'))
-      .then(() => discoveryApi.done())
-      .then(() => discoveryApi2.done())
-      .then(() => check.done())
+    await runCommand(ConnectInfo, ['--app', appName, '--resource', resourceName])
+
+    expect(cli.stdout, 'to be empty')
+    expect(cli.stderr, 'to contain', 'No connection found')
+    expect(cli.stderr, 'to contain', 'heroku addons:open connectqa -a fake-app')
+    discoveryApi.done()
+    discoveryApi2.done()
+    check.done()
   })
 })

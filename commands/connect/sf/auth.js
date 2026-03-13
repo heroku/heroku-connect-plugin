@@ -1,0 +1,75 @@
+import * as api from '../../../lib/connect/api.js'
+import cli from '@heroku/heroku-cli-util'
+import http from 'http'
+import { Command, flags } from '@heroku-cli/command'
+
+const LOCAL_PORT = 18000
+
+export function callbackServer () {
+  return new Promise(function (resolve, reject) {
+    // Create a local server that can receive the user after authoriztion is complete
+    http.createServer(function (request, response) {
+      // Notify the user that the the authorization is complete
+      response.writeHead(200, { 'Content-Type': 'text/html' })
+      const res = '<html><body><h3>Authorization complete</h3><p>You may close this window and return to the terminal to continue.</p></body></html>'
+      response.end(res)
+
+      // Shut down the server so the command can exit
+      request.socket.destroy()
+      this.close()
+
+      // Return control to the main command
+      resolve()
+    }).listen(LOCAL_PORT)
+  })
+}
+
+export default class SfAuth extends Command {
+  static description = 'Authorize access to Salesforce for your connection'
+
+  static callbackServer = callbackServer
+
+  static flags = {
+    app: flags.app({ required: true }),
+    callback: flags.string({ char: 'c', description: 'final callback URL' }),
+    environment: flags.string({ char: 'e', description: '"production", "sandbox", or "custom" [defaults to "production"]' }),
+    domain: flags.string({ char: 'd', description: 'specify a custom login domain (if using a "custom" environment)' }),
+    resource: flags.string({ description: 'specific connection resource name' })
+  }
+
+  async run () {
+    const { args, flags } = await this.parse(SfAuth)
+    const context = { app: flags.app, flags, args, auth: { password: this.heroku.auth } }
+
+    let redir
+    await cli.action('fetching authorizing URL', (async function () {
+      const connection = await api.withConnection(context, this.heroku)
+      context.region = connection.region_url
+
+      const url = `/api/v3/connections/${connection.id}/authorize_url`
+      const args = {
+        environment: 'production',
+        // Redirect to the local server created in callbackServer(), so the CLI
+        // can respond immediately after successful authorization
+        next: `http://localhost:${LOCAL_PORT}`
+      }
+
+      if (context.flags.environment) {
+        args.environment = context.flags.environment
+      }
+
+      if (context.flags.environment === 'custom' && context.flags.domain) {
+        args.domain = context.flags.domain
+      }
+
+      const response = await api.request(context, 'POST', url, args)
+      redir = response.data.redirect
+
+      await cli.open(redir)
+    }.bind(this))())
+
+    cli.log("\nIf your browser doesn't open, please copy the following URL to proceed:\n" + redir + '\n')
+
+    await cli.action('waiting for authorization', SfAuth.callbackServer())
+  }
+}

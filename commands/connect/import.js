@@ -1,30 +1,37 @@
-'use strict'
-const api = require('../../lib/connect/api.js')
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
-const fs = require('fs')
+import { Command, flags } from '@heroku-cli/command'
+import { Args } from '@oclif/core'
+import cli from '@heroku/heroku-cli-util'
+import * as api from '../../lib/connect/api.js'
+import fs from 'fs'
 
-module.exports = {
-  topic: 'connect',
-  command: 'import',
-  description: 'Import configuration from an export file',
-  help: 'Imports the mapping configuration from a json export file',
-  args: [
-    { name: 'file', desciption: 'JSON export file name' }
-  ],
-  flags: [
-    { name: 'resource', description: 'specific connection resource name', hasValue: true }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
-    const fName = context.args.file
-    yield cli.action(`uploading ${fName}`, co(function * () {
-      const connection = yield api.withConnection(context, heroku)
+export default class ConnectImport extends Command {
+  static description = 'Import configuration from an export file'
+
+  static args = {
+    file: Args.string({ description: 'JSON export file name' })
+  }
+
+  static flags = {
+    app: flags.app({ required: true }),
+    resource: flags.string({ description: 'specific connection resource name' })
+  }
+
+  async run () {
+    const { args, flags } = await this.parse(ConnectImport)
+    const context = {
+      app: flags.app,
+      flags,
+      args,
+      auth: { password: this.heroku.auth }
+    }
+
+    const fName = args.file
+    await cli.action(`uploading ${fName}`, (async function () {
+      const connection = await api.withConnection(context, this.heroku)
       context.region = connection.region_url
       const url = '/api/v3/connections/' + connection.id + '/actions/import'
       const data = JSON.parse(fs.readFileSync(fName, 'utf8'))
-      yield api.request(context, 'POST', url, data)
-    }))
-  }))
+      await api.request(context, 'POST', url, data)
+    }.bind(this))())
+  }
 }

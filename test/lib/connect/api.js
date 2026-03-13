@@ -1,8 +1,7 @@
-'use strict'
 /* globals describe it */
 
-const api = require('../../../lib/connect/api')
-const expect = require('unexpected')
+import * as api from '../../../lib/connect/api.js'
+import expect from 'unexpected'
 
 describe('api.withMapping', () => {
   it('matches the full object name', () => {

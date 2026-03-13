@@ -1,7 +1,6 @@
-'use strict'
-const api = require('../../lib/connect/api.js')
-const cli = require('@heroku/heroku-cli-util')
-const co = require('co')
+import { Command, flags } from '@heroku-cli/command'
+import cli from '@heroku/heroku-cli-util'
+import * as api from '../../lib/connect/api.js'
 
 function displayResults (results, flags) {
   results.errors.forEach(displayResult('RED', 'red'))
@@ -38,26 +37,32 @@ function timeout (duration) {
   })
 }
 
-module.exports = {
-  topic: 'connect',
-  command: 'diagnose',
-  description: 'Display diagnostic information about a connection',
-  help: 'Checks a connection for common configuration errors. ',
-  flags: [
-    { name: 'resource', description: 'specific connection resource name', hasValue: true },
-    { name: 'verbose', char: 'v', description: 'display passed and skipped check information as well' }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(co.wrap(function * (context, heroku) {
+export default class ConnectDiagnose extends Command {
+  static description = 'Display diagnostic information about a connection'
+
+  static flags = {
+    app: flags.app({ required: true }),
+    resource: flags.string({ description: 'specific connection resource name' }),
+    verbose: flags.boolean({ char: 'v', description: 'display passed and skipped check information as well' })
+  }
+
+  async run () {
+    const { flags } = await this.parse(ConnectDiagnose)
+    const context = {
+      app: flags.app,
+      flags,
+      args: {},
+      auth: { password: this.heroku.auth }
+    }
+
     let mappingResults
     let didDisplayAnything = false
-    const connection = yield api.withConnection(context, heroku)
+    const connection = await api.withConnection(context, this.heroku)
     context.region = connection.region_url
-    const results = yield cli.action('Diagnosing connection', co(function * () {
+    const results = await cli.action('Diagnosing connection', (async function () {
       const url = '/api/v3/connections/' + connection.id + '/validations'
       try {
-        const { data: { result_url: resultUrl } } = yield api.request(context, 'POST', url)
+        const { data: { result_url: resultUrl } } = await api.request(context, 'POST', url)
 
         let i = 0
 
@@ -66,7 +71,7 @@ module.exports = {
             cli.error('There was an issue retrieving validations')
             break
           }
-          const response = yield api.request(context, 'GET', resultUrl)
+          const response = await api.request(context, 'GET', resultUrl)
 
           if (response.status === 200) {
             return response.data
@@ -74,35 +79,35 @@ module.exports = {
 
           i++
 
-          yield timeout(500)
+          await timeout(500)
         }
       } catch (err) {
         cli.error(err)
       }
-    }))
+    })())
 
     cli.log() // Blank line to separate each section
     cli.styledHeader(`Connection: ${connection.name || connection.internal_name}`)
-    if (shouldDisplay(results, context.flags)) {
+    if (shouldDisplay(results, flags)) {
       didDisplayAnything = true
-      displayResults(results, context.flags)
+      displayResults(results, flags)
     }
 
     for (const objectName in results.mappings) {
       mappingResults = results.mappings[objectName]
-      if (shouldDisplay(mappingResults, context.flags)) {
+      if (shouldDisplay(mappingResults, flags)) {
         didDisplayAnything = true
         cli.log() // Blank line to separate each section
         cli.styledHeader(objectName)
-        displayResults(mappingResults, context.flags)
+        displayResults(mappingResults, flags)
       }
     }
 
-    if (!didDisplayAnything && !context.flags.verbose) {
+    if (!didDisplayAnything && !flags.verbose) {
       cli.log(cli.color.green('Everything appears to be fine'))
     }
-  })),
-
-  // Additional exports for code sharing
-  displayResults
+  }
 }
+
+// Additional exports for code sharing
+export { displayResults }

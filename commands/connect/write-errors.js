@@ -1,27 +1,28 @@
-'use strict'
-const api = require('../../lib/connect/api.js')
-const cli = require('@heroku/heroku-cli-util')
+import { Command, flags } from '@heroku-cli/command'
+import * as api from '../../lib/connect/api.js'
 
-module.exports = {
-  topic: 'connect',
-  command: 'write-errors',
-  description: 'Display the last 24 hours of write errors on this connection',
-  examples: [
+export default class ConnectWriteErrors extends Command {
+  static description = 'Display the last 24 hours of write errors on this connection'
+
+  static examples = [
     '$ heroku connect:write-errors -a myapp --resource herokuconnect-twisted-123'
-  ],
-  flags: [
-    {
-      name: 'resource',
-      description: 'specific connection resource name',
-      hasValue: true
-    },
-    {
-      name: 'json',
-      description: 'print errors as styled JSON',
-      hasValue: false
+  ]
+
+  static flags = {
+    app: flags.app({ required: true }),
+    resource: flags.string({ description: 'specific connection resource name' }),
+    json: flags.boolean({ description: 'print errors as styled JSON' })
+  }
+
+  async run () {
+    const { flags } = await this.parse(ConnectWriteErrors)
+    const context = {
+      app: flags.app,
+      flags,
+      args: {},
+      auth: { password: this.heroku.auth }
     }
-  ],
-  needsApp: true,
-  needsAuth: true,
-  run: cli.command(api.getWriteErrors)
+
+    await api.getWriteErrors(context, this.heroku)
+  }
 }
