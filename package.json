@@ -51,7 +51,7 @@
     "@heroku-cli/command": "^12.2.1",
     "@heroku/heroku-cli-util": "^8.0.15",
     "@oclif/core": "^4.8.4",
-    "axios": "^1.13.5",
+    "axios": "1.13.6",
     "heroku-client": "^3.0.6",
     "inquirer": "^8.2.7"
   },
@@ -73,6 +73,7 @@
     ]
   },
   "resolutions": {
-    "serialize-javascript": "^7.0.3"
+    "serialize-javascript": "^7.0.3",
+    "flatted": "^3.4.2"
   }
 }
