@@ -51,7 +51,7 @@
     "@heroku-cli/command": "^12.2.1",
     "@heroku/heroku-cli-util": "^8.0.15",
     "@oclif/core": "^4.8.4",
-    "axios": "1.13.6",
+    "axios": "1.15.0",
     "heroku-client": "^3.0.6",
     "inquirer": "^8.2.7"
   },
