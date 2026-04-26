@@ -979,9 +979,9 @@
     wrap-ansi "^7.0.0"
 
 "@oclif/core@^4", "@oclif/core@^4.3.0", "@oclif/core@^4.8.0", "@oclif/core@^4.8.4":
-  version "4.10.5"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-4.10.5.tgz#bcf7c5bb783849ccdce2fd2b5d691a247082ba51"
-  integrity sha512-qcdCF7NrdWPfme6Kr34wwljRCXbCVpL1WVxiNy0Ep6vbWKjxAjFQwuhqkoyL0yjI+KdwtLcOCGn5z2yzdijc8w==
+  version "4.10.6"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-4.10.6.tgz#233d66284d8c7c8162c9d437754503734069dd85"
+  integrity sha512-ySCOYnPKZE3KACT1V9It99hWG9b8E5MpagbRdWxPNRO3beMqmbr4SLUQoFtZ9XRtW++kks1ZVwZOdpnR8rpb9A==
   dependencies:
     ansi-escapes "^4.3.2"
     ansis "^3.17.0"
@@ -1938,10 +1938,10 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-axios@1.15.1:
-  version "1.15.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.15.1.tgz#075420b785da8adbdf545785b69f90c926b28542"
-  integrity sha512-WOG+Jj8ZOvR0a3rAn+Tuf1UQJRxw5venr6DgdbJzngJE3qG7X0kL83CZGpdHMxEm+ZK3seAbvFsw4FfOfP9vxg==
+axios@1.15.2:
+  version "1.15.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.15.2.tgz#eb8fb6d30349abace6ade5b4cb4d9e8a0dc23e5b"
+  integrity sha512-wLrXxPtcrPTsNlJmKjkPnNPK2Ihe0hn0wGSaTEiHRPxwjvJwT3hKmXF4dpqxmPO9SoNb2FsYXj/xEo0gHN+D5A==
   dependencies:
     follow-redirects "^1.15.11"
     form-data "^4.0.5"
