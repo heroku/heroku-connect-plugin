@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.12.1](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.12.0...heroku-connect-plugin-v0.12.1) (2026-05-11)
+
+
+### Bug Fixes
+
+* **deps:** bump axios from 1.13.6 to 1.15.0 ([#278](https://github.com/heroku/heroku-connect-plugin/issues/278)) ([acb5c3e](https://github.com/heroku/heroku-connect-plugin/commit/acb5c3edb5fc20bcf65d45c2a23e41d1b30b7ce1))
+* **deps:** bump axios from 1.15.1 to 1.15.2 ([#289](https://github.com/heroku/heroku-connect-plugin/issues/289)) ([60deb4f](https://github.com/heroku/heroku-connect-plugin/commit/60deb4f1b566e7c33753852946af31fb67e75746))
+* **deps:** bump fast-xml-builder from 1.1.4 to 1.2.0 ([#290](https://github.com/heroku/heroku-connect-plugin/issues/290)) ([03dea98](https://github.com/heroku/heroku-connect-plugin/commit/03dea98e3751c04ce3d5c79be9dd57f5c5cab7dc))
+* **deps:** bump follow-redirects from 1.15.11 to 1.16.0 ([#281](https://github.com/heroku/heroku-connect-plugin/issues/281)) ([99365fa](https://github.com/heroku/heroku-connect-plugin/commit/99365face15ffdb63fb8e4b97c2b622c0a0795fa))
+* **deps:** bump lodash from 4.17.23 to 4.18.1 ([#276](https://github.com/heroku/heroku-connect-plugin/issues/276)) ([df93fc3](https://github.com/heroku/heroku-connect-plugin/commit/df93fc3aebd4cec418ac772c8f5ddec4575bf95f))
+* **deps:** bump the patch-dependencies group across 1 directory with 3 updates ([#282](https://github.com/heroku/heroku-connect-plugin/issues/282)) ([fc4d831](https://github.com/heroku/heroku-connect-plugin/commit/fc4d831abf807dcbe347323e9c231e92f62aaf5c))
+
 ## [0.12.0](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.11.5...heroku-connect-plugin-v0.12.0) (2026-03-18)
 
 
