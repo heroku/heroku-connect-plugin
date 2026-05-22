@@ -24,6 +24,8 @@ OPTIONS
       --json                   print output as JSON
 ```
 
+`--target-version` is optional; when omitted, the diff is taken against the latest Salesforce API version supported by Heroku Connect (the same default `connect:upgrade-api-version` would target).
+
 **Example:**
 
 ```
@@ -78,6 +80,12 @@ OPTIONS
 4. If any mapping references a field that no longer exists at the target version, the upgrade is refused. Edit the mapping to remove the field, save it, and re-run the upgrade. `--force` does **not** override this check.
 5. If any mapping has unsafe non-drop changes (type changes, length decreases) the upgrade is refused unless `--force` is passed.
 
+**Confirmation prompt and `--confirm`:**
+
+The CLI prompts you to type the connection name (the same value shown by `connect:state`) before dispatching the upgrade. To skip the prompt — for scripts or `--json` callers — pass `--confirm <connection-name>`. The value must match the connection name exactly (after trimming whitespace).
+
+If your connection name contains shell-special characters (e.g. a colon as in `my-app:fake-conn`), quote it: `--confirm 'my-app:fake-conn'`.
+
 **Typical workflow:**
 
 ```
@@ -97,12 +105,18 @@ $ heroku connect:resume -a my-app
 
 **Error responses:**
 
-> `Cannot upgrade: some mappings reference fields that no longer exist at the target API version.`
-> `  Account: legacyfield__c`
->
-> Edit each listed mapping in the Heroku Connect dashboard to remove the dead fields, save, and re-run.
+```
+Cannot upgrade: some mappings reference fields that no longer exist at the target API version.
+  Account: legacyfield__c
+Edit each mapping to remove the listed fields, then re-run.
+```
 
-> `Cannot upgrade: some mappings have unsafe field changes at the target API version.`
-> `Affected mappings: Account, Lead`
->
-> Re-run with `--force` to proceed, or edit the affected mappings first.
+Edit each listed mapping in the Heroku Connect dashboard to remove the dead fields, save, and re-run.
+
+```
+Cannot upgrade: some mappings have unsafe field changes at the target API version.
+Affected mappings: Account, Lead
+Re-run with --force to proceed anyway, or edit the mappings first.
+```
+
+Re-run with `--force` to proceed, or edit the affected mappings first.

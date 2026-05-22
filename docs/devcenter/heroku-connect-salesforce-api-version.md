@@ -37,10 +37,12 @@ You do **not** need to upgrade the API version to receive routine Heroku Connect
 ## Step 1: Identify the current API version
 
 ```
-$ heroku connect:state -a my-app
+$ heroku connect:info -a my-app
 ```
 
-The output table includes the connection's current `api_version`.
+`connect:info` includes the connection's current `Salesforce API version`. (`connect:state` is also useful, but it focuses on the connection's run state — `Database`, `Schema`, `State` — and does not display the API version.)
+
+For scripts, the same value is available via `heroku connect:info -a my-app --json` under the `api_version` key.
 
 ## Step 2: Preview the schema differences
 
@@ -75,7 +77,7 @@ The upgrade endpoint refuses to run unless the connection is paused. This is int
 $ heroku connect:upgrade-api-version -a my-app --target-version 61.0
 ```
 
-The CLI prompts you to type the connection name to confirm. Pass `--confirm <name>` to skip the prompt (useful for scripts).
+The CLI prompts you to type the connection name to confirm — for example, `Upgrade my-app:fake-conn from API 55.0 to 61.0? Type the connection name to confirm`. Pass `--confirm <connection-name>` to skip the prompt (useful for scripts and required when running with `--json`). If your connection name contains shell-special characters, quote it: `--confirm 'my-app:fake-conn'`.
 
 On success the CLI prints `Upgrade dispatched.` and the connection stays paused. Heroku Connect updates `api_version`, refreshes the cached Salesforce schema for every mapping at the new version, and writes an audit log entry.
 
@@ -97,7 +99,7 @@ The diff classifies field changes as either *safe* or *unsafe*:
 You have two options for each unsafe mapping:
 
 1. **Remediate before upgrading.** In the Heroku Connect dashboard, edit the mapping, unselect the affected field, save, then re-select the field and save again. This refreshes the field metadata. Repeat for each affected mapping, then re-run `connect:upgrade-api-version`.
-2. **Upgrade with `--force` and remediate after.** Re-run with `--force` and the upgrade will dispatch despite the unsafe changes. You'll still need to unmap/remap the affected fields afterwards before sync resumes cleanly.
+2. **Upgrade with `--force` and remediate after.** Re-run with `--force` and the upgrade will dispatch despite the unsafe changes. You must still unmap/remap each affected field afterwards. **Until you do, calling `connect:resume` will surface row-level sync errors for the affected mappings** — the database column type no longer matches the Salesforce field type, and Heroku Connect will flag every mismatched record. The data already in your database is not modified, but no new writes for the affected fields will succeed until the mapping is fixed. If you need an immediate-recovery option, choose option 1 instead.
 
 ```
 $ heroku connect:upgrade-api-version -a my-app --target-version 61.0 --force
@@ -119,7 +121,13 @@ This guard exists because Heroku Connect would otherwise lose the ability to rea
 
 ## Rollback
 
-The upgrade is in-place. To revert, run `connect:upgrade-api-version` again with the previous version as `--target-version`. The same diff/safety rules apply — preview with `connect:schema-diff` first.
+`connect:upgrade-api-version` does **not** support downgrades. The endpoint rejects any `--target-version` lower than the connection's current `api_version`. This is intentional: between Salesforce API versions, fields can be added, types widened, and metadata reshaped in ways that can't be safely walked back — Heroku Connect's schema cache and your database columns may already reflect the newer version.
+
+If an upgrade leaves a connection in a bad state, the recovery path is one of:
+
+1. Edit the affected mappings in the Heroku Connect dashboard to bring them back into agreement with Salesforce, then resume.
+2. Restore the database from a [Heroku Postgres backup](https://devcenter.heroku.com/articles/heroku-postgres-backups) taken before the upgrade.
+3. Contact [Heroku Support](https://help.heroku.com/) for assistance — for example, if the connection itself needs to be re-provisioned at a specific API version.
 
 ## Related commands
 
