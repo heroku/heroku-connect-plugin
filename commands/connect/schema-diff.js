@@ -60,8 +60,6 @@ export default class ConnectSchemaDiff extends Command {
           label: 'Status',
           format: (changed, row) => {
             if (!changed) return cli.color.green('no changes')
-            // Backend may surface has_unsafe_changes once the upgrade work lands.
-            // Until then, all "changed" rows render the same.
             if (row.has_unsafe_changes === true) return cli.color.red('changed (unsafe)')
             if (row.has_unsafe_changes === false) return cli.color.yellow('changed (safe)')
             return cli.color.yellow('changed')
