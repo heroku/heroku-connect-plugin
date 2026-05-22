@@ -73,7 +73,12 @@ describe('connect:schema-diff', () => {
     expect(cli.stdout, 'to contain', 'Account')
     expect(cli.stdout, 'to contain', 'no changes')
     expect(cli.stdout, 'to contain', 'Lead')
-    expect(cli.stdout, 'to contain', 'changed')
+    // The Lead row falls through to the bare 'changed' label because
+    // has_unsafe_changes is missing — assert we did NOT mis-render it as
+    // safe/unsafe/no-changes (the original assertion would have passed
+    // even if status logic was completely broken).
+    expect(cli.stdout, 'not to contain', '(safe)')
+    expect(cli.stdout, 'not to contain', '(unsafe)')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
@@ -123,16 +128,37 @@ describe('connect:schema-diff', () => {
     diffApi.done()
   })
 
-  it('rejects an invalid --target-version without making a diff request', async () => {
+  it('rejects an invalid --target-version before any network call', async () => {
+    // Validation runs before withConnection, so neither the discovery nor
+    // the connection-detail nocks should be consumed. Set them up only to
+    // assert they remain pending.
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
 
-    await runCommand(ConnectSchemaDiff, ['--app', appName, '--resource', resourceName, '--target-version', 'not-a-version'])
+    let caught
+    try {
+      await runCommand(ConnectSchemaDiff, ['--app', appName, '--resource', resourceName, '--target-version', 'not-a-version'])
+    } catch (err) {
+      caught = err
+    }
 
-    expect(cli.stderr, 'to contain', 'Invalid --target-version')
-    discoveryApi.done()
-    connectionApi.done()
-    expect(nock.pendingMocks(), 'to be empty')
+    expect(caught, 'to be defined')
+    expect(caught.message, 'to contain', 'Invalid --target-version')
+    expect(nock.pendingMocks(), 'not to be empty')
+    expect(discoveryApi.isDone(), 'to be false')
+    expect(connectionApi.isDone(), 'to be false')
+    nock.cleanAll()
+  })
+
+  it('rejects a sub-floor --target-version even though the regex shape matches', async () => {
+    let caught
+    try {
+      await runCommand(ConnectSchemaDiff, ['--app', appName, '--resource', resourceName, '--target-version', '1.0'])
+    } catch (err) {
+      caught = err
+    }
+    expect(caught, 'to be defined')
+    expect(caught.message, 'to contain', 'Invalid --target-version')
   })
 
   it('renders unsafe-change styling when has_unsafe_changes is true', async () => {
@@ -152,6 +178,43 @@ describe('connect:schema-diff', () => {
     await runCommand(ConnectSchemaDiff, ['--app', appName, '--resource', resourceName])
 
     expect(cli.stdout, 'to contain', 'changed (unsafe)')
+    discoveryApi.done()
+    connectionApi.done()
+    diffApi.done()
+  })
+
+  it('renders safe-change styling when has_unsafe_changes is false', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail()
+    const diffApi = nock('https://hc-virginia-qa.herokai.com/', { headers })
+      .get('/api/v3/connections/1234/schema-diff')
+      .reply(200, {
+        guid: '1234',
+        current_api_version: '55.0',
+        target_api_version: '61.0',
+        mappings: [
+          { name: 'Account', result_message: 'length increase', fields_have_changed: true, has_unsafe_changes: false }
+        ]
+      })
+
+    await runCommand(ConnectSchemaDiff, ['--app', appName, '--resource', resourceName])
+
+    expect(cli.stdout, 'to contain', 'changed (safe)')
+    discoveryApi.done()
+    connectionApi.done()
+    diffApi.done()
+  })
+
+  it('does not crash when the backend returns no mappings field', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail()
+    const diffApi = nock('https://hc-virginia-qa.herokai.com/', { headers })
+      .get('/api/v3/connections/1234/schema-diff')
+      .reply(200, { guid: '1234', current_api_version: '55.0', target_api_version: '61.0' })
+
+    await runCommand(ConnectSchemaDiff, ['--app', appName, '--resource', resourceName])
+
+    expect(cli.stdout, 'to contain', 'Current API Version: 55.0')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
