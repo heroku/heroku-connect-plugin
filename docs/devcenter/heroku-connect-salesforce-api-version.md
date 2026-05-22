@@ -36,13 +36,14 @@ You do **not** need to upgrade the API version to receive routine Heroku Connect
 
 ## Step 1: Identify the current API version
 
+`connect:schema-diff` (Step 2) prints the connection's current Salesforce API version as the first line of its output:
+
 ```
-$ heroku connect:info -a my-app
+Current API Version: 55.0
+Target API Version:  61.0
 ```
 
-`connect:info` includes the connection's current `Salesforce API version`. (`connect:state` is also useful, but it focuses on the connection's run state — `Database`, `Schema`, `State` — and does not display the API version.)
-
-For scripts, the same value is available via `heroku connect:info -a my-app --json` under the `api_version` key.
+You can run it now to capture the current value, or skip ahead — Step 2 prints it as part of the diff.
 
 ## Step 2: Preview the schema differences
 
