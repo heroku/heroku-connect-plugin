@@ -75,15 +75,28 @@ describe('connect:sf-api-upgrade', () => {
 
   it('rejects an invalid --target-version before any network call', async () => {
     const err = await expectThrows(() => runCommand(ConnectSfApiUpgrade, [
-      '--app', appName, '--resource', resourceName, '--target-version', 'not-a-version'
+      '--app', appName, '--connection', resourceName, '--target-version', 'not-a-version'
     ]))
     expect(err.message, 'to contain', 'Invalid --target-version')
     expect(nock.pendingMocks(), 'to be empty')
   })
 
+  it('normalizes an integer --target-version to NN.0', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail()
+    const diffApi = stubDiff('61.0')
+
+    await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61'])
+
+    expect(cli.stdout, 'to contain', 'Target API Version:  61.0')
+    discoveryApi.done()
+    connectionApi.done()
+    diffApi.done()
+  })
+
   it('rejects a sub-floor --target-version (e.g. 1.0)', async () => {
     const err = await expectThrows(() => runCommand(ConnectSfApiUpgrade, [
-      '--app', appName, '--resource', resourceName, '--target-version', '1.0'
+      '--app', appName, '--connection', resourceName, '--target-version', '1.0'
     ]))
     expect(err.message, 'to contain', 'Invalid --target-version')
     expect(nock.pendingMocks(), 'to be empty')
@@ -97,7 +110,7 @@ describe('connect:sf-api-upgrade', () => {
       { name: 'Lead', result_message: 'changed', fields_have_changed: true }
     ])
 
-    await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--resource', resourceName, '--target-version', '61.0'])
+    await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
 
     expect(cli.stdout, 'to contain', 'Current API Version: 55.0')
     expect(cli.stdout, 'to contain', 'Target API Version:  61.0')
@@ -116,7 +129,7 @@ describe('connect:sf-api-upgrade', () => {
       { name: 'Account', result_message: 'unsafe change', fields_have_changed: true, has_unsafe_changes: true }
     ])
 
-    await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--resource', resourceName, '--target-version', '61.0'])
+    await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
 
     expect(cli.stdout, 'to contain', 'changed (unsafe)')
     discoveryApi.done()
@@ -131,7 +144,7 @@ describe('connect:sf-api-upgrade', () => {
       { name: 'Account', result_message: 'length increase', fields_have_changed: true, has_unsafe_changes: false }
     ])
 
-    await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--resource', resourceName, '--target-version', '61.0'])
+    await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
 
     expect(cli.stdout, 'to contain', 'changed (safe)')
     discoveryApi.done()
@@ -153,7 +166,7 @@ describe('connect:sf-api-upgrade', () => {
       .query({ target_version: '61.0' })
       .reply(200, responseBody)
 
-    await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--resource', resourceName, '--target-version', '61.0', '--json'])
+    await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61.0', '--json'])
 
     expect(JSON.parse(cli.stdout), 'to equal', responseBody)
     discoveryApi.done()
@@ -170,7 +183,7 @@ describe('connect:sf-api-upgrade', () => {
       .reply(202, { target_version: '61.0' })
 
     await runCommand(ConnectSfApiUpgrade, [
-      '--app', appName, '--resource', resourceName,
+      '--app', appName, '--connection', resourceName,
       '--target-version', '61.0', '--confirm', baseConnection.name
     ])
 
@@ -192,7 +205,7 @@ describe('connect:sf-api-upgrade', () => {
       .reply(202, { target_version: '61.0' })
 
     await runCommand(ConnectSfApiUpgrade, [
-      '--app', appName, '--resource', resourceName,
+      '--app', appName, '--connection', resourceName,
       '--target-version', '61.0', '--confirm', `  ${baseConnection.name}  `
     ])
 
@@ -210,48 +223,12 @@ describe('connect:sf-api-upgrade', () => {
 
     const err = await expectThrows(() =>
       runCommand(ConnectSfApiUpgrade, [
-        '--app', appName, '--resource', resourceName,
+        '--app', appName, '--connection', resourceName,
         '--target-version', '61.0', '--confirm', 'wrong-name'
       ])
     )
 
     expect(err.message, 'to contain', 'does not match')
-    discoveryApi.done()
-    connectionApi.done()
-    diffApi.done()
-  })
-
-  it('aborts upgrade when connection is not paused', async () => {
-    const discoveryApi = stubDiscovery()
-    const connectionApi = stubConnectionDetail({ state: 'IDLE' })
-    const diffApi = stubDiff('61.0')
-
-    const err = await expectThrows(() =>
-      runCommand(ConnectSfApiUpgrade, [
-        '--app', appName, '--resource', resourceName,
-        '--target-version', '61.0', '--confirm', baseConnection.name
-      ])
-    )
-
-    expect(err.message, 'to contain', 'must be paused')
-    discoveryApi.done()
-    connectionApi.done()
-    diffApi.done()
-  })
-
-  it('aborts upgrade when already on the target version', async () => {
-    const discoveryApi = stubDiscovery()
-    const connectionApi = stubConnectionDetail({ api_version: '61.0' })
-    const diffApi = stubDiff('61.0')
-
-    const err = await expectThrows(() =>
-      runCommand(ConnectSfApiUpgrade, [
-        '--app', appName, '--resource', resourceName,
-        '--target-version', '61.0', '--confirm', baseConnection.name
-      ])
-    )
-
-    expect(err.message, 'to contain', 'already on API 61.0')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
@@ -267,7 +244,7 @@ describe('connect:sf-api-upgrade', () => {
 
     const err = await expectThrows(() =>
       runCommand(ConnectSfApiUpgrade, [
-        '--app', appName, '--resource', resourceName,
+        '--app', appName, '--connection', resourceName,
         '--target-version', '61.0', '--confirm', baseConnection.name
       ])
     )
@@ -288,7 +265,7 @@ describe('connect:sf-api-upgrade', () => {
       .reply(202, '')
 
     await runCommand(ConnectSfApiUpgrade, [
-      '--app', appName, '--resource', resourceName,
+      '--app', appName, '--connection', resourceName,
       '--target-version', '61.0', '--confirm', baseConnection.name
     ])
 

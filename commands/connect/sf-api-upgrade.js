@@ -1,7 +1,7 @@
 import { Command, flags } from '@heroku-cli/command'
 import cli from '@heroku/heroku-cli-util'
 import * as api from '../../lib/connect/api.js'
-import { apiVersionFloor, isValidApiVersion } from '../../lib/connect/api-version.js'
+import { apiVersionFloor, isValidApiVersion, normalizeApiVersion } from '../../lib/connect/api-version.js'
 
 export default class ConnectSfApiUpgrade extends Command {
   static description = `compare mapping schemas between API versions and optionally upgrade
@@ -10,13 +10,14 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
 
   static examples = [
     '$ heroku connect:sf-api-upgrade --app my-app --target-version 61.0',
+    '$ heroku connect:sf-api-upgrade --app my-app --connection abcd-ef01 --target-version 61.0',
     '$ heroku connect:sf-api-upgrade --app my-app --target-version 61.0 --confirm my-app:fake-conn',
     '$ heroku connect:sf-api-upgrade --app my-app --target-version 61.0 --json'
   ]
 
   static flags = {
     app: flags.app({ required: true }),
-    resource: flags.string({ description: 'specific connection resource name' }),
+    connection: flags.string({ required: true, description: 'connection resource name' }),
     'target-version': flags.string({ required: true, description: 'Salesforce API version to compare against and upgrade to (e.g. 61.0)' }),
     confirm: flags.string({ description: 'after showing the diff, upgrade the connection — pass the connection name to confirm' }),
     json: flags.boolean({ description: 'print output as json' })
@@ -25,16 +26,18 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
   async run () {
     const { flags: parsed } = await this.parse(ConnectSfApiUpgrade)
 
-    if (!isValidApiVersion(parsed['target-version'])) {
+    const targetVersion = normalizeApiVersion(parsed['target-version'])
+
+    if (!isValidApiVersion(targetVersion)) {
       this.error(
-        `Invalid --target-version "${parsed['target-version']}". Expected a Salesforce API version like "61.0" (>= ${apiVersionFloor()}.0).`,
+        `Invalid --target-version "${parsed['target-version']}". Expected a numeric Salesforce API version (e.g. 61 or 61.0, >= ${apiVersionFloor()}).`,
         { exit: 2 }
       )
     }
 
     const context = {
       app: parsed.app,
-      flags: parsed,
+      flags: { ...parsed, resource: parsed.connection },
       args: {},
       auth: { password: this.heroku.auth }
     }
@@ -44,7 +47,7 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
 
     const diffResponse = await cli.action(
       'Comparing schemas',
-      api.request(context, 'GET', `/api/v3/connections/${connection.id}/schema-diff`, undefined, { target_version: parsed['target-version'] })
+      api.request(context, 'GET', `/api/v3/connections/${connection.id}/schema-diff`, undefined, { target_version: targetVersion })
     )
     const result = diffResponse.data
 
@@ -79,20 +82,6 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
 
     if (!parsed.confirm) return
 
-    if (connection.state !== 'PAUSED') {
-      this.error(
-        `Connection ${connection.name} must be paused before upgrading. ` +
-        `Run \`heroku connect:pause -a ${parsed.app}\`.`,
-        { exit: 1 }
-      )
-    }
-    if (connection.api_version === parsed['target-version']) {
-      this.error(
-        `Connection ${connection.name} is already on API ${connection.api_version}.`,
-        { exit: 1 }
-      )
-    }
-
     const confirmName = parsed.confirm.trim()
     if (confirmName !== connection.name) {
       this.error(
@@ -104,8 +93,8 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
     let upgradeResponse
     try {
       upgradeResponse = await cli.action(
-        `Upgrading ${connection.name} to API ${parsed['target-version']}`,
-        (async () => api.request(context, 'POST', `/api/v3/connections/${connection.id}/actions/upgrade-api-version`, { target_version: parsed['target-version'] }))()
+        `Upgrading ${connection.name} to API ${targetVersion}`,
+        (async () => api.request(context, 'POST', `/api/v3/connections/${connection.id}/actions/upgrade-api-version`, { target_version: targetVersion }))()
       )
     } catch (err) {
       const data = err && err.response && err.response.data
@@ -116,7 +105,7 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
       return
     }
 
-    const reportedVersion = (upgradeResponse.data && upgradeResponse.data.target_version) || parsed['target-version']
+    const reportedVersion = (upgradeResponse.data && upgradeResponse.data.target_version) || targetVersion
     cli.log(cli.color.green(`Upgrade dispatched. ${connection.name} will run at Salesforce API ${reportedVersion}.`))
     cli.log('Run `heroku connect:resume` when you are ready to resume sync.')
   }
