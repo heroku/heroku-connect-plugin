@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.2](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.12.1...heroku-connect-plugin-v0.12.2) (2026-06-09)
+
+
+### Bug Fixes
+
+* **deps:** bump axios from 1.15.2 to 1.16.0 ([#295](https://github.com/heroku/heroku-connect-plugin/issues/295)) ([937c36e](https://github.com/heroku/heroku-connect-plugin/commit/937c36ee6ea87198c33725b280c189d93edf0ad5))
+
 ## [0.12.1](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.12.0...heroku-connect-plugin-v0.12.1) (2026-05-11)
 
 
