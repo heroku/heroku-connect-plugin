@@ -1,10 +1,7 @@
-/* globals describe beforeEach afterEach it */
-
-import cli from '@heroku/heroku-cli-util'
+import { runCommand } from '@heroku-cli/test-utils'
 import nock from 'nock'
-import expect from 'unexpected'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import Acknowledge from '../../../commands/connect/notifications/acknowledge.js'
-import { runCommand } from '../../run-command.js'
 
 const password = '584151d78d318185'
 const headers = {
@@ -15,7 +12,6 @@ const headers = {
 
 describe('connect:notifications:acknowledge', () => {
   beforeEach(() => {
-    cli.mockConsole()
     process.env.HEROKU_API_KEY = password
   })
 
@@ -55,10 +51,10 @@ describe('connect:notifications:acknowledge', () => {
       })
       .reply(204)
 
-    await runCommand(Acknowledge, ['--app', appName])
+    const { stdout, stderr } = await runCommand(Acknowledge, ['--app', appName])
 
-    expect(cli.stdout, 'to be empty')
-    expect(cli.stderr, 'to be empty')
+    expect(stdout).toBe('')
+    expect(stderr).toBe('')
     discoveryApi.done()
     connectionDetailApi.done()
     acknowledgeApi.done()
@@ -99,10 +95,10 @@ describe('connect:notifications:acknowledge', () => {
       })
       .reply(204)
 
-    await runCommand(Acknowledge, ['--app', appName, '--after', '2024-01-01', '--before', '2024-01-31', '--event-type', 'mapping-error'])
+    const { stdout, stderr } = await runCommand(Acknowledge, ['--app', appName, '--after', '2024-01-01', '--before', '2024-01-31', '--event-type', 'mapping-error'])
 
-    expect(cli.stdout, 'to be empty')
-    expect(cli.stderr, 'to be empty')
+    expect(stdout).toBe('')
+    expect(stderr).toBe('')
     discoveryApi.done()
     connectionDetailApi.done()
     acknowledgeApi.done()
@@ -142,12 +138,9 @@ describe('connect:notifications:acknowledge', () => {
         message: 'Invalid request parameters'
       })
 
-    try {
-      await runCommand(Acknowledge, ['--app', appName])
-      throw new Error('Expected command to throw an error')
-    } catch (error) {
-      expect(error.message, 'to contain', '400')
-    }
+    const { error } = await runCommand(Acknowledge, ['--app', appName])
+    expect(error).toBeDefined()
+    expect(error.message).toContain('400')
 
     discoveryApi.done()
     connectionDetailApi.done()
@@ -186,12 +179,9 @@ describe('connect:notifications:acknowledge', () => {
       })
       .reply(500)
 
-    try {
-      await runCommand(Acknowledge, ['--app', appName])
-      throw new Error('Expected command to throw an error')
-    } catch (error) {
-      expect(error.message, 'to contain', '500')
-    }
+    const { error } = await runCommand(Acknowledge, ['--app', appName])
+    expect(error).toBeDefined()
+    expect(error.message).toContain('500')
 
     discoveryApi.done()
     connectionDetailApi.done()

@@ -1,10 +1,7 @@
-/* globals describe beforeEach afterEach it */
-
-import cli from '@heroku/heroku-cli-util'
+import { runCommand } from '@heroku-cli/test-utils'
 import nock from 'nock'
-import expect from 'unexpected'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import ConnectState from '../../../commands/connect/state.js'
-import { runCommand } from '../../run-command.js'
 
 const password = 's3cr3t3'
 const headers = {
@@ -14,10 +11,7 @@ const headers = {
 }
 
 describe('connect:state', () => {
-  // prevent stdout/stderr from displaying
-  // redirects to cli.stdout/cli.stderr instead
   beforeEach(() => {
-    cli.mockConsole()
     process.env.HEROKU_API_KEY = password
   })
 
@@ -51,12 +45,12 @@ describe('connect:state', () => {
       .query({ deep: true })
       .reply(200, connectionData)
 
-    await runCommand(ConnectState, ['--app', appName, '--resource', resourceName])
+    const { stdout, stderr } = await runCommand(ConnectState, ['--app', appName, '--resource', resourceName])
 
-    expect(cli.stdout, 'to contain', 'IDLE')
-    expect(cli.stdout, 'to contain', 'DATABASE_URL')
-    expect(cli.stdout, 'to contain', 'salesforce')
-    expect(cli.stderr, 'to be empty')
+    expect(stdout).toContain('IDLE')
+    expect(stdout).toContain('DATABASE_URL')
+    expect(stdout).toContain('salesforce')
+    expect(stderr).toBe('')
     discoveryApi.done()
     connectionDetailApi.done()
   })
@@ -88,10 +82,10 @@ describe('connect:state', () => {
       .query({ deep: true })
       .reply(200, connectionData)
 
-    await runCommand(ConnectState, ['--app', appName, '--resource', resourceName, '--json'])
+    const { stdout, stderr } = await runCommand(ConnectState, ['--app', appName, '--resource', resourceName, '--json'])
 
-    expect(JSON.parse(cli.stdout), 'to equal', [connectionData])
-    expect(cli.stderr, 'to be empty')
+    expect(JSON.parse(stdout)).toEqual([connectionData])
+    expect(stderr).toBe('')
     discoveryApi.done()
     connectionDetailApi.done()
   })
