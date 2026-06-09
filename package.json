@@ -62,7 +62,6 @@
     "@heroku-cli/test-utils": "^0.3.0",
     "eslint": "^9.39.4",
     "eslint-config-oclif": "^6.0.144",
-    "mockdate": "^3.0.5",
     "nock": "^14.0.10",
     "oclif": "^4.22.81",
     "sinon": "^22.0.0",

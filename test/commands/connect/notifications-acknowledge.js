@@ -139,7 +139,8 @@ describe('connect:notifications:acknowledge', () => {
       })
 
     const { error } = await runCommand(Acknowledge, ['--app', appName])
-    expect(error?.message).toContain('400')
+    expect(error).toBeDefined()
+    expect(error.message).toContain('400')
 
     discoveryApi.done()
     connectionDetailApi.done()
@@ -179,7 +180,8 @@ describe('connect:notifications:acknowledge', () => {
       .reply(500)
 
     const { error } = await runCommand(Acknowledge, ['--app', appName])
-    expect(error?.message).toContain('500')
+    expect(error).toBeDefined()
+    expect(error.message).toContain('500')
 
     discoveryApi.done()
     connectionDetailApi.done()

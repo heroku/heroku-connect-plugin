@@ -1,11 +1,10 @@
-import cli from '@heroku/heroku-cli-util'
 import nock from 'nock'
-import MockDate from 'mockdate'
+import { afterEach } from 'vitest'
 
-cli.raiseErrors = true
 nock.disableNetConnect()
+afterEach(() => nock.cleanAll())
 
 process.env.TZ = 'UTC'
-MockDate.set(new Date())
+process.env.CI = process.env.CI || '1'
 process.stdout.columns = 80
 process.stderr.columns = 80
