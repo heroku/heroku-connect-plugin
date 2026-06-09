@@ -1,11 +1,9 @@
-/* globals describe beforeEach afterEach it */
-
+import { runCommand } from '@heroku-cli/test-utils'
 import cli from '@heroku/heroku-cli-util'
 import nock from 'nock'
-import expect from 'unexpected'
 import sinon from 'sinon'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import SfAuth from '../../../commands/connect/sf/auth.js'
-import { runCommand } from '../../run-command.js'
 
 const password = 's3cr3t3'
 const headers = {
@@ -15,18 +13,13 @@ const headers = {
 }
 
 describe('connect:sf:auth', () => {
-  beforeEach(function () {
-    // prevent stdout/stderr from displaying
-    // redirects to cli.stdout/cli.stderr instead
-    cli.mockConsole()
+  beforeEach(() => {
     process.env.HEROKU_API_KEY = password
-    // Stub out the callbackServer we create for SF Authentication
     sinon.stub(SfAuth, 'callbackServer').resolves(true)
-    // Stub out the helper to open a URL in a browser
     sinon.stub(cli, 'open').resolves(true)
   })
 
-  afterEach(function () {
+  afterEach(() => {
     delete process.env.HEROKU_API_KEY
     sinon.restore()
   })
@@ -67,9 +60,9 @@ describe('connect:sf:auth', () => {
       })
       .reply(201, { redirect: 'redirect-uri' })
 
-    await runCommand(SfAuth, ['--app', appName, '--resource', resourceName])
+    const { stdout } = await runCommand(SfAuth, ['--app', appName, '--resource', resourceName])
 
-    expect(cli.stdout, 'to contain', "If your browser doesn't open")
+    expect(stdout).toContain("If your browser doesn't open")
     discoveryApi.done()
     connectionDetailApi.done()
     apiWithoutPort.done()

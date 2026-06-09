@@ -1,10 +1,7 @@
-/* globals describe beforeEach afterEach it */
-
-import cli from '@heroku/heroku-cli-util'
+import { runCommand } from '@heroku-cli/test-utils'
 import nock from 'nock'
-import expect from 'unexpected'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import Notifications, { formatDate, truncateMessage } from '../../../commands/connect/notifications/index.js'
-import { runCommand } from '../../run-command.js'
 
 const password = 'b3b1b13be4249eaf'
 const headers = {
@@ -15,7 +12,6 @@ const headers = {
 
 describe('connect:notifications', () => {
   beforeEach(() => {
-    cli.mockConsole()
     process.env.HEROKU_API_KEY = password
   })
 
@@ -72,14 +68,14 @@ describe('connect:notifications', () => {
       })
       .reply(200, notificationsData)
 
-    await runCommand(Notifications, ['--app', appName])
+    const { stdout, stderr } = await runCommand(Notifications, ['--app', appName])
 
-    expect(cli.stdout, 'to contain', 'mapping-error')
-    expect(cli.stdout, 'to contain', 'Failed to sync Account records due to validatio...')
-    expect(cli.stdout, 'to contain', 'postgres')
-    expect(cli.stdout, 'to contain', 'Database cannot connect')
-    expect(cli.stdout, 'to contain', '01/15/2024')
-    expect(cli.stderr, 'to be empty')
+    expect(stdout).toContain('mapping-error')
+    expect(stdout).toContain('Failed to sync Account records due to validatio...')
+    expect(stdout).toContain('postgres')
+    expect(stdout).toContain('Database cannot connect')
+    expect(stdout).toContain('01/15/2024')
+    expect(stderr).toBe('')
     discoveryApi.done()
     connectionDetailApi.done()
     notificationsApi.done()
@@ -129,11 +125,11 @@ describe('connect:notifications', () => {
         ]
       })
 
-    await runCommand(Notifications, ['--app', appName, '--after', '2024-01-01', '--before', '2024-01-31', '--event-type', 'mapping-error'])
+    const { stdout, stderr } = await runCommand(Notifications, ['--app', appName, '--after', '2024-01-01', '--before', '2024-01-31', '--event-type', 'mapping-error'])
 
-    expect(cli.stdout, 'to contain', 'mapping-error')
-    expect(cli.stdout, 'to contain', 'Failed to sync Account records due to validatio...')
-    expect(cli.stderr, 'to be empty')
+    expect(stdout).toContain('mapping-error')
+    expect(stdout).toContain('Failed to sync Account records due to validatio...')
+    expect(stderr).toBe('')
     discoveryApi.done()
     connectionDetailApi.done()
     notificationsApi.done()
@@ -171,12 +167,12 @@ describe('connect:notifications', () => {
       })
       .reply(200, { results: [] })
 
-    await runCommand(Notifications, ['--app', appName])
+    const { stdout, stderr } = await runCommand(Notifications, ['--app', appName])
 
-    expect(cli.stdout, 'to contain', 'Event Type')
-    expect(cli.stdout, 'to contain', 'Message')
-    expect(cli.stdout, 'to contain', 'Created At')
-    expect(cli.stderr, 'to be empty')
+    expect(stdout).toContain('Event Type')
+    expect(stdout).toContain('Message')
+    expect(stdout).toContain('Created At')
+    expect(stderr).toBe('')
     discoveryApi.done()
     connectionDetailApi.done()
     notificationsApi.done()
@@ -185,17 +181,17 @@ describe('connect:notifications', () => {
 
 describe('notifications helper functions', () => {
   it('formatDate formats dates correctly', () => {
-    expect(formatDate('2024-01-15T10:30:00Z'), 'to equal', '01/15/2024, 10:30 AM')
-    expect(formatDate(null), 'to equal', '')
-    expect(formatDate(undefined), 'to equal', '')
+    expect(formatDate('2024-01-15T10:30:00Z')).toBe('01/15/2024, 10:30 AM')
+    expect(formatDate(null)).toBe('')
+    expect(formatDate(undefined)).toBe('')
   })
 
   it('truncateMessage truncates long messages', () => {
-    expect(truncateMessage('Short message'), 'to equal', 'Short message')
-    expect(truncateMessage('This is a very long message that should be truncated because it exceeds the maximum length'), 'to equal', 'This is a very long message that should be trun...')
-    expect(truncateMessage('Exactly fifty characters in this message here!'), 'to equal', 'Exactly fifty characters in this message here!')
-    expect(truncateMessage(null), 'to equal', '')
-    expect(truncateMessage(undefined), 'to equal', '')
-    expect(truncateMessage('Custom length test', 10), 'to equal', 'Custom ...')
+    expect(truncateMessage('Short message')).toBe('Short message')
+    expect(truncateMessage('This is a very long message that should be truncated because it exceeds the maximum length')).toBe('This is a very long message that should be trun...')
+    expect(truncateMessage('Exactly fifty characters in this message here!')).toBe('Exactly fifty characters in this message here!')
+    expect(truncateMessage(null)).toBe('')
+    expect(truncateMessage(undefined)).toBe('')
+    expect(truncateMessage('Custom length test', 10)).toBe('Custom ...')
   })
 })

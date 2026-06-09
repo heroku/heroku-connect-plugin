@@ -1,10 +1,7 @@
-/* globals describe beforeEach afterEach it */
-
-import cli from '@heroku/heroku-cli-util'
+import { runCommand } from '@heroku-cli/test-utils'
 import nock from 'nock'
-import expect from 'unexpected'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import ConnectDiagnose from '../../../commands/connect/diagnose.js'
-import { runCommand } from '../../run-command.js'
 
 const password = 's3cr3t3'
 const headers = {
@@ -14,10 +11,7 @@ const headers = {
 }
 
 describe('connect:diagnose', () => {
-  // prevent stdout/stderr from displaying
-  // redirects to cli.stdout/cli.stderr instead
   beforeEach(() => {
-    cli.mockConsole()
     process.env.HEROKU_API_KEY = password
   })
 
@@ -87,11 +81,9 @@ describe('connect:diagnose', () => {
         skips: []
       })
 
-    await runCommand(ConnectDiagnose, ['--app', appName])
+    const { stdout } = await runCommand(ConnectDiagnose, ['--app', appName])
 
-    expect(
-      cli.stdout,
-      'to contain',
+    expect(stdout).toContain(
       `=== Connection: awesome-connection-1234
 YELLOW: Salesforce API Version
 The latest available Salesforce API version is 47.0. Your connection is using version 44.0. You should re-create your connection to use the latest version.
