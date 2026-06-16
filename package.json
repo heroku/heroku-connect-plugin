@@ -1,7 +1,7 @@
 {
   "name": "@heroku-cli/heroku-connect-plugin",
   "description": "Heroku Connect CLI plugin",
-  "version": "0.12.1",
+  "version": "0.12.2",
   "author": "Heroku",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
-    "test": "CONNECT_ADDON=connectqa mocha",
+    "test": "CONNECT_ADDON=connectqa vitest run",
     "posttest": "standard",
     "style-fix": "standard --fix",
     "build": "oclif manifest"
@@ -51,7 +51,7 @@
     "@heroku-cli/command": "^12.2.1",
     "@heroku/heroku-cli-util": "^8.0.15",
     "@oclif/core": "^4.8.4",
-    "axios": "1.15.2",
+    "axios": "1.16.0",
     "heroku-client": "^3.0.6",
     "inquirer": "^8.2.7"
   },
@@ -59,21 +59,19 @@
     "cross-spawn": "^6.0.6"
   },
   "devDependencies": {
-    "mocha": "^11.0.1",
-    "mockdate": "^3.0.5",
+    "@heroku-cli/test-utils": "^0.3.0",
+    "eslint": "^9.39.4",
+    "eslint-config-oclif": "^6.0.144",
     "nock": "^14.0.10",
     "oclif": "^4.22.81",
-    "sinon": "^21.0.0",
+    "sinon": "^22.0.0",
     "standard": "^17.1.0",
-    "unexpected": "^13.2.1"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.8"
   },
   "standard": {
     "ignore": [
       "workflows-repo/**"
     ]
-  },
-  "resolutions": {
-    "serialize-javascript": "^7.0.3",
-    "flatted": "^3.4.2"
   }
 }

@@ -1,10 +1,7 @@
-/* globals describe beforeEach afterEach it */
-
-import cli from '@heroku/heroku-cli-util'
+import { runCommand } from '@heroku-cli/test-utils'
 import nock from 'nock'
-import expect from 'unexpected'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import ConnectInfo from '../../../commands/connect/info.js'
-import { runCommand } from '../../run-command.js'
 
 const password = 's3cr3t3'
 const headers = {
@@ -14,10 +11,7 @@ const headers = {
 }
 
 describe('connect:info', () => {
-  // prevent stdout/stderr from displaying
-  // redirects to cli.stdout/cli.stderr instead
   beforeEach(() => {
-    cli.mockConsole()
     process.env.HEROKU_API_KEY = password
   })
 
@@ -64,14 +58,14 @@ describe('connect:info', () => {
       .query({ deep: true })
       .reply(200, connectionData)
 
-    await runCommand(ConnectInfo, ['--app', appName, '--resource', resourceName])
+    const { stdout, stderr } = await runCommand(ConnectInfo, ['--app', appName, '--resource', resourceName])
 
-    expect(cli.stdout, 'to contain', connectionData.resource_name)
-    expect(cli.stdout, 'to contain', connectionData.mappings[0].object_name)
-    expect(cli.stdout, 'to contain', connectionData.mappings[0].state)
-    expect(cli.stdout, 'to contain', connectionData.mappings[1].object_name)
-    expect(cli.stdout, 'to contain', connectionData.mappings[1].state)
-    expect(cli.stderr, 'to be empty')
+    expect(stdout).toContain(connectionData.resource_name)
+    expect(stdout).toContain(connectionData.mappings[0].object_name)
+    expect(stdout).toContain(connectionData.mappings[0].state)
+    expect(stdout).toContain(connectionData.mappings[1].object_name)
+    expect(stdout).toContain(connectionData.mappings[1].state)
+    expect(stderr).toBe('')
     discoveryApi.done()
     connectionDetailApi.done()
   })
@@ -91,11 +85,11 @@ describe('connect:info', () => {
       .query({ app: appName, resource_name: resourceName })
       .reply(200, { results: [] })
 
-    await runCommand(ConnectInfo, ['--app', appName, '--resource', resourceName])
+    const { stdout, stderr } = await runCommand(ConnectInfo, ['--app', appName, '--resource', resourceName])
 
-    expect(cli.stdout, 'to be empty')
-    expect(cli.stderr, 'to contain', 'No connection found')
-    expect(cli.stderr, 'to contain', 'heroku addons:open connectqa -a fake-app')
+    expect(stdout).toBe('')
+    expect(stderr).toContain('No connection found')
+    expect(stderr).toContain('heroku addons:open connectqa -a fake-app')
     discoveryApi.done()
     discoveryApi2.done()
     check.done()

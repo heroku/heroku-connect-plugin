@@ -1,10 +1,8 @@
-/* globals describe it */
-
+import { describe, expect, it } from 'vitest'
 import * as api from '../../../lib/connect/api.js'
-import expect from 'unexpected'
 
 describe('api.withMapping', () => {
-  it('matches the full object name', () => {
+  it('matches the full object name', async () => {
     const con = {
       mappings: [
         { object_name: 'Account' },
@@ -12,22 +10,19 @@ describe('api.withMapping', () => {
       ]
     }
     const name = 'Account'
-    return api.withMapping(con, name).then((mapping) => {
-      expect(mapping.object_name, 'to be', name)
-    })
+    const mapping = await api.withMapping(con, name)
+    expect(mapping.object_name).toBe(name)
   })
 
-  it('throws an error if there is no match', () => {
+  it('throws an error if there is no match', async () => {
     const con = { mappings: [] }
     const name = 'Account'
-    return api.withMapping(con, name)
-      .then((mapping) => { throw new Error(`Did not expect mapping ${mapping}`) })
-      .catch((err) => expect(err.message, 'to be', 'No mapping configured for Account'))
+    await expect(api.withMapping(con, name)).rejects.toThrow('No mapping configured for Account')
   })
 })
 
 describe('api.withStream', () => {
-  it('matches the full stream name', () => {
+  it('matches the full stream name', async () => {
     const con = {
       streams: [
         { object_name: 'Account' },
@@ -35,16 +30,13 @@ describe('api.withStream', () => {
       ]
     }
     const name = 'Account'
-    return api.withStream({}, con, name).then((mapping) => {
-      expect(mapping.object_name, 'to be', name)
-    })
+    const mapping = await api.withStream({}, con, name)
+    expect(mapping.object_name).toBe(name)
   })
 
-  it('throws an error if there is no match', () => {
+  it('throws an error if there is no match', async () => {
     const con = { streams: [] }
     const name = 'Account'
-    return api.withStream({}, con, name)
-      .then((mapping) => { throw new Error(`Did not expect mapping ${mapping}`) })
-      .catch((err) => expect(err.message, 'to be', 'No stream configured for Account'))
+    await expect(api.withStream({}, con, name)).rejects.toThrow('No stream configured for Account')
   })
 })
