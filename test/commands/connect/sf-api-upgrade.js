@@ -58,7 +58,7 @@ describe('connect:sf-api-upgrade', () => {
     nock.cleanAll()
   })
 
-  it('rejects an invalid --target-version before any network call', async () => {
+  it('rejects a non-numeric --target-version before any network call', async () => {
     const { error } = await runCommand(ConnectSfApiUpgrade, [
       '--app', appName, '--connection', resourceName, '--target-version', 'not-a-version'
     ])
@@ -78,15 +78,6 @@ describe('connect:sf-api-upgrade', () => {
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
-  })
-
-  it('rejects a sub-floor --target-version (e.g. 1.0)', async () => {
-    const { error } = await runCommand(ConnectSfApiUpgrade, [
-      '--app', appName, '--connection', resourceName, '--target-version', '1.0'
-    ])
-    expect(error).toBeDefined()
-    expect(error.message).toContain('Invalid --target-version')
-    expect(nock.pendingMocks()).toHaveLength(0)
   })
 
   it('renders the diff table without upgrading when --confirm is omitted', async () => {

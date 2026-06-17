@@ -1,7 +1,7 @@
 import { Command, flags } from '@heroku-cli/command'
 import cli from '@heroku/heroku-cli-util'
 import * as api from '../../lib/connect/api.js'
-import { apiVersionFloor, isValidApiVersion, normalizeApiVersion } from '../../lib/connect/api-version.js'
+import { normalizeApiVersion } from '../../lib/connect/api-version.js'
 
 export default class ConnectSfApiUpgrade extends Command {
   static description = `compare mapping schemas between API versions and optionally upgrade
@@ -28,9 +28,9 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
 
     const targetVersion = normalizeApiVersion(parsed['target-version'])
 
-    if (!isValidApiVersion(targetVersion)) {
+    if (!targetVersion) {
       this.error(
-        `Invalid --target-version "${parsed['target-version']}". Expected a numeric Salesforce API version (e.g. 61 or 61.0, >= ${apiVersionFloor()}).`,
+        `Invalid --target-version "${parsed['target-version']}". Expected a numeric Salesforce API version (e.g. 61 or 61.0).`,
         { exit: 2 }
       )
     }
