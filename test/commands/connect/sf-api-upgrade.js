@@ -2,7 +2,7 @@
 
 import cli from '@heroku/heroku-cli-util'
 import nock from 'nock'
-import expect from 'unexpected'
+import { expect } from 'vitest'
 import ConnectSfApiUpgrade from '../../../commands/connect/sf-api-upgrade.js'
 import { runCommand } from '../../run-command.js'
 
@@ -58,7 +58,7 @@ async function expectThrows (fn) {
   } catch (err) {
     caught = err
   }
-  expect(caught, 'to be defined')
+  expect(caught).toBeDefined()
   return caught
 }
 
@@ -77,8 +77,8 @@ describe('connect:sf-api-upgrade', () => {
     const err = await expectThrows(() => runCommand(ConnectSfApiUpgrade, [
       '--app', appName, '--connection', resourceName, '--target-version', 'not-a-version'
     ]))
-    expect(err.message, 'to contain', 'Invalid --target-version')
-    expect(nock.pendingMocks(), 'to be empty')
+    expect(err.message).toContain('Invalid --target-version')
+    expect(nock.pendingMocks()).toHaveLength(0)
   })
 
   it('normalizes an integer --target-version to NN.0', async () => {
@@ -88,7 +88,7 @@ describe('connect:sf-api-upgrade', () => {
 
     await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61'])
 
-    expect(cli.stdout, 'to contain', 'Target API Version:  61.0')
+    expect(cli.stdout).toContain('Target API Version:  61.0')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
@@ -98,8 +98,8 @@ describe('connect:sf-api-upgrade', () => {
     const err = await expectThrows(() => runCommand(ConnectSfApiUpgrade, [
       '--app', appName, '--connection', resourceName, '--target-version', '1.0'
     ]))
-    expect(err.message, 'to contain', 'Invalid --target-version')
-    expect(nock.pendingMocks(), 'to be empty')
+    expect(err.message).toContain('Invalid --target-version')
+    expect(nock.pendingMocks()).toHaveLength(0)
   })
 
   it('renders the diff table without upgrading when --confirm is omitted', async () => {
@@ -112,11 +112,11 @@ describe('connect:sf-api-upgrade', () => {
 
     await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
 
-    expect(cli.stdout, 'to contain', 'Current API Version: 55.0')
-    expect(cli.stdout, 'to contain', 'Target API Version:  61.0')
-    expect(cli.stdout, 'to contain', 'Account')
-    expect(cli.stdout, 'to contain', 'no changes')
-    expect(cli.stdout, 'not to contain', 'Upgrade dispatched')
+    expect(cli.stdout).toContain('Current API Version: 55.0')
+    expect(cli.stdout).toContain('Target API Version:  61.0')
+    expect(cli.stdout).toContain('Account')
+    expect(cli.stdout).toContain('no changes')
+    expect(cli.stdout).not.toContain('Upgrade dispatched')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
@@ -131,7 +131,7 @@ describe('connect:sf-api-upgrade', () => {
 
     await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
 
-    expect(cli.stdout, 'to contain', 'changed (unsafe)')
+    expect(cli.stdout).toContain('changed (unsafe)')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
@@ -146,7 +146,7 @@ describe('connect:sf-api-upgrade', () => {
 
     await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
 
-    expect(cli.stdout, 'to contain', 'changed (safe)')
+    expect(cli.stdout).toContain('changed (safe)')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
@@ -168,7 +168,7 @@ describe('connect:sf-api-upgrade', () => {
 
     await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61.0', '--json'])
 
-    expect(JSON.parse(cli.stdout), 'to equal', responseBody)
+    expect(JSON.parse(cli.stdout)).toEqual(responseBody)
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
@@ -187,9 +187,9 @@ describe('connect:sf-api-upgrade', () => {
       '--target-version', '61.0', '--confirm', baseConnection.name
     ])
 
-    expect(cli.stdout, 'to contain', 'Current API Version: 55.0')
-    expect(cli.stdout, 'to contain', 'Upgrade dispatched')
-    expect(cli.stdout, 'to contain', '61.0')
+    expect(cli.stdout).toContain('Current API Version: 55.0')
+    expect(cli.stdout).toContain('Upgrade dispatched')
+    expect(cli.stdout).toContain('61.0')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
@@ -209,7 +209,7 @@ describe('connect:sf-api-upgrade', () => {
       '--target-version', '61.0', '--confirm', `  ${baseConnection.name}  `
     ])
 
-    expect(cli.stdout, 'to contain', 'Upgrade dispatched')
+    expect(cli.stdout).toContain('Upgrade dispatched')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
@@ -228,7 +228,7 @@ describe('connect:sf-api-upgrade', () => {
       ])
     )
 
-    expect(err.message, 'to contain', 'does not match')
+    expect(err.message).toContain('does not match')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
@@ -249,7 +249,7 @@ describe('connect:sf-api-upgrade', () => {
       ])
     )
 
-    expect(err.message, 'to contain', 'Some mappings have unsafe changes')
+    expect(err.message).toContain('Some mappings have unsafe changes')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
@@ -269,9 +269,9 @@ describe('connect:sf-api-upgrade', () => {
       '--target-version', '61.0', '--confirm', baseConnection.name
     ])
 
-    expect(cli.stdout, 'to contain', 'Upgrade dispatched')
-    expect(cli.stdout, 'to contain', '61.0')
-    expect(cli.stdout, 'not to contain', 'undefined')
+    expect(cli.stdout).toContain('Upgrade dispatched')
+    expect(cli.stdout).toContain('61.0')
+    expect(cli.stdout).not.toContain('undefined')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
