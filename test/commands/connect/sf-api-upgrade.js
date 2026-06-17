@@ -161,7 +161,7 @@ describe('connect:sf-api-upgrade', () => {
     diffApi.done()
   })
 
-  it('shows the diff then upgrades when --confirm matches the connection name', async () => {
+  it('shows the diff then upgrades when --confirm matches the app name', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
     const diffApi = stubDiff('61.0', [{ name: 'Account', result_message: 'ok', fields_have_changed: false }])
@@ -171,7 +171,7 @@ describe('connect:sf-api-upgrade', () => {
 
     const { stdout } = await runCommand(ConnectSfApiUpgrade, [
       '--app', appName, '--connection', resourceName,
-      '--target-version', '61.0', '--confirm', baseConnection.name
+      '--target-version', '61.0', '--confirm', appName
     ])
 
     expect(stdout).toContain('Current API Version: 55.0')
@@ -193,7 +193,7 @@ describe('connect:sf-api-upgrade', () => {
 
     const { stdout } = await runCommand(ConnectSfApiUpgrade, [
       '--app', appName, '--connection', resourceName,
-      '--target-version', '61.0', '--confirm', `  ${baseConnection.name}  `
+      '--target-version', '61.0', '--confirm', `  ${appName}  `
     ])
 
     expect(stdout).toContain('Upgrade dispatched')
@@ -203,7 +203,7 @@ describe('connect:sf-api-upgrade', () => {
     upgradeApi.done()
   })
 
-  it('aborts upgrade when --confirm does not match connection name', async () => {
+  it('aborts upgrade when --confirm does not match app name', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
     const diffApi = stubDiff('61.0')
@@ -230,7 +230,7 @@ describe('connect:sf-api-upgrade', () => {
 
     const { error } = await runCommand(ConnectSfApiUpgrade, [
       '--app', appName, '--connection', resourceName,
-      '--target-version', '61.0', '--confirm', baseConnection.name
+      '--target-version', '61.0', '--confirm', appName
     ])
 
     expect(error).toBeDefined()
@@ -251,7 +251,7 @@ describe('connect:sf-api-upgrade', () => {
 
     const { stdout } = await runCommand(ConnectSfApiUpgrade, [
       '--app', appName, '--connection', resourceName,
-      '--target-version', '61.0', '--confirm', baseConnection.name
+      '--target-version', '61.0', '--confirm', appName
     ])
 
     expect(stdout).toContain('Upgrade dispatched')
