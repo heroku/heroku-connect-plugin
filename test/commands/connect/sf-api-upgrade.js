@@ -48,17 +48,6 @@ function stubDiff (targetVersion = '61.0', mappings = []) {
     })
 }
 
-async function expectThrows (fn) {
-  let caught
-  try {
-    await fn()
-  } catch (err) {
-    caught = err
-  }
-  expect(caught).toBeDefined()
-  return caught
-}
-
 describe('connect:sf-api-upgrade', () => {
   beforeEach(() => {
     process.env.HEROKU_API_KEY = password
@@ -70,10 +59,11 @@ describe('connect:sf-api-upgrade', () => {
   })
 
   it('rejects an invalid --target-version before any network call', async () => {
-    const err = await expectThrows(() => runCommand(ConnectSfApiUpgrade, [
+    const { error } = await runCommand(ConnectSfApiUpgrade, [
       '--app', appName, '--connection', resourceName, '--target-version', 'not-a-version'
-    ]))
-    expect(err.message).toContain('Invalid --target-version')
+    ])
+    expect(error).toBeDefined()
+    expect(error.message).toContain('Invalid --target-version')
     expect(nock.pendingMocks()).toHaveLength(0)
   })
 
@@ -91,10 +81,11 @@ describe('connect:sf-api-upgrade', () => {
   })
 
   it('rejects a sub-floor --target-version (e.g. 1.0)', async () => {
-    const err = await expectThrows(() => runCommand(ConnectSfApiUpgrade, [
+    const { error } = await runCommand(ConnectSfApiUpgrade, [
       '--app', appName, '--connection', resourceName, '--target-version', '1.0'
-    ]))
-    expect(err.message).toContain('Invalid --target-version')
+    ])
+    expect(error).toBeDefined()
+    expect(error.message).toContain('Invalid --target-version')
     expect(nock.pendingMocks()).toHaveLength(0)
   })
 
@@ -217,14 +208,13 @@ describe('connect:sf-api-upgrade', () => {
     const connectionApi = stubConnectionDetail()
     const diffApi = stubDiff('61.0')
 
-    const err = await expectThrows(() =>
-      runCommand(ConnectSfApiUpgrade, [
-        '--app', appName, '--connection', resourceName,
-        '--target-version', '61.0', '--confirm', 'wrong-name'
-      ])
-    )
+    const { error } = await runCommand(ConnectSfApiUpgrade, [
+      '--app', appName, '--connection', resourceName,
+      '--target-version', '61.0', '--confirm', 'wrong-name'
+    ])
 
-    expect(err.message).toContain('does not match')
+    expect(error).toBeDefined()
+    expect(error.message).toContain('does not match')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
@@ -238,14 +228,13 @@ describe('connect:sf-api-upgrade', () => {
       .post('/api/v3/connections/1234/actions/upgrade-api-version', { target_version: '61.0' })
       .reply(409, { message: 'Some mappings have unsafe changes. Edit them and retry.' })
 
-    const err = await expectThrows(() =>
-      runCommand(ConnectSfApiUpgrade, [
-        '--app', appName, '--connection', resourceName,
-        '--target-version', '61.0', '--confirm', baseConnection.name
-      ])
-    )
+    const { error } = await runCommand(ConnectSfApiUpgrade, [
+      '--app', appName, '--connection', resourceName,
+      '--target-version', '61.0', '--confirm', baseConnection.name
+    ])
 
-    expect(err.message).toContain('Some mappings have unsafe changes')
+    expect(error).toBeDefined()
+    expect(error.message).toContain('Some mappings have unsafe changes')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
