@@ -106,44 +106,31 @@ describe('connect:manage-sf-api-version', () => {
     expect(stdout).toContain('Current API Version: 55.0')
     expect(stdout).toContain('Target API Version:  61.0')
     expect(stdout).toContain('Account')
-    expect(stdout).toContain('no changes')
+    expect(stdout).toContain('No changes')
     expect(stdout).not.toContain('Upgrade dispatched')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
   })
 
-  it('renders unsafe-change styling when has_unsafe_changes is true', async () => {
+  it('shows "Action required" for an unsafe change and "No action required" for a safe one', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
     const diffApi = stubUpgrade({
       targetVersion: '61.0',
       mappings: [
-        { name: 'Account', result_message: 'unsafe change', fields_have_changed: true, has_unsafe_changes: true }
+        { name: 'Account', result_message: 'length increase', fields_have_changed: true, has_unsafe_changes: false },
+        { name: 'Contact', result_message: 'field removed', fields_have_changed: true, has_unsafe_changes: true }
       ]
     })
 
     const { stdout } = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
 
-    expect(stdout).toContain('changed (unsafe)')
-    discoveryApi.done()
-    connectionApi.done()
-    diffApi.done()
-  })
-
-  it('renders safe-change styling when has_unsafe_changes is false', async () => {
-    const discoveryApi = stubDiscovery()
-    const connectionApi = stubConnectionDetail()
-    const diffApi = stubUpgrade({
-      targetVersion: '61.0',
-      mappings: [
-        { name: 'Account', result_message: 'length increase', fields_have_changed: true, has_unsafe_changes: false }
-      ]
-    })
-
-    const { stdout } = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
-
-    expect(stdout).toContain('changed (safe)')
+    // Status is framed by required action, not by "safe"/"unsafe".
+    expect(stdout).toContain('Action required')
+    expect(stdout).toContain('No action required')
+    expect(stdout).not.toContain('(safe)')
+    expect(stdout).not.toContain('(unsafe)')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()

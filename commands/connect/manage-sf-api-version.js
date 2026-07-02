@@ -102,10 +102,16 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
           key: 'fields_have_changed',
           label: 'Status',
           format: (changed, row) => {
-            if (changed === false) return cli.color.green('no changes')
-            if (row.has_unsafe_changes === true) return cli.color.red('changed (unsafe)')
-            if (row.has_unsafe_changes === false) return cli.color.yellow('changed (safe)')
-            return cli.color.yellow('changed')
+            // Frame the status by what the customer must do, not by "safe" vs
+            // "unsafe": unsafe/dropped-field changes need the customer to
+            // unmap & re-map ("Action required"); safe changes are applied by
+            // HC automatically. Only the actionable state is colored (red) so
+            // it stands out; the benign states use the default text color,
+            // matching the dashboard. The label carries the meaning so it
+            // still reads correctly without color (--no-color / piped output).
+            if (row.has_unsafe_changes === true) return cli.color.red('Action required')
+            if (changed === false) return 'No changes'
+            return 'No action required'
           }
         },
         { key: 'result_message', label: 'Details' }
