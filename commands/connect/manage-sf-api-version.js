@@ -1,0 +1,122 @@
+import { Command, flags } from '@heroku-cli/command'
+import cli from '@heroku/heroku-cli-util'
+import * as api from '../../lib/connect/api.js'
+import { normalizeApiVersion } from '../../lib/connect/api-version.js'
+
+export default class ConnectManageSfApiVersion extends Command {
+  static description = `compare mapping schemas between API versions and optionally change the version
+
+Shows a per-mapping field diff between the connection's current Salesforce API version and a target version. Pass --confirm to also change the connection to the target version after displaying the diff. The connection must be paused before changing the version.`
+
+  static examples = [
+    '$ heroku connect:manage-sf-api-version --app my-app --target-version 61.0',
+    '$ heroku connect:manage-sf-api-version --app my-app --connection abcd-ef01 --target-version 61.0',
+    '$ heroku connect:manage-sf-api-version --app my-app --target-version 61.0 --confirm my-app',
+    '$ heroku connect:manage-sf-api-version --app my-app --target-version 61.0 --json'
+  ]
+
+  static flags = {
+    app: flags.app({ required: true }),
+    connection: flags.string({ required: true, description: 'connection resource name' }),
+    'target-version': flags.string({ required: true, description: 'Salesforce API version to compare against and upgrade to (e.g. 61.0)' }),
+    confirm: flags.string({ description: 'after showing the diff, upgrade the connection — pass the app name to confirm' }),
+    json: flags.boolean({ description: 'print output as json' })
+  }
+
+  async run () {
+    const { flags: parsed } = await this.parse(ConnectManageSfApiVersion)
+
+    const targetVersion = normalizeApiVersion(parsed['target-version'])
+
+    if (!targetVersion) {
+      this.error(
+        `Invalid --target-version "${parsed['target-version']}". Expected a numeric Salesforce API version (e.g. 61 or 61.0).`,
+        { exit: 2 }
+      )
+    }
+
+    const context = {
+      app: parsed.app,
+      flags: { ...parsed, resource: parsed.connection },
+      args: {},
+      auth: { password: this.heroku.auth }
+    }
+
+    const connection = await api.withConnection(context, this.heroku)
+    context.region = connection.region_url
+
+    // Validate --confirm before any network call so a mismatch fails fast.
+    let confirmed = false
+    if (parsed.confirm) {
+      const confirmName = parsed.confirm.trim()
+      if (confirmName !== parsed.app) {
+        this.error(
+          `--confirm value "${confirmName}" does not match app name "${parsed.app}". Aborting.`,
+          { exit: 1 }
+        )
+      }
+      confirmed = true
+    }
+
+    const connectionName = connection.name || connection.internal_name
+
+    // Two endpoints, one call per action: preview reads the diff from the
+    // schema-diff endpoint; confirming performs the version change, whose
+    // response also carries the diff — so the diff is only ever computed once
+    // per invocation (we never call both).
+    const basePath = `/api/v3/connections/${connection.id}`
+    let response
+    try {
+      response = await cli.action(
+        confirmed ? `Changing ${connectionName} to API ${targetVersion}` : 'Comparing schemas',
+        (async () => confirmed
+          ? api.request(context, 'POST', `${basePath}/actions/change-sf-api-version`, { target_version: targetVersion })
+          : api.request(context, 'GET', `${basePath}/schema-diff`, undefined, { target_version: targetVersion }))()
+      )
+    } catch (err) {
+      const data = err && err.response && err.response.data
+        ? err.response.data
+        : (err && err.body ? err.body : null)
+      const message = (data && (data.message || data.error)) || (err && err.message) || 'unknown error'
+      this.error(message, { exit: 1 })
+      return
+    }
+
+    const result = response.data || {}
+
+    if (parsed.json) {
+      cli.styledJSON(result)
+      return
+    }
+
+    cli.log()
+    cli.styledHeader(`Connection: ${connectionName}`)
+    cli.log(`Current API Version: ${result.current_api_version}`)
+    cli.log(`Target API Version:  ${result.target_api_version || targetVersion}`)
+    cli.log()
+
+    cli.table(result.mappings || [], {
+      columns: [
+        { key: 'name', label: 'Mapping' },
+        {
+          key: 'fields_have_changed',
+          label: 'Status',
+          format: (changed, row) => {
+            if (changed === false) return cli.color.green('no changes')
+            if (row.has_unsafe_changes === true) return cli.color.red('changed (unsafe)')
+            if (row.has_unsafe_changes === false) return cli.color.yellow('changed (safe)')
+            return cli.color.yellow('changed')
+          }
+        },
+        { key: 'result_message', label: 'Details' }
+      ]
+    })
+    cli.log()
+
+    if (!confirmed) return
+
+    const reportedVersion = result.target_version || targetVersion
+    cli.log(cli.color.green(`Version change dispatched. ${connectionName} will run at Salesforce API ${reportedVersion}.`))
+    cli.log('Run `heroku connect:resume` when you are ready to resume sync.')
+  }
+}

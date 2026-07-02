@@ -1,7 +1,7 @@
 import { runCommand } from '@heroku-cli/test-utils'
 import nock from 'nock'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import ConnectSfApiUpgrade from '../../../commands/connect/sf-api-upgrade.js'
+import ConnectManageSfApiVersion from '../../../commands/connect/manage-sf-api-version.js'
 
 const password = 's3cr3t3'
 const headers = {
@@ -36,19 +36,29 @@ function stubConnectionDetail (extra = {}) {
     .reply(200, { ...baseConnection, ...extra })
 }
 
-function stubDiff (targetVersion = '61.0', mappings = []) {
-  return nock('https://hc-virginia-qa.herokai.com/', { headers })
-    .get('/api/v3/connections/1234/schema-diff')
-    .query({ target_version: targetVersion })
-    .reply(200, {
-      guid: '1234',
-      current_api_version: '55.0',
-      target_api_version: targetVersion,
-      mappings
-    })
+// Two endpoints: the GET schema-diff preview and the POST change action.
+// Both return the diff payload; the change action also echoes target_version.
+function stubUpgrade ({ confirm = false, targetVersion = '61.0', mappings = [], statusCode = null, body = null } = {}) {
+  const responseStatus = statusCode || (confirm ? 202 : 200)
+  const responseBody = body || {
+    guid: '1234',
+    current_api_version: '55.0',
+    target_api_version: targetVersion,
+    mappings,
+    ...(confirm ? { target_version: targetVersion } : {})
+  }
+  const scope = nock('https://hc-virginia-qa.herokai.com/', { headers })
+  return confirm
+    ? scope
+      .post('/api/v3/connections/1234/actions/change-sf-api-version', { target_version: targetVersion })
+      .reply(responseStatus, responseBody)
+    : scope
+      .get('/api/v3/connections/1234/schema-diff')
+      .query({ target_version: targetVersion })
+      .reply(responseStatus, responseBody)
 }
 
-describe('connect:sf-api-upgrade', () => {
+describe('connect:manage-sf-api-version', () => {
   beforeEach(() => {
     process.env.HEROKU_API_KEY = password
   })
@@ -59,7 +69,7 @@ describe('connect:sf-api-upgrade', () => {
   })
 
   it('rejects a non-numeric --target-version before any network call', async () => {
-    const { error } = await runCommand(ConnectSfApiUpgrade, [
+    const { error } = await runCommand(ConnectManageSfApiVersion, [
       '--app', appName, '--connection', resourceName, '--target-version', 'not-a-version'
     ])
     expect(error).toBeDefined()
@@ -70,9 +80,9 @@ describe('connect:sf-api-upgrade', () => {
   it('normalizes an integer --target-version to NN.0', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
-    const diffApi = stubDiff('61.0')
+    const diffApi = stubUpgrade({ targetVersion: '61.0' })
 
-    const { stdout } = await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61'])
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61'])
 
     expect(stdout).toContain('Target API Version:  61.0')
     discoveryApi.done()
@@ -83,12 +93,15 @@ describe('connect:sf-api-upgrade', () => {
   it('renders the diff table without upgrading when --confirm is omitted', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
-    const diffApi = stubDiff('61.0', [
-      { name: 'Account', result_message: 'ok', fields_have_changed: false },
-      { name: 'Lead', result_message: 'changed', fields_have_changed: true }
-    ])
+    const diffApi = stubUpgrade({
+      targetVersion: '61.0',
+      mappings: [
+        { name: 'Account', result_message: 'ok', fields_have_changed: false },
+        { name: 'Lead', result_message: 'changed', fields_have_changed: true }
+      ]
+    })
 
-    const { stdout } = await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
 
     expect(stdout).toContain('Current API Version: 55.0')
     expect(stdout).toContain('Target API Version:  61.0')
@@ -103,11 +116,14 @@ describe('connect:sf-api-upgrade', () => {
   it('renders unsafe-change styling when has_unsafe_changes is true', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
-    const diffApi = stubDiff('61.0', [
-      { name: 'Account', result_message: 'unsafe change', fields_have_changed: true, has_unsafe_changes: true }
-    ])
+    const diffApi = stubUpgrade({
+      targetVersion: '61.0',
+      mappings: [
+        { name: 'Account', result_message: 'unsafe change', fields_have_changed: true, has_unsafe_changes: true }
+      ]
+    })
 
-    const { stdout } = await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
 
     expect(stdout).toContain('changed (unsafe)')
     discoveryApi.done()
@@ -118,11 +134,14 @@ describe('connect:sf-api-upgrade', () => {
   it('renders safe-change styling when has_unsafe_changes is false', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
-    const diffApi = stubDiff('61.0', [
-      { name: 'Account', result_message: 'length increase', fields_have_changed: true, has_unsafe_changes: false }
-    ])
+    const diffApi = stubUpgrade({
+      targetVersion: '61.0',
+      mappings: [
+        { name: 'Account', result_message: 'length increase', fields_have_changed: true, has_unsafe_changes: false }
+      ]
+    })
 
-    const { stdout } = await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
 
     expect(stdout).toContain('changed (safe)')
     discoveryApi.done()
@@ -139,12 +158,9 @@ describe('connect:sf-api-upgrade', () => {
       target_api_version: '61.0',
       mappings: [{ name: 'Account', result_message: 'ok', fields_have_changed: false }]
     }
-    const diffApi = nock('https://hc-virginia-qa.herokai.com/', { headers })
-      .get('/api/v3/connections/1234/schema-diff')
-      .query({ target_version: '61.0' })
-      .reply(200, responseBody)
+    const diffApi = stubUpgrade({ targetVersion: '61.0', body: responseBody })
 
-    const { stdout } = await runCommand(ConnectSfApiUpgrade, ['--app', appName, '--connection', resourceName, '--target-version', '61.0', '--json'])
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0', '--json'])
 
     expect(JSON.parse(stdout)).toEqual(responseBody)
     discoveryApi.done()
@@ -155,71 +171,70 @@ describe('connect:sf-api-upgrade', () => {
   it('shows the diff then upgrades when --confirm matches the app name', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
-    const diffApi = stubDiff('61.0', [{ name: 'Account', result_message: 'ok', fields_have_changed: false }])
-    const upgradeApi = nock('https://hc-virginia-qa.herokai.com/', { headers })
-      .post('/api/v3/connections/1234/actions/upgrade-api-version', { target_version: '61.0' })
-      .reply(202, { target_version: '61.0' })
+    const upgradeApi = stubUpgrade({
+      confirm: true,
+      targetVersion: '61.0',
+      mappings: [{ name: 'Account', result_message: 'ok', fields_have_changed: false }]
+    })
 
-    const { stdout } = await runCommand(ConnectSfApiUpgrade, [
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, [
       '--app', appName, '--connection', resourceName,
       '--target-version', '61.0', '--confirm', appName
     ])
 
     expect(stdout).toContain('Current API Version: 55.0')
-    expect(stdout).toContain('Upgrade dispatched')
+    expect(stdout).toContain('Account')
+    expect(stdout).toContain('Version change dispatched')
     expect(stdout).toContain('61.0')
     discoveryApi.done()
     connectionApi.done()
-    diffApi.done()
     upgradeApi.done()
   })
 
   it('accepts --confirm with surrounding whitespace', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
-    const diffApi = stubDiff('61.0')
-    const upgradeApi = nock('https://hc-virginia-qa.herokai.com/', { headers })
-      .post('/api/v3/connections/1234/actions/upgrade-api-version', { target_version: '61.0' })
-      .reply(202, { target_version: '61.0' })
+    const upgradeApi = stubUpgrade({ confirm: true, targetVersion: '61.0' })
 
-    const { stdout } = await runCommand(ConnectSfApiUpgrade, [
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, [
       '--app', appName, '--connection', resourceName,
       '--target-version', '61.0', '--confirm', `  ${appName}  `
     ])
 
-    expect(stdout).toContain('Upgrade dispatched')
+    expect(stdout).toContain('Version change dispatched')
     discoveryApi.done()
     connectionApi.done()
-    diffApi.done()
     upgradeApi.done()
   })
 
-  it('aborts upgrade when --confirm does not match app name', async () => {
+  it('aborts before any upgrade call when --confirm does not match app name', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
-    const diffApi = stubDiff('61.0')
 
-    const { error } = await runCommand(ConnectSfApiUpgrade, [
+    const { error } = await runCommand(ConnectManageSfApiVersion, [
       '--app', appName, '--connection', resourceName,
       '--target-version', '61.0', '--confirm', 'wrong-name'
     ])
 
     expect(error).toBeDefined()
     expect(error.message).toContain('does not match')
+    // No POST should have been issued — the mismatch is caught before the call.
+    expect(nock.pendingMocks()).toHaveLength(0)
     discoveryApi.done()
     connectionApi.done()
-    diffApi.done()
   })
 
   it('displays backend error message when upgrade returns a non-2xx response', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
-    const diffApi = stubDiff('61.0')
-    const upgradeApi = nock('https://hc-virginia-qa.herokai.com/', { headers })
-      .post('/api/v3/connections/1234/actions/upgrade-api-version', { target_version: '61.0' })
-      .reply(409, { message: 'Some mappings have unsafe changes. Edit them and retry.' })
+    const upgradeApi = stubUpgrade({
+      confirm: true,
+      targetVersion: '61.0',
+      statusCode: 409,
+      body: { message: 'Some mappings have unsafe changes. Edit them and retry.' }
+    })
 
-    const { error } = await runCommand(ConnectSfApiUpgrade, [
+    const { error } = await runCommand(ConnectManageSfApiVersion, [
       '--app', appName, '--connection', resourceName,
       '--target-version', '61.0', '--confirm', appName
     ])
@@ -228,29 +243,24 @@ describe('connect:sf-api-upgrade', () => {
     expect(error.message).toContain('Some mappings have unsafe changes')
     discoveryApi.done()
     connectionApi.done()
-    diffApi.done()
     upgradeApi.done()
   })
 
   it('falls back to the requested target_version when backend response omits it', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
-    const diffApi = stubDiff('61.0')
-    const upgradeApi = nock('https://hc-virginia-qa.herokai.com/', { headers })
-      .post('/api/v3/connections/1234/actions/upgrade-api-version', { target_version: '61.0' })
-      .reply(202, '')
+    const upgradeApi = stubUpgrade({ confirm: true, targetVersion: '61.0', body: '' })
 
-    const { stdout } = await runCommand(ConnectSfApiUpgrade, [
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, [
       '--app', appName, '--connection', resourceName,
       '--target-version', '61.0', '--confirm', appName
     ])
 
-    expect(stdout).toContain('Upgrade dispatched')
+    expect(stdout).toContain('Version change dispatched')
     expect(stdout).toContain('61.0')
     expect(stdout).not.toContain('undefined')
     discoveryApi.done()
     connectionApi.done()
-    diffApi.done()
     upgradeApi.done()
   })
 })
