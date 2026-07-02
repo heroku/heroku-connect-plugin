@@ -18,8 +18,8 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
   static flags = {
     app: flags.app({ required: true }),
     connection: flags.string({ required: true, description: 'connection resource name' }),
-    'target-version': flags.string({ required: true, description: 'Salesforce API version to compare against and upgrade to (e.g. 61.0)' }),
-    confirm: flags.string({ description: 'after showing the diff, upgrade the connection — pass the app name to confirm' }),
+    'target-version': flags.string({ required: true, description: 'Salesforce API version to compare against and change to (e.g. 61.0)' }),
+    confirm: flags.string({ description: 'after showing the diff, change the connection to the target version — pass the app name to confirm' }),
     json: flags.boolean({ description: 'print output as json' })
   }
 
