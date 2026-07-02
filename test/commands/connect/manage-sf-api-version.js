@@ -106,14 +106,15 @@ describe('connect:manage-sf-api-version', () => {
     expect(stdout).toContain('Current API Version: 55.0')
     expect(stdout).toContain('Target API Version:  61.0')
     expect(stdout).toContain('Account')
-    expect(stdout).toContain('No changes')
+    expect(stdout).toContain('No action required')
+    expect(stdout).toContain('re-run this command with --confirm')
     expect(stdout).not.toContain('Upgrade dispatched')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
   })
 
-  it('shows "Action required" for an unsafe change and "No action required" for a safe one', async () => {
+  it('shows "Action required" for an unsafe change and "No action required" otherwise', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
     const diffApi = stubUpgrade({

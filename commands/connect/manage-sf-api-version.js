@@ -102,15 +102,13 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
           key: 'fields_have_changed',
           label: 'Status',
           format: (changed, row) => {
-            // Frame the status by what the customer must do, not by "safe" vs
-            // "unsafe": unsafe/dropped-field changes need the customer to
-            // unmap & re-map ("Action required"); safe changes are applied by
-            // HC automatically. Only the actionable state is colored (red) so
-            // it stands out; the benign states use the default text color,
-            // matching the dashboard. The label carries the meaning so it
-            // still reads correctly without color (--no-color / piped output).
+            // Status is framed purely by whether the customer must act: unsafe/
+            // dropped-field changes need them to unmap & re-map ("Action
+            // required", red); everything else — including no change at all —
+            // needs nothing from them. Whether anything actually changed is
+            // conveyed by the Details column. The label carries the meaning so
+            // it still reads correctly without color (--no-color / piped).
             if (row.has_unsafe_changes === true) return cli.color.red('Action required')
-            if (changed === false) return 'No changes'
             return 'No action required'
           }
         },
@@ -119,7 +117,10 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
     })
     cli.log()
 
-    if (!confirmed) return
+    if (!confirmed) {
+      cli.log(`To change ${connectionName} to Salesforce API ${targetVersion}, re-run this command with --confirm ${parsed.app}.`)
+      return
+    }
 
     const reportedVersion = result.target_version || targetVersion
     cli.log(cli.color.green(`Version change dispatched. ${connectionName} will run at Salesforce API ${reportedVersion}.`))
