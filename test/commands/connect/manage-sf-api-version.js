@@ -140,6 +140,29 @@ describe('connect:manage-sf-api-version', () => {
     diffApi.done()
   })
 
+  it('orders rows unsafe, then safe changes, then no changes', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail()
+    // Backend returns them in the reverse of the desired display order.
+    const diffApi = stubUpgrade({
+      targetVersion: '61.0',
+      mappings: [
+        { name: 'Opportunity', result_message: 'no changes', fields_have_changed: false, has_unsafe_changes: false },
+        { name: 'Account', result_message: 'length increase', fields_have_changed: true, has_unsafe_changes: false },
+        { name: 'Contact', result_message: 'field removed', fields_have_changed: true, has_unsafe_changes: true }
+      ]
+    })
+
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
+
+    // Unsafe (Contact) first, safe change (Account) next, no-change (Opportunity) last.
+    expect(stdout.indexOf('Contact')).toBeLessThan(stdout.indexOf('Account'))
+    expect(stdout.indexOf('Account')).toBeLessThan(stdout.indexOf('Opportunity'))
+    discoveryApi.done()
+    connectionApi.done()
+    diffApi.done()
+  })
+
   it('outputs JSON when --json is passed', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()

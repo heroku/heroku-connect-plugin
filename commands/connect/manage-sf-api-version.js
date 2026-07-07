@@ -95,11 +95,12 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
     cli.log(`Target API Version:  ${result.target_api_version || targetVersion}`)
     cli.log()
 
-    // Surface the mappings that need customer action first, so the rows that
-    // require unmapping/re-mapping are read before the no-op ones. Stable sort
-    // preserves the backend's ordering within each group.
-    const rows = (result.mappings || []).slice().sort((a, b) =>
-      (b.has_unsafe_changes === true ? 1 : 0) - (a.has_unsafe_changes === true ? 1 : 0))
+    // Order rows by how much attention they need: "Action required" (unsafe)
+    // first, then safe changes, then untouched "No changes" rows last. Stable
+    // sort preserves the backend's ordering within each group.
+    const rowRank = (row) =>
+      row.has_unsafe_changes === true ? 0 : row.fields_have_changed === true ? 1 : 2
+    const rows = (result.mappings || []).slice().sort((a, b) => rowRank(a) - rowRank(b))
 
     cli.table(rows, {
       columns: [
