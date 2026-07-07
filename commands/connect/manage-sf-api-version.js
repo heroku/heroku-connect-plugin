@@ -95,7 +95,13 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
     cli.log(`Target API Version:  ${result.target_api_version || targetVersion}`)
     cli.log()
 
-    cli.table(result.mappings || [], {
+    // Surface the mappings that need customer action first, so the rows that
+    // require unmapping/re-mapping are read before the no-op ones. Stable sort
+    // preserves the backend's ordering within each group.
+    const rows = (result.mappings || []).slice().sort((a, b) =>
+      (b.has_unsafe_changes === true ? 1 : 0) - (a.has_unsafe_changes === true ? 1 : 0))
+
+    cli.table(rows, {
       columns: [
         { key: 'name', label: 'Mapping' },
         {

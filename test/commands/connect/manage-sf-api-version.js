@@ -132,6 +132,9 @@ describe('connect:manage-sf-api-version', () => {
     expect(stdout).toContain('No action required')
     expect(stdout).not.toContain('(safe)')
     expect(stdout).not.toContain('(unsafe)')
+    // Action-required rows sort first even though the backend returned the
+    // safe (Account) row before the unsafe (Contact) one.
+    expect(stdout.indexOf('Contact')).toBeLessThan(stdout.indexOf('Account'))
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
