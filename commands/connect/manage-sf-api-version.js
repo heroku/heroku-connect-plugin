@@ -18,8 +18,8 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
   static flags = {
     app: flags.app({ required: true }),
     connection: flags.string({ required: true, description: 'connection resource name' }),
-    'target-version': flags.string({ required: true, description: 'Salesforce API version to compare against and change to (e.g. 61.0)' }),
-    confirm: flags.string({ description: 'after showing the diff, change the connection to the target version — pass the app name to confirm' }),
+    'target-version': flags.string({ required: true, description: 'Salesforce API version to compare against and change to (example: 61.0)' }),
+    confirm: flags.string({ description: 'pass the app name to change the connection to the target version after showing the schema differences' }),
     json: flags.boolean({ description: 'print output as json' })
   }
 
@@ -30,7 +30,7 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
 
     if (!targetVersion) {
       this.error(
-        `Invalid --target-version "${parsed['target-version']}". Expected a numeric Salesforce API version (e.g. 61 or 61.0).`,
+        `--target-version "${parsed['target-version']}" is invalid. Enter a numeric Salesforce API version (for example: 61 or 61.0) and try again.`,
         { exit: 2 }
       )
     }
@@ -51,7 +51,7 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
       const confirmName = parsed.confirm.trim()
       if (confirmName !== parsed.app) {
         this.error(
-          `--confirm value "${confirmName}" does not match app name "${parsed.app}". Aborting.`,
+          `--confirm value "${confirmName}" doesn’t match app name "${parsed.app}". Canceling version change.`,
           { exit: 1 }
         )
       }
@@ -119,7 +119,13 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
             return 'No action required'
           }
         },
-        { key: 'result_message', label: 'Details' }
+        {
+          key: 'result_message',
+          label: 'Details',
+          // Only show details when something actually changed; a "no changes"
+          // row leaves the column blank rather than restating the obvious.
+          format: (message, row) => (row.fields_have_changed === true ? message : '')
+        }
       ]
     })
     cli.log()
@@ -130,7 +136,6 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
     }
 
     const reportedVersion = result.target_version || targetVersion
-    cli.log(cli.color.green(`Version change dispatched. ${connectionName} will run at Salesforce API ${reportedVersion}.`))
-    cli.log('Run `heroku connect:resume` when you are ready to resume sync.')
+    cli.log(cli.color.green(`Successfully changed version on ${connectionName} to Salesforce API ${reportedVersion}. Run heroku connect:resume to resume sync.`))
   }
 }

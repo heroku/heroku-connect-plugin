@@ -73,7 +73,7 @@ describe('connect:manage-sf-api-version', () => {
       '--app', appName, '--connection', resourceName, '--target-version', 'not-a-version'
     ])
     expect(error).toBeDefined()
-    expect(error.message).toContain('Invalid --target-version')
+    expect(error.message).toContain('--target-version "not-a-version" is invalid')
     expect(nock.pendingMocks()).toHaveLength(0)
   })
 
@@ -96,8 +96,8 @@ describe('connect:manage-sf-api-version', () => {
     const diffApi = stubUpgrade({
       targetVersion: '61.0',
       mappings: [
-        { name: 'Account', result_message: 'ok', fields_have_changed: false },
-        { name: 'Lead', result_message: 'changed', fields_have_changed: true }
+        { name: 'Account', result_message: 'UNCHANGED_DETAILS', fields_have_changed: false },
+        { name: 'Lead', result_message: 'CHANGED_DETAILS', fields_have_changed: true }
       ]
     })
 
@@ -107,6 +107,9 @@ describe('connect:manage-sf-api-version', () => {
     expect(stdout).toContain('Target API Version:  61.0')
     expect(stdout).toContain('Account')
     expect(stdout).toContain('No action required')
+    // The changed row shows its details; the no-change row's details is blank.
+    expect(stdout).toContain('CHANGED_DETAILS')
+    expect(stdout).not.toContain('UNCHANGED_DETAILS')
     expect(stdout).toContain('re-run this command with --confirm')
     expect(stdout).not.toContain('Upgrade dispatched')
     discoveryApi.done()
@@ -198,7 +201,7 @@ describe('connect:manage-sf-api-version', () => {
 
     expect(stdout).toContain('Current API Version: 55.0')
     expect(stdout).toContain('Account')
-    expect(stdout).toContain('Version change dispatched')
+    expect(stdout).toContain('Successfully changed version')
     expect(stdout).toContain('61.0')
     discoveryApi.done()
     connectionApi.done()
@@ -215,7 +218,7 @@ describe('connect:manage-sf-api-version', () => {
       '--target-version', '61.0', '--confirm', `  ${appName}  `
     ])
 
-    expect(stdout).toContain('Version change dispatched')
+    expect(stdout).toContain('Successfully changed version')
     discoveryApi.done()
     connectionApi.done()
     upgradeApi.done()
@@ -231,7 +234,7 @@ describe('connect:manage-sf-api-version', () => {
     ])
 
     expect(error).toBeDefined()
-    expect(error.message).toContain('does not match')
+    expect(error.message).toContain('doesn’t match')
     // No POST should have been issued — the mismatch is caught before the call.
     expect(nock.pendingMocks()).toHaveLength(0)
     discoveryApi.done()
@@ -270,7 +273,7 @@ describe('connect:manage-sf-api-version', () => {
       '--target-version', '61.0', '--confirm', appName
     ])
 
-    expect(stdout).toContain('Version change dispatched')
+    expect(stdout).toContain('Successfully changed version')
     expect(stdout).toContain('61.0')
     expect(stdout).not.toContain('undefined')
     discoveryApi.done()
