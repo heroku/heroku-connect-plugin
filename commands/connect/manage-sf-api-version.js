@@ -9,10 +9,9 @@ export default class ConnectManageSfApiVersion extends Command {
 Shows a per-mapping field diff between the connection's current Salesforce API version and a target version. Pass --confirm to also change the connection to the target version after displaying the diff. The connection must be paused before changing the version.`
 
   static examples = [
-    '$ heroku connect:manage-sf-api-version --app my-app --target-version 61.0',
-    '$ heroku connect:manage-sf-api-version --app my-app --connection abcd-ef01 --target-version 61.0',
-    '$ heroku connect:manage-sf-api-version --app my-app --target-version 61.0 --confirm my-app',
-    '$ heroku connect:manage-sf-api-version --app my-app --target-version 61.0 --json'
+    '$ heroku connect:manage-sf-api-version --app my-app --connection herokuconnect-swiftly-54348 --target-version 61.0',
+    '$ heroku connect:manage-sf-api-version --app my-app --connection herokuconnect-swiftly-54348 --target-version 61.0 --confirm my-app',
+    '$ heroku connect:manage-sf-api-version --app my-app --connection herokuconnect-swiftly-54348 --target-version 61.0 --json'
   ]
 
   static flags = {
