@@ -23,15 +23,27 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
     json: flags.boolean({ description: 'print output as json' })
   }
 
+  // Fail in a way that respects --json: emit a structured `{ error }` object to
+  // stdout (so a --json consumer always gets parseable output) and exit
+  // non-zero. Without --json, fall back to the standard CLI error (stderr).
+  fail (json, message, exit) {
+    if (json) {
+      cli.styledJSON({ error: message })
+      this.exit(exit)
+    }
+    this.error(message, { exit })
+  }
+
   async run () {
     const { flags: parsed } = await this.parse(ConnectManageSfApiVersion)
 
     const targetVersion = normalizeApiVersion(parsed['target-version'])
 
     if (!targetVersion) {
-      this.error(
+      this.fail(
+        parsed.json,
         `--target-version "${parsed['target-version']}" is invalid. Enter a numeric Salesforce API version (for example: 61 or 61.0) and try again.`,
-        { exit: 2 }
+        2
       )
     }
 
@@ -50,9 +62,10 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
     if (parsed.confirm) {
       const confirmName = parsed.confirm.trim()
       if (confirmName !== parsed.app) {
-        this.error(
+        this.fail(
+          parsed.json,
           `--confirm value "${confirmName}" doesn’t match app name "${parsed.app}". Canceling version change.`,
-          { exit: 1 }
+          1
         )
       }
       confirmed = true
@@ -78,7 +91,7 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
         ? err.response.data
         : (err && err.body ? err.body : null)
       const message = (data && (data.message || data.error)) || (err && err.message) || 'unknown error'
-      this.error(message, { exit: 1 })
+      this.fail(parsed.json, message, 1)
       return
     }
 

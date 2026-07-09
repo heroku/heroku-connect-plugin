@@ -77,6 +77,53 @@ describe('connect:manage-sf-api-version', () => {
     expect(nock.pendingMocks()).toHaveLength(0)
   })
 
+  it('emits a structured JSON error for an invalid --target-version when --json is passed', async () => {
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, [
+      '--app', appName, '--connection', resourceName, '--target-version', 'not-a-version', '--json'
+    ])
+    const parsed = JSON.parse(stdout)
+    expect(parsed.error).toContain('--target-version "not-a-version" is invalid')
+    expect(nock.pendingMocks()).toHaveLength(0)
+  })
+
+  it('emits a structured JSON error for a --confirm mismatch when --json is passed', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail()
+
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, [
+      '--app', appName, '--connection', resourceName,
+      '--target-version', '61.0', '--confirm', 'wrong-name', '--json'
+    ])
+
+    const parsed = JSON.parse(stdout)
+    expect(parsed.error).toContain('doesn’t match')
+    expect(nock.pendingMocks()).toHaveLength(0)
+    discoveryApi.done()
+    connectionApi.done()
+  })
+
+  it('emits a structured JSON error when the backend fails and --json is passed', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail()
+    const upgradeApi = stubUpgrade({
+      confirm: true,
+      targetVersion: '61.0',
+      statusCode: 409,
+      body: { message: 'Some mappings have unsafe changes. Edit them and retry.' }
+    })
+
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, [
+      '--app', appName, '--connection', resourceName,
+      '--target-version', '61.0', '--confirm', appName, '--json'
+    ])
+
+    const parsed = JSON.parse(stdout)
+    expect(parsed.error).toContain('Some mappings have unsafe changes')
+    discoveryApi.done()
+    connectionApi.done()
+    upgradeApi.done()
+  })
+
   it('normalizes an integer --target-version to NN.0', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
