@@ -213,6 +213,34 @@ describe('connect:manage-sf-api-version', () => {
     diffApi.done()
   })
 
+  it('renders each kind of change on its own line when a mapping has multiple', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail()
+    // The backend joins each kind of change with a newline.
+    const diffApi = stubUpgrade({
+      targetVersion: '61.0',
+      mappings: [
+        {
+          name: 'Account',
+          fields_have_changed: true,
+          has_unsafe_changes: true,
+          result_message: 'Length increased in Salesforce for field: name. \nFields removed from Salesforce: number. '
+        }
+      ]
+    })
+
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
+
+    // Both segments appear, each on its own line (no run-on paragraph), and the
+    // trailing whitespace each segment carries is trimmed off.
+    expect(stdout).toContain('Length increased in Salesforce for field: name.')
+    expect(stdout).toContain('Fields removed from Salesforce: number.')
+    expect(stdout).not.toContain('name. Fields removed')
+    discoveryApi.done()
+    connectionApi.done()
+    diffApi.done()
+  })
+
   it('outputs JSON when --json is passed', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()

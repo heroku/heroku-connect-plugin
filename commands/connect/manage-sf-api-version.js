@@ -136,7 +136,13 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
           label: 'Details',
           // Only show details when something actually changed; a "no changes"
           // row leaves the column blank rather than restating the obvious.
-          format: (message, row) => (row.fields_have_changed === true ? message : '')
+          // The backend joins each kind of change (unsafe / length increase /
+          // dropped field) with a newline, so render each on its own line
+          // rather than as a run-on paragraph.
+          format: (message, row) => {
+            if (row.fields_have_changed !== true || !message) return ''
+            return message.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
+          }
         }
       ]
     })
