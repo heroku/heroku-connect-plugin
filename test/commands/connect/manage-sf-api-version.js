@@ -241,6 +241,34 @@ describe('connect:manage-sf-api-version', () => {
     diffApi.done()
   })
 
+  it('flags mappings we can\'t assess and orders them right after unsafe changes', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail()
+    const diffApi = stubUpgrade({
+      targetVersion: '61.0',
+      mappings: [
+        { name: 'Opportunity', result_message: 'no changes', fields_have_changed: false, has_unsafe_changes: false, action_undetermined: false },
+        { name: 'Lead', result_message: 'Unable to determine if an action is required.', fields_have_changed: false, has_unsafe_changes: false, action_undetermined: true },
+        { name: 'Account', result_message: 'length increase', fields_have_changed: true, has_unsafe_changes: false, action_undetermined: false },
+        { name: 'Contact', result_message: 'field removed', fields_have_changed: true, has_unsafe_changes: true, action_undetermined: false }
+      ]
+    })
+
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
+
+    // Undetermined rows get their own status and show their message.
+    expect(stdout).toContain('Action undetermined')
+    expect(stdout).toContain('Unable to determine if an action is required.')
+    // Order: unsafe (Contact) first, undetermined (Lead) next, safe (Account),
+    // then no-change (Opportunity) last.
+    expect(stdout.indexOf('Contact')).toBeLessThan(stdout.indexOf('Lead'))
+    expect(stdout.indexOf('Lead')).toBeLessThan(stdout.indexOf('Account'))
+    expect(stdout.indexOf('Account')).toBeLessThan(stdout.indexOf('Opportunity'))
+    discoveryApi.done()
+    connectionApi.done()
+    diffApi.done()
+  })
+
   it('outputs JSON when --json is passed', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
@@ -316,6 +344,156 @@ describe('connect:manage-sf-api-version', () => {
     connectionApi.done()
   })
 
+  it('refuses --confirm before any upgrade call while a mapping is still syncing', async () => {
+    const discoveryApi = stubDiscovery()
+    // Connection is paused, but a mapping is still polling Salesforce.
+    const connectionApi = stubConnectionDetail({
+      mappings: [
+        { object_name: 'Account', state: 'DATA_SYNCED' },
+        { object_name: 'Contact', state: 'POLLING_SF_CHANGES' }
+      ]
+    })
+
+    const { error } = await runCommand(ConnectManageSfApiVersion, [
+      '--app', appName, '--connection', resourceName,
+      '--target-version', '61.0', '--confirm', appName
+    ])
+
+    expect(error).toBeDefined()
+    expect(error.message).toContain('still syncing')
+    expect(error.message).toContain('Contact')
+    // Only the in-flight mapping is named — the synced one is not.
+    expect(error.message).not.toContain('Account')
+    // No POST should have been issued — the guard runs before the network call.
+    expect(nock.pendingMocks()).toHaveLength(0)
+    discoveryApi.done()
+    connectionApi.done()
+  })
+
+  it('refuses --confirm while a mapping is busy (non-polling in-flight state)', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail({
+      mappings: [{ object_name: 'Account', state: 'WAIT_BULK_LOAD' }]
+    })
+
+    const { error } = await runCommand(ConnectManageSfApiVersion, [
+      '--app', appName, '--connection', resourceName,
+      '--target-version', '61.0', '--confirm', appName
+    ])
+
+    expect(error).toBeDefined()
+    expect(error.message).toContain('still syncing')
+    expect(error.message).toContain('Account')
+    expect(nock.pendingMocks()).toHaveLength(0)
+    discoveryApi.done()
+    connectionApi.done()
+  })
+
+  it('allows --confirm when every mapping is settled (DATA_SYNCED)', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail({
+      mappings: [{ object_name: 'Account', state: 'DATA_SYNCED' }]
+    })
+    const upgradeApi = stubUpgrade({ confirm: true, targetVersion: '61.0' })
+
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, [
+      '--app', appName, '--connection', resourceName,
+      '--target-version', '61.0', '--confirm', appName
+    ])
+
+    expect(stdout).toContain('Successfully changed version')
+    discoveryApi.done()
+    connectionApi.done()
+    upgradeApi.done()
+  })
+
+  it('does not block the read-only preview when a mapping is still syncing', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail({
+      mappings: [{ object_name: 'Contact', state: 'POLLING_SF_CHANGES' }]
+    })
+    const diffApi = stubUpgrade({ targetVersion: '61.0' })
+
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, [
+      '--app', appName, '--connection', resourceName, '--target-version', '61.0'
+    ])
+
+    // Preview renders normally — the sync guard only applies to --confirm.
+    expect(stdout).toContain('Target API Version:  61.0')
+    discoveryApi.done()
+    connectionApi.done()
+    diffApi.done()
+  })
+
+  it('treats a not-at-rest mapping (e.g. errored) as still syncing in the pre-flight', async () => {
+    const discoveryApi = stubDiscovery()
+    // The pre-flight is an allowlist (DATA_SYNCED / INITIAL), so any other
+    // state — including an errored one — is caught before the network call. The
+    // backend remains the authoritative check.
+    const connectionApi = stubConnectionDetail({
+      mappings: [{ object_name: 'Account', state: 'BAD_CONFIG' }]
+    })
+
+    const { error } = await runCommand(ConnectManageSfApiVersion, [
+      '--app', appName, '--connection', resourceName,
+      '--target-version', '61.0', '--confirm', appName
+    ])
+
+    expect(error).toBeDefined()
+    expect(error.message).toContain('still syncing')
+    expect(error.message).toContain('Account')
+    expect(nock.pendingMocks()).toHaveLength(0)
+    discoveryApi.done()
+    connectionApi.done()
+  })
+
+  it('allows --confirm when a mapping is never-synced (INITIAL)', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail({
+      mappings: [{ object_name: 'Account', state: 'INITIAL' }]
+    })
+    const upgradeApi = stubUpgrade({ confirm: true, targetVersion: '61.0' })
+
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, [
+      '--app', appName, '--connection', resourceName,
+      '--target-version', '61.0', '--confirm', appName
+    ])
+
+    expect(stdout).toContain('Successfully changed version')
+    discoveryApi.done()
+    connectionApi.done()
+    upgradeApi.done()
+  })
+
+  it('surfaces the backend 409 when it rejects a still-syncing mapping the pre-flight missed', async () => {
+    const discoveryApi = stubDiscovery()
+    // Pre-flight sees the mapping as at-rest, but the backend (authoritative,
+    // working from live state) rejects it — the CLI surfaces that error.
+    const connectionApi = stubConnectionDetail({
+      mappings: [{ object_name: 'Account', state: 'DATA_SYNCED' }]
+    })
+    const upgradeApi = stubUpgrade({
+      confirm: true,
+      targetVersion: '61.0',
+      statusCode: 409,
+      body: {
+        error: 'Some mappings are still syncing. Wait for them to finish syncing before changing the API version.',
+        syncing_mappings: ['Account']
+      }
+    })
+
+    const { error } = await runCommand(ConnectManageSfApiVersion, [
+      '--app', appName, '--connection', resourceName,
+      '--target-version', '61.0', '--confirm', appName
+    ])
+
+    expect(error).toBeDefined()
+    expect(error.message).toContain('still syncing')
+    discoveryApi.done()
+    connectionApi.done()
+    upgradeApi.done()
+  })
+
   it('displays backend error message when upgrade returns a non-2xx response', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail()
@@ -333,6 +511,75 @@ describe('connect:manage-sf-api-version', () => {
 
     expect(error).toBeDefined()
     expect(error.message).toContain('Some mappings have unsafe changes')
+    discoveryApi.done()
+    connectionApi.done()
+    upgradeApi.done()
+  })
+
+  it('renders the diff table when the upgrade is rejected because a mapping needs action', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail()
+    // The backend rejects with 409 but includes the diff so the customer can see
+    // which mappings to fix.
+    const upgradeApi = stubUpgrade({
+      confirm: true,
+      targetVersion: '61.0',
+      statusCode: 409,
+      body: {
+        message: 'Some mappings have unsafe changes. Edit them and retry.',
+        current_api_version: '55.0',
+        target_api_version: '61.0',
+        mappings: [
+          { name: 'Account', result_message: 'length increase', fields_have_changed: true, has_unsafe_changes: false },
+          { name: 'Contact', result_message: 'field removed', fields_have_changed: true, has_unsafe_changes: true }
+        ]
+      }
+    })
+
+    const { stdout, error } = await runCommand(ConnectManageSfApiVersion, [
+      '--app', appName, '--connection', resourceName,
+      '--target-version', '61.0', '--confirm', appName
+    ])
+
+    // Diff is shown even though the change failed.
+    expect(stdout).toContain('Current API Version: 55.0')
+    expect(stdout).toContain('Contact')
+    expect(stdout).toContain('Action required')
+    expect(stdout.indexOf('Contact')).toBeLessThan(stdout.indexOf('Account'))
+    // The error is still surfaced.
+    expect(error).toBeDefined()
+    expect(error.message).toContain('Some mappings have unsafe changes')
+    discoveryApi.done()
+    connectionApi.done()
+    upgradeApi.done()
+  })
+
+  it('does not render the diff table on error when --json is passed', async () => {
+    const discoveryApi = stubDiscovery()
+    const connectionApi = stubConnectionDetail()
+    const upgradeApi = stubUpgrade({
+      confirm: true,
+      targetVersion: '61.0',
+      statusCode: 409,
+      body: {
+        message: 'Some mappings have unsafe changes. Edit them and retry.',
+        current_api_version: '55.0',
+        target_api_version: '61.0',
+        mappings: [
+          { name: 'Contact', result_message: 'field removed', fields_have_changed: true, has_unsafe_changes: true }
+        ]
+      }
+    })
+
+    const { stdout } = await runCommand(ConnectManageSfApiVersion, [
+      '--app', appName, '--connection', resourceName,
+      '--target-version', '61.0', '--confirm', appName, '--json'
+    ])
+
+    // --json output is the machine-readable error object only — no table.
+    const parsed = JSON.parse(stdout)
+    expect(parsed.error).toContain('Some mappings have unsafe changes')
+    expect(stdout).not.toContain('Action required')
     discoveryApi.done()
     connectionApi.done()
     upgradeApi.done()

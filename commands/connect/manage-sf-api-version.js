@@ -3,6 +3,16 @@ import cli from '@heroku/heroku-cli-util'
 import * as api from '../../lib/connect/api.js'
 import { normalizeApiVersion } from '../../lib/connect/api-version.js'
 
+// Mapping states in which a mapping is at rest — synced (DATA_SYNCED) or
+// never-synced (INITIAL). Any other state means it's mid-sync (polling, bulk
+// loading, recovering, errored, …). The backend enforces this authoritatively
+// on the change endpoint; this allowlist is only a client-side pre-flight so we
+// can fail fast (before pausing / any network call) with a clear message rather
+// than surfacing the 409. Kept as an allowlist — not a blocklist of busy states
+// — so any new sync state blocks by default. Must match the backend's
+// at_rest_states in apiv3/connections/views.py.
+const AT_REST_MAPPING_STATES = new Set(['DATA_SYNCED', 'INITIAL'])
+
 export default class ConnectManageSfApiVersion extends Command {
   static description = `compare mapping schemas between API versions and optionally change the version
 
@@ -31,6 +41,66 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
       this.exit(exit)
     }
     this.error(message, { exit })
+  }
+
+  // Render the per-mapping schema diff (header + table). Shared by the success
+  // path and the error path: when the version change is rejected because some
+  // mappings need action, the backend still returns the diff in the error body,
+  // so we show it before surfacing the error — the customer sees exactly which
+  // mappings to fix rather than just an opaque failure message.
+  printDiff (result, connectionName, targetVersion) {
+    cli.log()
+    cli.styledHeader(`Connection: ${connectionName}`)
+    cli.log(`Current API Version: ${result.current_api_version}`)
+    cli.log(`Target API Version:  ${result.target_api_version || targetVersion}`)
+    cli.log()
+
+    // Order rows by how much attention they need: "Action required" (unsafe)
+    // first, then mappings we can't assess (no snapshot), then safe changes,
+    // then untouched "No changes" rows last. Stable sort preserves the
+    // backend's ordering within each group.
+    const rowRank = (row) =>
+      row.has_unsafe_changes === true ? 0
+        : row.action_undetermined === true ? 1
+          : row.fields_have_changed === true ? 2 : 3
+    const rows = (result.mappings || []).slice().sort((a, b) => rowRank(a) - rowRank(b))
+
+    cli.table(rows, {
+      columns: [
+        { key: 'name', label: 'Mapping' },
+        {
+          key: 'fields_have_changed',
+          label: 'Status',
+          format: (changed, row) => {
+            // Status is framed purely by whether the customer must act: unsafe/
+            // dropped-field changes need them to unmap & re-map ("Action
+            // required", red); everything else — including no change at all —
+            // needs nothing from them. Whether anything actually changed is
+            // conveyed by the Details column. The label carries the meaning so
+            // it still reads correctly without color (--no-color / piped).
+            if (row.has_unsafe_changes === true) return cli.color.red('Action required')
+            // No snapshot to diff against — we can't say whether action is
+            // needed, so flag it (yellow) rather than implying it's clear.
+            if (row.action_undetermined === true) return cli.color.yellow('Action undetermined')
+            return 'No action required'
+          }
+        },
+        {
+          key: 'result_message',
+          label: 'Details',
+          // Only show details when something actually changed; a "no changes"
+          // row leaves the column blank rather than restating the obvious.
+          // The backend joins each kind of change (unsafe / length increase /
+          // dropped field) with a newline, so render each on its own line
+          // rather than as a run-on paragraph.
+          format: (message, row) => {
+            if ((row.fields_have_changed !== true && row.action_undetermined !== true) || !message) return ''
+            return message.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
+          }
+        }
+      ]
+    })
+    cli.log()
   }
 
   async run () {
@@ -72,6 +142,28 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
 
     const connectionName = connection.name || connection.internal_name
 
+    // Client-side pre-flight for the mutating path (--confirm) only: the preview
+    // is read-only and safe anytime. Changing the version refreshes every
+    // mapping's schema, so it must not run while a mapping is still syncing. The
+    // backend enforces this authoritatively; we check here too so we can fail
+    // fast — before pausing or any network call — with a clear message naming
+    // the mappings to wait on. A mapping stays in its sync state even after the
+    // connection is paused, so this is a per-mapping check, not a connection one.
+    if (confirmed) {
+      const syncing = (connection.mappings || [])
+        .filter(m => !AT_REST_MAPPING_STATES.has(m.state))
+        .map(m => m.object_name)
+      if (syncing.length) {
+        const which = syncing.length === 1 ? 'a mapping is' : 'mappings are'
+        const them = syncing.length === 1 ? 'it' : 'them'
+        this.fail(
+          parsed.json,
+          `Can’t change the version on ${parsed.app} while ${which} still syncing: ${syncing.join(', ')}. Wait for ${them} to finish syncing, then try again.`,
+          1
+        )
+      }
+    }
+
     // Two endpoints, one call per action: preview reads the diff from the
     // schema-diff endpoint; confirming performs the version change, whose
     // response also carries the diff — so the diff is only ever computed once
@@ -80,7 +172,7 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
     let response
     try {
       response = await cli.action(
-        confirmed ? `Changing ${connectionName} to API ${targetVersion}` : 'Comparing schemas',
+        confirmed ? `Changing ${connectionName} to Salesforce API version ${targetVersion}` : 'Comparing schemas',
         (async () => confirmed
           ? api.request(context, 'POST', `${basePath}/actions/change-sf-api-version`, { target_version: targetVersion })
           : api.request(context, 'GET', `${basePath}/schema-diff`, undefined, { target_version: targetVersion }))()
@@ -90,6 +182,13 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
         ? err.response.data
         : (err && err.body ? err.body : null)
       const message = (data && (data.message || data.error)) || (err && err.message) || 'unknown error'
+      // When the change is rejected because mappings need action, the backend
+      // returns the diff alongside the error. Show it (outside --json, where the
+      // error object is machine-readable on its own) so the customer sees which
+      // mappings to fix rather than just the failure message.
+      if (!parsed.json && data && Array.isArray(data.mappings) && data.mappings.length) {
+        this.printDiff(data, connectionName, targetVersion)
+      }
       this.fail(parsed.json, message, 1)
       return
     }
@@ -101,52 +200,7 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
       return
     }
 
-    cli.log()
-    cli.styledHeader(`Connection: ${connectionName}`)
-    cli.log(`Current API Version: ${result.current_api_version}`)
-    cli.log(`Target API Version:  ${result.target_api_version || targetVersion}`)
-    cli.log()
-
-    // Order rows by how much attention they need: "Action required" (unsafe)
-    // first, then safe changes, then untouched "No changes" rows last. Stable
-    // sort preserves the backend's ordering within each group.
-    const rowRank = (row) =>
-      row.has_unsafe_changes === true ? 0 : row.fields_have_changed === true ? 1 : 2
-    const rows = (result.mappings || []).slice().sort((a, b) => rowRank(a) - rowRank(b))
-
-    cli.table(rows, {
-      columns: [
-        { key: 'name', label: 'Mapping' },
-        {
-          key: 'fields_have_changed',
-          label: 'Status',
-          format: (changed, row) => {
-            // Status is framed purely by whether the customer must act: unsafe/
-            // dropped-field changes need them to unmap & re-map ("Action
-            // required", red); everything else — including no change at all —
-            // needs nothing from them. Whether anything actually changed is
-            // conveyed by the Details column. The label carries the meaning so
-            // it still reads correctly without color (--no-color / piped).
-            if (row.has_unsafe_changes === true) return cli.color.red('Action required')
-            return 'No action required'
-          }
-        },
-        {
-          key: 'result_message',
-          label: 'Details',
-          // Only show details when something actually changed; a "no changes"
-          // row leaves the column blank rather than restating the obvious.
-          // The backend joins each kind of change (unsafe / length increase /
-          // dropped field) with a newline, so render each on its own line
-          // rather than as a run-on paragraph.
-          format: (message, row) => {
-            if (row.fields_have_changed !== true || !message) return ''
-            return message.split('\n').map(line => line.trim()).filter(Boolean).join('\n')
-          }
-        }
-      ]
-    })
-    cli.log()
+    this.printDiff(result, connectionName, targetVersion)
 
     if (!confirmed) {
       cli.log(`To change ${connectionName} to Salesforce API ${targetVersion}, re-run this command with --confirm ${parsed.app}.`)
