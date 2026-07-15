@@ -3,16 +3,6 @@ import cli from '@heroku/heroku-cli-util'
 import * as api from '../../lib/connect/api.js'
 import { normalizeApiVersion } from '../../lib/connect/api-version.js'
 
-// Mapping states in which a mapping is at rest — synced (DATA_SYNCED) or
-// never-synced (INITIAL). Any other state means it's mid-sync (polling, bulk
-// loading, recovering, errored, …). The backend enforces this authoritatively
-// on the change endpoint; this allowlist is only a client-side pre-flight so we
-// can fail fast (before pausing / any network call) with a clear message rather
-// than surfacing the 409. Kept as an allowlist — not a blocklist of busy states
-// — so any new sync state blocks by default. Must match the backend's
-// at_rest_states in apiv3/connections/views.py.
-const AT_REST_MAPPING_STATES = new Set(['DATA_SYNCED', 'INITIAL'])
-
 export default class ConnectManageSfApiVersion extends Command {
   static description = `compare mapping schemas between API versions and optionally change the version
 
@@ -142,27 +132,11 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
 
     const connectionName = connection.name || connection.internal_name
 
-    // Client-side pre-flight for the mutating path (--confirm) only: the preview
-    // is read-only and safe anytime. Changing the version refreshes every
-    // mapping's schema, so it must not run while a mapping is still syncing. The
-    // backend enforces this authoritatively; we check here too so we can fail
-    // fast — before pausing or any network call — with a clear message naming
-    // the mappings to wait on. A mapping stays in its sync state even after the
-    // connection is paused, so this is a per-mapping check, not a connection one.
-    if (confirmed) {
-      const syncing = (connection.mappings || [])
-        .filter(m => !AT_REST_MAPPING_STATES.has(m.state))
-        .map(m => m.object_name)
-      if (syncing.length) {
-        const which = syncing.length === 1 ? 'a mapping is' : 'mappings are'
-        const them = syncing.length === 1 ? 'it' : 'them'
-        this.fail(
-          parsed.json,
-          `Can’t change the version on ${parsed.app} while ${which} still syncing: ${syncing.join(', ')}. Wait for ${them} to finish syncing, then try again.`,
-          1
-        )
-      }
-    }
+    // The backend authoritatively rejects a version change while any mapping is
+    // still syncing (a mapping stays mid-sync even after the connection pauses).
+    // We don't pre-check that here — the 409's `error` is surfaced verbatim by
+    // the catch block below, so the "still syncing" wording stays identical
+    // across the CLI, dashboard, and API.
 
     // Two endpoints, one call per action: preview reads the diff from the
     // schema-diff endpoint; confirming performs the version change, whose

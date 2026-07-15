@@ -344,14 +344,22 @@ describe('connect:manage-sf-api-version', () => {
     connectionApi.done()
   })
 
-  it('refuses --confirm before any upgrade call while a mapping is still syncing', async () => {
+  it('surfaces the backend 409 verbatim when a mapping is still syncing', async () => {
     const discoveryApi = stubDiscovery()
-    // Connection is paused, but a mapping is still polling Salesforce.
     const connectionApi = stubConnectionDetail({
-      mappings: [
-        { object_name: 'Account', state: 'DATA_SYNCED' },
-        { object_name: 'Contact', state: 'POLLING_SF_CHANGES' }
-      ]
+      mappings: [{ object_name: 'Contact', state: 'POLLING_SF_CHANGES' }]
+    })
+    // The backend is the sole authority on the still-syncing rule; the CLI
+    // renders its self-contained `error` string verbatim so the wording matches
+    // the dashboard and API exactly.
+    const upgradeApi = stubUpgrade({
+      confirm: true,
+      targetVersion: '61.0',
+      statusCode: 409,
+      body: {
+        error: 'Mapping Contact is still syncing. Wait for it to finish syncing before changing the API version.',
+        syncing_mappings: ['Contact']
+      }
     })
 
     const { error } = await runCommand(ConnectManageSfApiVersion, [
@@ -360,36 +368,14 @@ describe('connect:manage-sf-api-version', () => {
     ])
 
     expect(error).toBeDefined()
-    expect(error.message).toContain('still syncing')
-    expect(error.message).toContain('Contact')
-    // Only the in-flight mapping is named — the synced one is not.
-    expect(error.message).not.toContain('Account')
-    // No POST should have been issued — the guard runs before the network call.
-    expect(nock.pendingMocks()).toHaveLength(0)
+    // Rendered verbatim — no CLI-composed rewording.
+    expect(error.message).toBe('Mapping Contact is still syncing. Wait for it to finish syncing before changing the API version.')
     discoveryApi.done()
     connectionApi.done()
+    upgradeApi.done()
   })
 
-  it('refuses --confirm while a mapping is busy (non-polling in-flight state)', async () => {
-    const discoveryApi = stubDiscovery()
-    const connectionApi = stubConnectionDetail({
-      mappings: [{ object_name: 'Account', state: 'WAIT_BULK_LOAD' }]
-    })
-
-    const { error } = await runCommand(ConnectManageSfApiVersion, [
-      '--app', appName, '--connection', resourceName,
-      '--target-version', '61.0', '--confirm', appName
-    ])
-
-    expect(error).toBeDefined()
-    expect(error.message).toContain('still syncing')
-    expect(error.message).toContain('Account')
-    expect(nock.pendingMocks()).toHaveLength(0)
-    discoveryApi.done()
-    connectionApi.done()
-  })
-
-  it('allows --confirm when every mapping is settled (DATA_SYNCED)', async () => {
+  it('allows --confirm and upgrades when the backend accepts the change', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail({
       mappings: [{ object_name: 'Account', state: 'DATA_SYNCED' }]
@@ -407,7 +393,7 @@ describe('connect:manage-sf-api-version', () => {
     upgradeApi.done()
   })
 
-  it('does not block the read-only preview when a mapping is still syncing', async () => {
+  it('does not gate the read-only preview on mapping sync state', async () => {
     const discoveryApi = stubDiscovery()
     const connectionApi = stubConnectionDetail({
       mappings: [{ object_name: 'Contact', state: 'POLLING_SF_CHANGES' }]
@@ -418,80 +404,11 @@ describe('connect:manage-sf-api-version', () => {
       '--app', appName, '--connection', resourceName, '--target-version', '61.0'
     ])
 
-    // Preview renders normally — the sync guard only applies to --confirm.
+    // Preview is read-only — it hits the diff endpoint regardless of sync state.
     expect(stdout).toContain('Target API Version:  61.0')
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
-  })
-
-  it('treats a not-at-rest mapping (e.g. errored) as still syncing in the pre-flight', async () => {
-    const discoveryApi = stubDiscovery()
-    // The pre-flight is an allowlist (DATA_SYNCED / INITIAL), so any other
-    // state — including an errored one — is caught before the network call. The
-    // backend remains the authoritative check.
-    const connectionApi = stubConnectionDetail({
-      mappings: [{ object_name: 'Account', state: 'BAD_CONFIG' }]
-    })
-
-    const { error } = await runCommand(ConnectManageSfApiVersion, [
-      '--app', appName, '--connection', resourceName,
-      '--target-version', '61.0', '--confirm', appName
-    ])
-
-    expect(error).toBeDefined()
-    expect(error.message).toContain('still syncing')
-    expect(error.message).toContain('Account')
-    expect(nock.pendingMocks()).toHaveLength(0)
-    discoveryApi.done()
-    connectionApi.done()
-  })
-
-  it('allows --confirm when a mapping is never-synced (INITIAL)', async () => {
-    const discoveryApi = stubDiscovery()
-    const connectionApi = stubConnectionDetail({
-      mappings: [{ object_name: 'Account', state: 'INITIAL' }]
-    })
-    const upgradeApi = stubUpgrade({ confirm: true, targetVersion: '61.0' })
-
-    const { stdout } = await runCommand(ConnectManageSfApiVersion, [
-      '--app', appName, '--connection', resourceName,
-      '--target-version', '61.0', '--confirm', appName
-    ])
-
-    expect(stdout).toContain('Successfully changed version')
-    discoveryApi.done()
-    connectionApi.done()
-    upgradeApi.done()
-  })
-
-  it('surfaces the backend 409 when it rejects a still-syncing mapping the pre-flight missed', async () => {
-    const discoveryApi = stubDiscovery()
-    // Pre-flight sees the mapping as at-rest, but the backend (authoritative,
-    // working from live state) rejects it — the CLI surfaces that error.
-    const connectionApi = stubConnectionDetail({
-      mappings: [{ object_name: 'Account', state: 'DATA_SYNCED' }]
-    })
-    const upgradeApi = stubUpgrade({
-      confirm: true,
-      targetVersion: '61.0',
-      statusCode: 409,
-      body: {
-        error: 'Some mappings are still syncing. Wait for them to finish syncing before changing the API version.',
-        syncing_mappings: ['Account']
-      }
-    })
-
-    const { error } = await runCommand(ConnectManageSfApiVersion, [
-      '--app', appName, '--connection', resourceName,
-      '--target-version', '61.0', '--confirm', appName
-    ])
-
-    expect(error).toBeDefined()
-    expect(error.message).toContain('still syncing')
-    discoveryApi.done()
-    connectionApi.done()
-    upgradeApi.done()
   })
 
   it('displays backend error message when upgrade returns a non-2xx response', async () => {
