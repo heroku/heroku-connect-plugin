@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.3](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.12.2...heroku-connect-plugin-v0.12.3) (2026-07-17)
+
+
+### Dependencies
+
+* bump @opentelemetry/core and @opentelemetry/sdk-trace-base ([#303](https://github.com/heroku/heroku-connect-plugin/issues/303)) ([833ac17](https://github.com/heroku/heroku-connect-plugin/commit/833ac17a6bb8b054b3e09e70bf566e7733d779fe))
+* bump form-data from 4.0.5 to 4.0.6 ([#304](https://github.com/heroku/heroku-connect-plugin/issues/304)) ([98f0da4](https://github.com/heroku/heroku-connect-plugin/commit/98f0da41f4c0074c31fc6d6c3f6e52dea1d75e06))
+
 ## [0.12.2](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.12.1...heroku-connect-plugin-v0.12.2) (2026-06-09)
 
 
