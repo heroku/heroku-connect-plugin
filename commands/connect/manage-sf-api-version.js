@@ -50,8 +50,10 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
     // then untouched "No changes" rows last. Stable sort preserves the
     // backend's ordering within each group.
     const rowRank = (row) =>
-      row.has_unsafe_changes === true ? 0
-        : row.action_undetermined === true ? 1
+      row.has_unsafe_changes === true
+        ? 0
+        : row.action_undetermined === true
+          ? 1
           : row.fields_have_changed === true ? 2 : 3
     const rows = (result.mappings || []).slice().sort((a, b) => rowRank(a) - rowRank(b))
 
