@@ -15,20 +15,24 @@
   ],
   "license": "Apache-2.0",
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "build": "rm -rf dist && tsc && oclif manifest && oclif readme",
+    "lint": "eslint .",
+    "postpublish": "rm -f oclif.manifest.json",
+    "posttest": "npm run lint",
+    "prepare": "npm run build",
     "test": "CONNECT_ADDON=connectqa vitest run",
-    "posttest": "standard",
-    "style-fix": "standard --fix",
-    "build": "oclif manifest"
+    "version": "oclif readme && git add README.md"
   },
   "files": [
-    "/commands",
-    "/lib",
+    "dist",
     "oclif.manifest.json"
   ],
   "oclif": {
     "bin": "heroku",
-    "commands": "./commands",
+    "commands": "./dist/commands",
     "topics": {
       "connect": {
         "description": "manage connections for Heroku Connect"
@@ -43,10 +47,9 @@
   },
   "dependencies": {
     "@heroku-cli/command": "^13.0.0",
-    "@heroku/heroku-cli-util": "^8.0.15",
+    "@heroku/heroku-cli-util": "^10.9.2",
     "@oclif/core": "^4.8.4",
     "axios": "1.16.0",
-    "heroku-client": "^3.0.6",
     "inquirer": "^8.2.7"
   },
   "overrides": {
@@ -54,18 +57,16 @@
   },
   "devDependencies": {
     "@heroku-cli/test-utils": "^0.3.0",
+    "@types/inquirer": "^8.2.10",
+    "@types/node": "^22.15.3",
     "eslint": "^9.39.4",
     "eslint-config-oclif": "^6.0.144",
+    "eslint-plugin-vitest": "^0.5.4",
     "nock": "^14.0.10",
     "oclif": "^4.22.81",
     "sinon": "^22.0.0",
-    "standard": "^17.1.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.8"
-  },
-  "standard": {
-    "ignore": [
-      "workflows-repo/**"
-    ]
   }
 }
