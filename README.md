@@ -29,6 +29,7 @@ $ heroku help connect
 * [`heroku connect:export`](#heroku-connectexport)
 * [`heroku connect:import [FILE]`](#heroku-connectimport-file)
 * [`heroku connect:info`](#heroku-connectinfo)
+* [`heroku connect:manage-sf-api-version`](#heroku-connectmanage-sf-api-version)
 * [`heroku connect:mapping:delete [MAPPING]`](#heroku-connectmappingdelete-mapping)
 * [`heroku connect:mapping:diagnose [MAPPING]`](#heroku-connectmappingdiagnose-mapping)
 * [`heroku connect:mapping:reload [MAPPING]`](#heroku-connectmappingreload-mapping)
@@ -155,6 +156,43 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/connect/info.ts](https://github.com/heroku/heroku-connect-plugin/blob/v0.12.3/src/commands/connect/info.ts)_
+
+## `heroku connect:manage-sf-api-version`
+
+compare mapping schemas between API versions and optionally change the version
+
+```
+USAGE
+  $ heroku connect:manage-sf-api-version -a <value> --connection <value> --target-version <value> [--prompt] [--confirm <value>]
+    [--json]
+
+FLAGS
+  -a, --app=<value>             (required) app to run command against
+      --confirm=<value>         pass the app name to change the connection to the target version after showing the
+                                schema differences
+      --connection=<value>      (required) connection resource name
+      --json                    print output as json
+      --target-version=<value>  (required) Salesforce API version to compare against and change to (example: 61.0)
+
+GLOBAL FLAGS
+  --prompt  interactively prompt for command arguments and flags
+
+DESCRIPTION
+  compare mapping schemas between API versions and optionally change the version
+
+  Shows a per-mapping field diff between the connection's current Salesforce API version and a target version. Pass
+  --confirm to also change the connection to the target version after displaying the diff. The connection must be paused
+  before changing the version.
+
+EXAMPLES
+  $ heroku connect:manage-sf-api-version --app my-app --connection herokuconnect-swiftly-54348 --target-version 61.0
+
+  $ heroku connect:manage-sf-api-version --app my-app --connection herokuconnect-swiftly-54348 --target-version 61.0 --confirm my-app
+
+  $ heroku connect:manage-sf-api-version --app my-app --connection herokuconnect-swiftly-54348 --target-version 61.0 --json
+```
+
+_See code: [src/commands/connect/manage-sf-api-version.ts](https://github.com/heroku/heroku-connect-plugin/blob/v0.12.3/src/commands/connect/manage-sf-api-version.ts)_
 
 ## `heroku connect:mapping:delete [MAPPING]`
 
