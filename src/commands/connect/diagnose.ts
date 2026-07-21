@@ -24,24 +24,15 @@ type DiagnoseResults = {
 
 type DiagnoseFlags = {verbose?: boolean}
 
-function colorize(name: 'dim' | 'green' | 'red' | 'yellow'): (text: string) => string {
-  switch (name) {
-    case 'dim': {return color.gray
-    }
+const colors = {
+  dim: color.gray,
+  green: color.green,
+  red: color.red,
+  yellow: color.yellow,
+} as const
 
-    case 'green': {return color.green
-    }
-
-    case 'red': {return color.red
-    }
-
-    case 'yellow': {return color.yellow
-    }
-  }
-}
-
-function displayResult(label: string, colorName: 'dim' | 'green' | 'red' | 'yellow', displayMessages = true) {
-  const colorFn = colorize(colorName)
+function displayResult(label: string, colorName: keyof typeof colors, displayMessages = true) {
+  const colorFn = colors[colorName]
   return (result: CheckResult): void => {
     ux.stdout(colorFn(`${label}: ${result.display_name}`))
     if (displayMessages) {
