@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@heroku-cli/test-utils": "^0.3.0",
-    "eslint": "^9.39.4",
+    "eslint": "^10.4.1",
     "eslint-config-oclif": "^6.0.144",
     "nock": "^14.0.10",
     "oclif": "^4.22.81",
