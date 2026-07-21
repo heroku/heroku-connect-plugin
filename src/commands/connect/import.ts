@@ -26,7 +26,7 @@ export default class ConnectImport extends Command {
 
     const fName = args.file as string
     ux.action.start(`uploading ${fName}`)
-    const connection = await api.withConnection(context, this.heroku)
+    const connection = await api.withConnection(context)
     context.region = connection.region_url
     const url = `/api/v3/connections/${connection.id}/actions/import`
     const data = JSON.parse(fs.readFileSync(fName, 'utf8'))

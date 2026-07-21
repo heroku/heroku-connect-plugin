@@ -27,6 +27,6 @@ export default class MappingWriteErrors extends Command {
       flags,
     }
 
-    await api.getWriteErrors(context, this.heroku)
+    await api.getWriteErrors(context)
   }
 }

@@ -1,16 +1,13 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 
+import type {Connection} from '../connect/api.js'
+
 export type ConnectContext = {
   app?: string
   args: Record<string, unknown>
   auth: {password: string}
   flags: Record<string, unknown>
   region?: string
-}
-
-type Connection = {
-  [key: string]: unknown
-  detail_url: string
 }
 
 type RequestOptions = {

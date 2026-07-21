@@ -24,11 +24,11 @@ export default class ConnectInfo extends Command {
 
     let connections: api.Connection[]
     if (flags['check-for-new']) {
-      connections = await api.requestAppAccess(context, flags.app, flags, true, this.heroku)
+      connections = await api.requestAppAccess(context, flags.app)
     } else {
-      connections = await api.withUserConnections(context, flags.app, flags, true, this.heroku)
+      connections = await api.withUserConnections(context, flags.app)
       if (connections.length === 0) {
-        connections = await api.requestAppAccess(context, flags.app, flags, true, this.heroku)
+        connections = await api.requestAppAccess(context, flags.app)
       }
     }
 
@@ -45,7 +45,7 @@ export default class ConnectInfo extends Command {
       styledHeader(`Connection [${connection.id}] / ${connection.resource_name} (${connection.state})`)
       ux.stdout()
       if (connection.mappings.length > 0) {
-        table(connection.mappings as unknown as Array<Record<string, unknown>>, {
+        table(connection.mappings, {
           object_name: {header: 'Object Name'},
           state: {header: 'State'},
         })

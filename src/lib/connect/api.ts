@@ -9,6 +9,7 @@ import {DiscoveryClient} from '../clients/discovery.js'
 export const ADDON_TYPE_SYNC = 1
 
 export type ConnectionMapping = {
+  [key: string]: unknown
   id: string
   object_name: string
   state: string
@@ -18,6 +19,7 @@ export type Connection = {
   [key: string]: unknown
   app_name?: string
   db_key?: string
+  detail_url: string
   id: number
   internal_name?: string
   mappings: ConnectionMapping[]
@@ -48,12 +50,6 @@ export function request(
 export async function withUserConnections(
   context: ConnectContext,
   appName: string,
-
-  _flags: unknown,
-
-  _allowNone?: unknown,
-
-  _heroku?: unknown,
   addonType?: number,
 ): Promise<Connection[]> {
   const connectClient = new ConnectClient(context)
@@ -67,7 +63,7 @@ export async function withUserConnections(
   }
 
   const fetchConnectionDetailFuncs = connections.map(async c => {
-    const response = await connectClient.getDetails(c as unknown as {detail_url: string})
+    const response = await connectClient.getDetails(c)
     return {...c, ...response.data} as Connection
   })
 
@@ -76,8 +72,6 @@ export async function withUserConnections(
 
 export async function withConnection(
   context: ConnectContext,
-
-  _heroku?: unknown,
   addonType?: number,
 ): Promise<Connection> {
   const connectClient = new ConnectClient(context)
@@ -95,11 +89,11 @@ export async function withConnection(
   }
 
   const match = connections[0]
-  const matchDetailResponse = await connectClient.getDetails(match as unknown as {detail_url: string})
+  const matchDetailResponse = await connectClient.getDetails(match)
   return {...match, ...matchDetailResponse.data} as Connection
 }
 
-export async function withMapping(connection: Connection, objectName?: string): Promise<ConnectionMapping> {
+export async function withMapping(connection: Pick<Connection, 'mappings'>, objectName?: string): Promise<ConnectionMapping> {
   const objectNameLower = objectName?.toLowerCase()
   const mapping = connection.mappings.find(m => m.object_name.toLowerCase() === objectNameLower)
   if (mapping) {
@@ -112,21 +106,18 @@ export async function withMapping(connection: Connection, objectName?: string): 
 export async function requestAppAccess(
   context: ConnectContext,
   app: string,
-  flags: unknown,
-  allowNone: unknown,
-  heroku: unknown,
   addonType?: number,
 ): Promise<Connection[]> {
   const discoveryClient = new DiscoveryClient(context)
   await discoveryClient.requestAppAccess(app, addonType)
-  return withUserConnections(context, app, flags, allowNone, heroku, addonType)
+  return withUserConnections(context, app, addonType)
 }
 
-export async function getWriteErrors(context: ConnectContext, heroku?: unknown): Promise<void> {
+export async function getWriteErrors(context: ConnectContext): Promise<void> {
   let url: string
   let action: string
   const mappingName = context.args.name as string | undefined
-  const connection = await withConnection(context, heroku)
+  const connection = await withConnection(context)
   context.region = connection.region_url
   if (mappingName) {
     const mapping = await withMapping(connection, mappingName)

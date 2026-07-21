@@ -41,7 +41,7 @@ export default class Notifications extends Command {
       flags,
     }
 
-    const connection = await api.withConnection(context, this.heroku)
+    const connection = await api.withConnection(context)
     context.region = connection.region_url
 
     const params = {

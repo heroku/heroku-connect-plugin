@@ -21,7 +21,7 @@ export default class ConnectResume extends Command {
     }
 
     ux.action.start('resuming connection')
-    const connection = await api.withConnection(context, this.heroku)
+    const connection = await api.withConnection(context)
     context.region = connection.region_url
     const url = `/api/v3/connections/${connection.id}/actions/resume`
     await api.request(context, 'POST', url)

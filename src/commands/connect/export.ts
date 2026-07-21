@@ -22,7 +22,7 @@ export default class ConnectExport extends Command {
     }
 
     ux.action.start('fetching configuration')
-    const connection = await api.withConnection(context, this.heroku)
+    const connection = await api.withConnection(context)
     context.region = connection.region_url
     const url = `/api/v3/connections/${connection.id}/actions/export`
     const response = await api.request(context, 'GET', url)

@@ -81,7 +81,7 @@ export default class ConnectDiagnose extends Command {
     }
 
     let didDisplayAnything = false
-    const connection = await api.withConnection(context, this.heroku)
+    const connection = await api.withConnection(context)
     context.region = connection.region_url
 
     ux.action.start('Diagnosing connection')

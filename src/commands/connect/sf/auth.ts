@@ -46,7 +46,7 @@ export default class SfAuth extends Command {
     }
 
     ux.action.start('fetching authorizing URL')
-    const connection = await api.withConnection(context, this.heroku)
+    const connection = await api.withConnection(context)
     context.region = connection.region_url
 
     const url = `/api/v3/connections/${connection.id}/authorize_url`
@@ -55,12 +55,12 @@ export default class SfAuth extends Command {
       next: `http://localhost:${LOCAL_PORT}`,
     }
 
-    if (context.flags.environment) {
-      requestArgs.environment = context.flags.environment as string
+    if (flags.environment) {
+      requestArgs.environment = flags.environment
     }
 
-    if (context.flags.environment === 'custom' && context.flags.domain) {
-      requestArgs.domain = context.flags.domain as string
+    if (flags.environment === 'custom' && flags.domain) {
+      requestArgs.domain = flags.domain
     }
 
     const response = await api.request(context, 'POST', url, requestArgs)

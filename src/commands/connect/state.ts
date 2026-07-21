@@ -21,14 +21,14 @@ export default class ConnectState extends Command {
       flags,
     }
 
-    const connections = await api.withUserConnections(context, flags.app, flags, undefined, this.heroku)
+    const connections = await api.withUserConnections(context, flags.app)
 
     if (flags.json) {
       styledJSON(connections)
       return
     }
 
-    table(connections as unknown as Array<Record<string, unknown>>, {
+    table(connections, {
       db_key: {header: 'Database'},
       schema_name: {header: 'Schema'},
       state: {header: 'State'},

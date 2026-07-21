@@ -51,11 +51,11 @@ export default class DbSet extends Command {
     }
 
     const data: Record<string, string | undefined> = {
-      db_key: context.flags.db as string | undefined,
-      schema_name: context.flags.schema as string | undefined,
+      db_key: flags.db,
+      schema_name: flags.schema,
     }
 
-    const connection = await api.withConnection(context, this.heroku)
+    const connection = await api.withConnection(context)
     context.region = connection.region_url
 
     const answers = await inquirer.prompt([
@@ -64,13 +64,13 @@ export default class DbSet extends Command {
         message: "Select the config var that points to the database you'd like to use",
         name: 'db_key',
         type: 'list',
-        when: !context.flags.db,
+        when: !flags.db,
       },
       {
-        default: (context.flags.schema as string | undefined) || 'salesforce',
-        message: "Enter a schema name you'd like to use for the conneted data",
+        default: flags.schema || 'salesforce',
+        message: "Enter a schema name you'd like to use for the connected data",
         name: 'schema_name',
-        when: !context.flags.schema,
+        when: !flags.schema,
       },
     ])
 

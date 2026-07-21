@@ -23,6 +23,6 @@ export default class ConnectWriteErrors extends Command {
       flags,
     }
 
-    await api.getWriteErrors(context, this.heroku)
+    await api.getWriteErrors(context)
   }
 }

@@ -28,7 +28,7 @@ export default class MappingDelete extends Command {
     await confirmCommand({comparison: flags.app, confirmation: flags.confirm})
 
     ux.action.start('deleting mapping')
-    const connection = await api.withConnection(context, this.heroku)
+    const connection = await api.withConnection(context)
     context.region = connection.region_url
     const mapping = await api.withMapping(connection, context.args.mapping as string | undefined)
     const response = await api.request(context, 'DELETE', `/api/v3/mappings/${mapping.id}`)
