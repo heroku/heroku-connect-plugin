@@ -48,7 +48,7 @@
     }
   },
   "dependencies": {
-    "@heroku-cli/command": "^12.2.1",
+    "@heroku-cli/command": "^13.0.0",
     "@heroku/heroku-cli-util": "^8.0.15",
     "@oclif/core": "^4.8.4",
     "axios": "1.16.0",
