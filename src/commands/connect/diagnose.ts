@@ -15,11 +15,11 @@ type CheckResult = {
 }
 
 type DiagnoseResults = {
-  errors: CheckResult[]
+  errors?: CheckResult[]
   mappings?: Record<string, DiagnoseResults>
-  passes: CheckResult[]
-  skips: CheckResult[]
-  warnings: CheckResult[]
+  passes?: CheckResult[]
+  skips?: CheckResult[]
+  warnings?: CheckResult[]
 }
 
 type DiagnoseFlags = {verbose?: boolean}
@@ -45,16 +45,18 @@ function displayResult(label: string, colorName: keyof typeof colors, displayMes
 }
 
 export function displayResults(results: DiagnoseResults, flags: DiagnoseFlags): void {
-  results.errors.forEach(displayResult('RED', 'red'))
-  results.warnings.forEach(displayResult('YELLOW', 'yellow'))
+  results.errors?.forEach(displayResult('RED', 'red'))
+  results.warnings?.forEach(displayResult('YELLOW', 'yellow'))
   if (flags.verbose) {
-    results.passes.forEach(displayResult('GREEN', 'green', false))
-    results.skips.forEach(displayResult('SKIPPED', 'dim', false))
+    results.passes?.forEach(displayResult('GREEN', 'green', false))
+    results.skips?.forEach(displayResult('SKIPPED', 'dim', false))
   }
 }
 
 function shouldDisplay(results: DiagnoseResults, flags: DiagnoseFlags): boolean {
-  return results.errors.length > 0 || results.warnings.length > 0 || Boolean(flags.verbose)
+  const errorCount = results.errors?.length ?? 0
+  const warningCount = results.warnings?.length ?? 0
+  return errorCount > 0 || warningCount > 0 || Boolean(flags.verbose)
 }
 
 function timeout(duration: number): Promise<void> {

@@ -94,4 +94,52 @@ describe('connect:diagnose', () => {
     connectionDetailApi.done()
     connectionValidationApi.done()
   })
+
+  it('handles a validation payload that omits result arrays', async () => {
+    const appName = 'fake-app'
+
+    const discoveryApi = nock('https://hc-central-qa.herokai.com/', {reqheaders: headers})
+      .get('/connections')
+      .query({app: appName})
+      .reply(200, {
+        results: [
+          {
+            detail_url: 'https://hc-virginia-qa.herokai.com/connections/1234',
+          },
+        ],
+      })
+
+    const connectionData = {
+      db_key: 'DATABASE_URL',
+      id: 1234,
+      name: 'awesome-connection-1234',
+      region_url: 'https://hc-virginia-qa.herokai.com/',
+      schema_name: 'salesforce',
+      state: 'IDLE',
+    }
+
+    const connectionDetailApi = nock('https://hc-virginia-qa.herokai.com/', {reqheaders: headers})
+      .get('/connections/1234')
+      .query({deep: true})
+      .reply(200, connectionData)
+
+    const connectionValidationApi = nock('https://hc-virginia-qa.herokai.com/', {reqheaders: headers})
+      .post('/api/v3/connections/1234/validations')
+      .reply(202, {
+        result_url: 'https://hc-virginia-qa.herokai.com/api/v3/connections/1234/validations/456',
+      })
+      .get('/api/v3/connections/1234/validations/456')
+      .reply(200, {
+        mappings: {
+          Account: {},
+        },
+      })
+
+    const {stdout} = await runCommand(ConnectDiagnose, ['--app', appName])
+
+    expect(stdout).toContain('Everything appears to be fine')
+    discoveryApi.done()
+    connectionDetailApi.done()
+    connectionValidationApi.done()
+  })
 })
