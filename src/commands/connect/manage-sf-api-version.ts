@@ -96,7 +96,9 @@ The connection must be paused before changing the version.`
 
     const rows = [...(result.mappings || [])].sort((a, b) => rowRank(a) - rowRank(b))
 
+    /* eslint-disable perfectionist/sort-objects */
     table(rows as unknown as Array<Record<string, unknown>>, {
+      name: {header: 'Mapping'},
       fields_have_changed: {
         get(row: Record<string, unknown>): string {
           const r = row as unknown as DiffMapping
@@ -106,7 +108,6 @@ The connection must be paused before changing the version.`
         },
         header: 'Status',
       },
-      name: {header: 'Mapping'},
       result_message: {
         get(row: Record<string, unknown>): string {
           const r = row as unknown as DiffMapping
@@ -119,6 +120,7 @@ The connection must be paused before changing the version.`
     }, {maxWidth: 'none', overflow: 'wrap'})
     ux.stdout()
   }
+  /* eslint-enable perfectionist/sort-objects */
 
   async run(): Promise<void> {
     const {flags: parsed} = await this.parse(ConnectManageSfApiVersion)
