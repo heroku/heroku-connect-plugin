@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.1](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.0...heroku-connect-plugin-v0.13.1) (2026-07-23)
+
+
+### Code Refactoring
+
+* rename --connection flag to --resource for consistency in manage-sf-api-version ([#311](https://github.com/heroku/heroku-connect-plugin/issues/311)) ([5e6d09a](https://github.com/heroku/heroku-connect-plugin/commit/5e6d09acc16af767cdbf32aac1fb689a2e8c2071))
+
 ## [0.13.0](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.12.3...heroku-connect-plugin-v0.13.0) (2026-07-22)
 
 
