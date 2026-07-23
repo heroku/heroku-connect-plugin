@@ -5,7 +5,7 @@ import {ConnectContext} from '../../lib/clients/connect.js'
 import * as api from '../../lib/connect/api.js'
 
 export default class ConnectState extends Command {
-  static description = 'return the connection(s) state'
+  static description = 'Return the connection(s) state'
   static flags = {
     app: flags.app({required: true}),
     json: flags.boolean({description: 'print output as json'}),

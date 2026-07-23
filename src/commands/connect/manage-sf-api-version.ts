@@ -31,7 +31,7 @@ function rowRank(row: DiffMapping): number {
 }
 
 export default class ConnectManageSfApiVersion extends Command {
-  static description = `compare mapping schemas between API versions and optionally change the version
+  static description = `Compare mapping schemas between API versions and optionally change the version
 
 Shows a per-mapping field diff between the connection's current Salesforce API version and a target version. \
 Pass --confirm to also change the connection to the target version after displaying the diff. \

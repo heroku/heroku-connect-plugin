@@ -8,7 +8,7 @@ export default class MappingState extends Command {
   static args = {
     mapping: Args.string({description: 'mapping name'}),
   }
-  static description = 'return a mapping state'
+  static description = 'Return a mapping state'
   static flags = {
     app: flags.app({required: true}),
     resource: flags.string({description: 'specific connection resource name'}),

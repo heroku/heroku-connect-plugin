@@ -6,7 +6,7 @@ import {ConnectContext} from '../../lib/clients/connect.js'
 import * as api from '../../lib/connect/api.js'
 
 export default class ConnectInfo extends Command {
-  static description = 'display connection information'
+  static description = 'Display connection information'
   static flags = {
     app: flags.app({required: true}),
     'check-for-new': flags.boolean({char: 'c', description: 'check for access to any new connections'}),
