@@ -22,6 +22,7 @@ const baseConnection = {
   id: 1234,
   name: 'fake-app:fake-conn',
   region_url: 'https://hc-virginia-qa.herokai.com/',
+  resource_name: 'herokuconnect-swiftly-54348',
   state: 'PAUSED',
 }
 
@@ -30,6 +31,15 @@ function stubDiscovery() {
     .get('/connections')
     .query({app: appName, resource_name: resourceName})
     .reply(200, {results: [{detail_url: connectionDetailUrl}]})
+}
+
+// When --resource is omitted, discovery is queried by app only. Mirrors how
+// every other connect command resolves a single connection without --resource.
+function stubDiscoveryWithoutResource(results = [{detail_url: connectionDetailUrl}]) {
+  return nock('https://hc-central-qa.herokai.com/', {reqheaders: headers})
+    .get('/connections')
+    .query({app: appName})
+    .reply(200, {results})
 }
 
 function stubConnectionDetail(extra: Record<string, unknown> = {}) {
@@ -87,7 +97,7 @@ describe('connect:manage-sf-api-version', () => {
 
   it('rejects a non-numeric --target-version before any network call', async () => {
     const {error} = await runCommand(ConnectManageSfApiVersion, [
-      '--app', appName, '--connection', resourceName, '--target-version', 'not-a-version',
+      '--app', appName, '--resource', resourceName, '--target-version', 'not-a-version',
     ])
     expect(error).toBeDefined()
     expect(error?.message).toContain('--target-version "not-a-version" is invalid')
@@ -96,7 +106,7 @@ describe('connect:manage-sf-api-version', () => {
 
   it('emits a structured JSON error for an invalid --target-version when --json is passed', async () => {
     const {stdout} = await runCommand(ConnectManageSfApiVersion, [
-      '--app', appName, '--connection', resourceName, '--target-version', 'not-a-version', '--json',
+      '--app', appName, '--resource', resourceName, '--target-version', 'not-a-version', '--json',
     ])
     const parsed = JSON.parse(stdout)
     expect(parsed.error).toContain('--target-version "not-a-version" is invalid')
@@ -110,7 +120,7 @@ describe('connect:manage-sf-api-version', () => {
     const {stdout} = await runCommand(ConnectManageSfApiVersion, [
       '--app',
       appName,
-      '--connection',
+      '--resource',
       resourceName,
       '--target-version',
       '61.0',
@@ -139,7 +149,7 @@ describe('connect:manage-sf-api-version', () => {
     const {stdout} = await runCommand(ConnectManageSfApiVersion, [
       '--app',
       appName,
-      '--connection',
+      '--resource',
       resourceName,
       '--target-version',
       '61.0',
@@ -160,7 +170,7 @@ describe('connect:manage-sf-api-version', () => {
     const connectionApi = stubConnectionDetail()
     const diffApi = stubUpgrade({targetVersion: '61.0'})
 
-    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61'])
+    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--resource', resourceName, '--target-version', '61'])
 
     expect(stdout).toContain('Target API Version:  61.0')
     discoveryApi.done()
@@ -179,8 +189,11 @@ describe('connect:manage-sf-api-version', () => {
       targetVersion: '61.0',
     })
 
-    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
+    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--resource', resourceName, '--target-version', '61.0'])
 
+    // The header identifies the connection by its resource name (what --resource
+    // takes), not the app-prefixed `name` field.
+    expect(stdout).toContain('Connection: herokuconnect-swiftly-54348')
     expect(stdout).toContain('Current API Version: 55.0')
     expect(stdout).toContain('Target API Version:  61.0')
     expect(stdout).toContain('Account')
@@ -192,6 +205,33 @@ describe('connect:manage-sf-api-version', () => {
     discoveryApi.done()
     connectionApi.done()
     diffApi.done()
+  })
+
+  it('resolves the single connection on an app when --resource is omitted', async () => {
+    const discoveryApi = stubDiscoveryWithoutResource()
+    const connectionApi = stubConnectionDetail()
+    const diffApi = stubUpgrade({targetVersion: '61.0'})
+
+    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--target-version', '61.0'])
+
+    expect(stdout).toContain('Target API Version:  61.0')
+    discoveryApi.done()
+    connectionApi.done()
+    diffApi.done()
+  })
+
+  it('errors asking for --resource when the app has more than one connection', async () => {
+    const discoveryApi = stubDiscoveryWithoutResource([
+      {detail_url: connectionDetailUrl},
+      {detail_url: 'https://hc-virginia-qa.herokai.com/connections/5678'},
+    ])
+
+    const {error} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--target-version', '61.0'])
+
+    expect(error).toBeDefined()
+    expect(error?.message).toContain('Multiple connections found')
+    expect(error?.message).toContain('--resource')
+    discoveryApi.done()
   })
 
   it('shows "Action required" for an unsafe change and "No action required" otherwise', async () => {
@@ -209,7 +249,7 @@ describe('connect:manage-sf-api-version', () => {
       targetVersion: '61.0',
     })
 
-    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
+    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--resource', resourceName, '--target-version', '61.0'])
 
     expect(stdout).toContain('Action required')
     expect(stdout).toContain('No action required')
@@ -239,7 +279,7 @@ describe('connect:manage-sf-api-version', () => {
       targetVersion: '61.0',
     })
 
-    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
+    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--resource', resourceName, '--target-version', '61.0'])
 
     expect(stdout.indexOf('Contact')).toBeLessThan(stdout.indexOf('Account'))
     expect(stdout.indexOf('Account')).toBeLessThan(stdout.indexOf('Opportunity'))
@@ -263,7 +303,7 @@ describe('connect:manage-sf-api-version', () => {
       targetVersion: '61.0',
     })
 
-    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
+    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--resource', resourceName, '--target-version', '61.0'])
 
     expect(stdout).toContain('Length increased in Salesforce for field: name.')
     expect(stdout).toContain('Fields removed from Salesforce: number.')
@@ -294,7 +334,7 @@ describe('connect:manage-sf-api-version', () => {
       targetVersion: '61.0',
     })
 
-    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0'])
+    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--resource', resourceName, '--target-version', '61.0'])
 
     expect(stdout).toContain('Action undetermined')
     expect(stdout).toContain('Unable to determine if an action is required.')
@@ -317,7 +357,7 @@ describe('connect:manage-sf-api-version', () => {
     }
     const diffApi = stubUpgrade({body: responseBody, targetVersion: '61.0'})
 
-    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--connection', resourceName, '--target-version', '61.0', '--json'])
+    const {stdout} = await runCommand(ConnectManageSfApiVersion, ['--app', appName, '--resource', resourceName, '--target-version', '61.0', '--json'])
 
     expect(JSON.parse(stdout)).toEqual(responseBody)
     discoveryApi.done()
@@ -337,7 +377,7 @@ describe('connect:manage-sf-api-version', () => {
     const {stdout} = await runCommand(ConnectManageSfApiVersion, [
       '--app',
       appName,
-      '--connection',
+      '--resource',
       resourceName,
       '--target-version',
       '61.0',
@@ -362,7 +402,7 @@ describe('connect:manage-sf-api-version', () => {
     const {stdout} = await runCommand(ConnectManageSfApiVersion, [
       '--app',
       appName,
-      '--connection',
+      '--resource',
       resourceName,
       '--target-version',
       '61.0',
@@ -383,7 +423,7 @@ describe('connect:manage-sf-api-version', () => {
     const {error} = await runCommand(ConnectManageSfApiVersion, [
       '--app',
       appName,
-      '--connection',
+      '--resource',
       resourceName,
       '--target-version',
       '61.0',
@@ -416,7 +456,7 @@ describe('connect:manage-sf-api-version', () => {
     const {error} = await runCommand(ConnectManageSfApiVersion, [
       '--app',
       appName,
-      '--connection',
+      '--resource',
       resourceName,
       '--target-version',
       '61.0',
@@ -441,7 +481,7 @@ describe('connect:manage-sf-api-version', () => {
     const {stdout} = await runCommand(ConnectManageSfApiVersion, [
       '--app',
       appName,
-      '--connection',
+      '--resource',
       resourceName,
       '--target-version',
       '61.0',
@@ -463,7 +503,7 @@ describe('connect:manage-sf-api-version', () => {
     const diffApi = stubUpgrade({targetVersion: '61.0'})
 
     const {stdout} = await runCommand(ConnectManageSfApiVersion, [
-      '--app', appName, '--connection', resourceName, '--target-version', '61.0',
+      '--app', appName, '--resource', resourceName, '--target-version', '61.0',
     ])
 
     expect(stdout).toContain('Target API Version:  61.0')
@@ -485,7 +525,7 @@ describe('connect:manage-sf-api-version', () => {
     const {error} = await runCommand(ConnectManageSfApiVersion, [
       '--app',
       appName,
-      '--connection',
+      '--resource',
       resourceName,
       '--target-version',
       '61.0',
@@ -525,7 +565,7 @@ describe('connect:manage-sf-api-version', () => {
     const {error, stdout} = await runCommand(ConnectManageSfApiVersion, [
       '--app',
       appName,
-      '--connection',
+      '--resource',
       resourceName,
       '--target-version',
       '61.0',
@@ -566,7 +606,7 @@ describe('connect:manage-sf-api-version', () => {
     const {stdout} = await runCommand(ConnectManageSfApiVersion, [
       '--app',
       appName,
-      '--connection',
+      '--resource',
       resourceName,
       '--target-version',
       '61.0',
@@ -591,7 +631,7 @@ describe('connect:manage-sf-api-version', () => {
     const {stdout} = await runCommand(ConnectManageSfApiVersion, [
       '--app',
       appName,
-      '--connection',
+      '--resource',
       resourceName,
       '--target-version',
       '61.0',

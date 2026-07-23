@@ -163,15 +163,15 @@ compare mapping schemas between API versions and optionally change the version
 
 ```
 USAGE
-  $ heroku connect:manage-sf-api-version -a <value> --connection <value> --target-version <value> [--prompt] [--confirm <value>]
-    [--json]
+  $ heroku connect:manage-sf-api-version -a <value> --target-version <value> [--prompt] [--confirm <value>] [--json] [--resource
+    <value>]
 
 FLAGS
   -a, --app=<value>             (required) app to run command against
       --confirm=<value>         pass the app name to change the connection to the target version after showing the
                                 schema differences
-      --connection=<value>      (required) connection resource name
       --json                    print output as json
+      --resource=<value>        specific connection resource name
       --target-version=<value>  (required) Salesforce API version to compare against and change to (example: 61.0)
 
 GLOBAL FLAGS
@@ -185,11 +185,11 @@ DESCRIPTION
   before changing the version.
 
 EXAMPLES
-  $ heroku connect:manage-sf-api-version --app my-app --connection herokuconnect-swiftly-54348 --target-version 61.0
+  $ heroku connect:manage-sf-api-version --app my-app --resource herokuconnect-swiftly-54348 --target-version 61.0
 
-  $ heroku connect:manage-sf-api-version --app my-app --connection herokuconnect-swiftly-54348 --target-version 61.0 --confirm my-app
+  $ heroku connect:manage-sf-api-version --app my-app --resource herokuconnect-swiftly-54348 --target-version 61.0 --confirm my-app
 
-  $ heroku connect:manage-sf-api-version --app my-app --connection herokuconnect-swiftly-54348 --target-version 61.0 --json
+  $ heroku connect:manage-sf-api-version --app my-app --resource herokuconnect-swiftly-54348 --target-version 61.0 --json
 ```
 
 _See code: [src/commands/connect/manage-sf-api-version.ts](https://github.com/heroku/heroku-connect-plugin/blob/v0.12.3/src/commands/connect/manage-sf-api-version.ts)_

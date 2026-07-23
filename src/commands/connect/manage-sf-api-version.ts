@@ -37,15 +37,15 @@ Shows a per-mapping field diff between the connection's current Salesforce API v
 Pass --confirm to also change the connection to the target version after displaying the diff. \
 The connection must be paused before changing the version.`
   static examples = [
-    '$ heroku connect:manage-sf-api-version --app my-app --connection herokuconnect-swiftly-54348 --target-version 61.0',
-    '$ heroku connect:manage-sf-api-version --app my-app --connection herokuconnect-swiftly-54348 --target-version 61.0 --confirm my-app',
-    '$ heroku connect:manage-sf-api-version --app my-app --connection herokuconnect-swiftly-54348 --target-version 61.0 --json',
+    '$ heroku connect:manage-sf-api-version --app my-app --resource herokuconnect-swiftly-54348 --target-version 61.0',
+    '$ heroku connect:manage-sf-api-version --app my-app --resource herokuconnect-swiftly-54348 --target-version 61.0 --confirm my-app',
+    '$ heroku connect:manage-sf-api-version --app my-app --resource herokuconnect-swiftly-54348 --target-version 61.0 --json',
   ]
   static flags = {
     app: flags.app({required: true}),
     confirm: flags.string({description: 'pass the app name to change the connection to the target version after showing the schema differences'}),
-    connection: flags.string({description: 'connection resource name', required: true}),
     json: flags.boolean({description: 'print output as json'}),
+    resource: flags.string({description: 'specific connection resource name'}),
     'target-version': flags.string({description: 'Salesforce API version to compare against and change to (example: 61.0)', required: true}),
   }
 
@@ -139,14 +139,14 @@ The connection must be paused before changing the version.`
       app: parsed.app,
       args: {},
       auth: {password: (await this.heroku.getAuth()) as string},
-      flags: {...parsed, resource: parsed.connection},
+      flags: parsed,
     }
 
     const connection = await api.withConnection(context)
     context.region = connection.region_url
 
     const confirmed = this.validateConfirm(parsed.confirm, parsed.app, parsed.json)
-    const connectionName = connection.name || connection.internal_name || ''
+    const connectionName = connection.resource_name || connection.name || connection.internal_name || ''
 
     const result = await this.fetchResult(context, connection, connectionName, targetVersion, confirmed, parsed.json)
 
