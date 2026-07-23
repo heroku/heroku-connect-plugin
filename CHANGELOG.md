@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.13.0](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.12.3...heroku-connect-plugin-v0.13.0) (2026-07-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove connect-events pilot commands and migrate to TypeScript ([#309](https://github.com/heroku/heroku-connect-plugin/issues/309))
+
+### Features
+
+* remove connect-events pilot commands and migrate to TypeScript ([#309](https://github.com/heroku/heroku-connect-plugin/issues/309)) ([99d2435](https://github.com/heroku/heroku-connect-plugin/commit/99d2435eabe128d8efaf0a7db67f7269e97066f7))
+
 ## [0.12.3](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.12.2...heroku-connect-plugin-v0.12.3) (2026-07-17)
 
 
