@@ -35,13 +35,13 @@
     "commands": "./dist/commands",
     "topics": {
       "connect": {
-        "description": "manage connections for Heroku Connect"
+        "description": "Manage connections for Heroku Connect"
       },
       "connect:mapping": {
-        "description": "manage mappings on a Heroku Connect addon"
+        "description": "Manage mappings on a Heroku Connect addon"
       },
       "connect:notifications": {
-        "description": "manage notifications on a Heroku Connect addon"
+        "description": "Manage notifications on a Heroku Connect addon"
       }
     }
   },
