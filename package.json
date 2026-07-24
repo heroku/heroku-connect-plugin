@@ -33,6 +33,7 @@
   "oclif": {
     "bin": "heroku",
     "commands": "./dist/commands",
+    "repositoryPrefix": "<%- repo %>/blob/heroku-connect-plugin-v<%- version %>/<%- commandPath %>",
     "topics": {
       "connect": {
         "description": "Manage connections for Heroku Connect"
