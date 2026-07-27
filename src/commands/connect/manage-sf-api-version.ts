@@ -117,7 +117,7 @@ The connection must be paused before changing the version.`
         },
         header: 'Details',
       },
-    }, {maxWidth: 'none', overflow: 'wrap'})
+    }, {overflow: 'wrap'})
     ux.stdout()
   }
   /* eslint-enable perfectionist/sort-objects */
