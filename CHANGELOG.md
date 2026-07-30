@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.2](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.1...heroku-connect-plugin-v0.13.2) (2026-07-30)
+
+
+### Bug Fixes
+
+* align wrapped Details column in schema diff table ([#315](https://github.com/heroku/heroku-connect-plugin/issues/315)) ([bad4163](https://github.com/heroku/heroku-connect-plugin/commit/bad416390faf8c9faa3ed354d60e5d74c040ba0b))
+* capitalize descriptions and repair broken README command links ([#313](https://github.com/heroku/heroku-connect-plugin/issues/313)) ([83f97d4](https://github.com/heroku/heroku-connect-plugin/commit/83f97d479b8bba2d43f79eb2bb978ff3ee5b9a38))
+
 ## [0.13.1](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.0...heroku-connect-plugin-v0.13.1) (2026-07-23)
 
 
