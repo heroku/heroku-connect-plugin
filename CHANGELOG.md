@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.13.3](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.2...heroku-connect-plugin-v0.13.3) (2026-08-21)
+
+
+### Dependencies
+
+* bump @heroku-cli/command from 13.0.0 to 13.1.0 ([#285](https://github.com/heroku/heroku-connect-plugin/issues/285)) ([aa0d2c9](https://github.com/heroku/heroku-connect-plugin/commit/aa0d2c9fd892f040ce015ca8a3b89231e8e4e841))
+* bump axios from 1.16.0 to 1.18.0 ([#308](https://github.com/heroku/heroku-connect-plugin/issues/308)) ([1801331](https://github.com/heroku/heroku-connect-plugin/commit/1801331b850bb5a11ded26990371708161e3e4b8))
+* bump axios from 1.18.0 to 1.19.0 ([#322](https://github.com/heroku/heroku-connect-plugin/issues/322)) ([2ae780e](https://github.com/heroku/heroku-connect-plugin/commit/2ae780e40e0434b10dff9440e069ae70e6638c76))
+* bump postcss from 8.5.15 to 8.5.25 ([#316](https://github.com/heroku/heroku-connect-plugin/issues/316)) ([c7d92e9](https://github.com/heroku/heroku-connect-plugin/commit/c7d92e956875bd1be24f1906c8125696ec695323))
+
 ## [0.13.2](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.1...heroku-connect-plugin-v0.13.2) (2026-07-30)
 
 
