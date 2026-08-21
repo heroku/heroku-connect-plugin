@@ -60,6 +60,7 @@
     "@heroku-cli/test-utils": "^1.0.1",
     "@types/inquirer": "^8.2.10",
     "@types/node": "^22.15.3",
+    "@vitest/eslint-plugin": "^1.6.27",
     "eslint": "^9.39.4",
     "eslint-config-oclif": "^6.0.144",
     "eslint-plugin-vitest": "^0.5.4",
