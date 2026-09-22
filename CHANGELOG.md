@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.4](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.3...heroku-connect-plugin-v0.13.4) (2026-09-22)
+
+
+### Dependencies
+
+* bump @heroku/heroku-cli-util from 10.9.2 to 10.10.0 ([#329](https://github.com/heroku/heroku-connect-plugin/issues/329)) ([8807e62](https://github.com/heroku/heroku-connect-plugin/commit/8807e62d8b273bb2f32e0b2064381ebfdac24f5c))
+* bump @oclif/core from 4.13.5 to 4.14.0 ([#328](https://github.com/heroku/heroku-connect-plugin/issues/328)) ([2cdb6ed](https://github.com/heroku/heroku-connect-plugin/commit/2cdb6ed2e4ba03cb984b237acd32d3ca6895c09a))
+
 ## [0.13.3](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.2...heroku-connect-plugin-v0.13.3) (2026-08-21)
 
 
