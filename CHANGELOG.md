@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.5](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.4...heroku-connect-plugin-v0.13.5) (2026-10-01)
+
+
+### Dependencies
+
+* bump axios from 1.19.0 to 1.20.0 ([#340](https://github.com/heroku/heroku-connect-plugin/issues/340)) ([4819799](https://github.com/heroku/heroku-connect-plugin/commit/4819799ee7f295181593425d2df2dac3113b7bfa))
+
 ## [0.13.4](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.3...heroku-connect-plugin-v0.13.4) (2026-09-22)
 
 
