@@ -37,6 +37,8 @@ export default class MappingDiagnose extends Command {
 
     ux.stdout('')
     styledHeader(mapping.object_name)
-    displayResults(results.data, flags)
+    if (results.data) {
+      displayResults(results.data, flags)
+    }
   }
 }
