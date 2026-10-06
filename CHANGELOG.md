@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.6](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.5...heroku-connect-plugin-v0.13.6) (2026-10-06)
+
+
+### Bug Fixes
+
+* guard against null results in connect:mapping:diagnose ([#343](https://github.com/heroku/heroku-connect-plugin/issues/343)) ([630a106](https://github.com/heroku/heroku-connect-plugin/commit/630a106ceb874a1efc2cc79607c29c0bacb55bc3))
+
 ## [0.13.5](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.4...heroku-connect-plugin-v0.13.5) (2026-10-01)
 
 
