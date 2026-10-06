@@ -45,7 +45,7 @@ DESCRIPTION
   Set database parameters
 ```
 
-_See code: [src/commands/connect/db/set.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/db/set.ts)_
+_See code: [src/commands/connect/db/set.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/db/set.ts)_
 
 ## `heroku connect:diagnose`
 
@@ -67,7 +67,7 @@ DESCRIPTION
   Display diagnostic information about a connection
 ```
 
-_See code: [src/commands/connect/diagnose.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/diagnose.ts)_
+_See code: [src/commands/connect/diagnose.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/diagnose.ts)_
 
 ## `heroku connect:export`
 
@@ -88,7 +88,7 @@ DESCRIPTION
   Export configuration from a connection
 ```
 
-_See code: [src/commands/connect/export.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/export.ts)_
+_See code: [src/commands/connect/export.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/export.ts)_
 
 ## `heroku connect:import [FILE]`
 
@@ -112,7 +112,7 @@ DESCRIPTION
   Import configuration from an export file
 ```
 
-_See code: [src/commands/connect/import.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/import.ts)_
+_See code: [src/commands/connect/import.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/import.ts)_
 
 ## `heroku connect:info`
 
@@ -134,7 +134,7 @@ DESCRIPTION
   Display connection information
 ```
 
-_See code: [src/commands/connect/info.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/info.ts)_
+_See code: [src/commands/connect/info.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/info.ts)_
 
 ## `heroku connect:manage-sf-api-version`
 
@@ -171,7 +171,7 @@ EXAMPLES
   $ heroku connect:manage-sf-api-version --app my-app --resource herokuconnect-swiftly-54348 --target-version 61.0 --json
 ```
 
-_See code: [src/commands/connect/manage-sf-api-version.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/manage-sf-api-version.ts)_
+_See code: [src/commands/connect/manage-sf-api-version.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/manage-sf-api-version.ts)_
 
 ## `heroku connect:mapping:delete [MAPPING]`
 
@@ -196,7 +196,7 @@ DESCRIPTION
   Delete an existing mapping
 ```
 
-_See code: [src/commands/connect/mapping/delete.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/mapping/delete.ts)_
+_See code: [src/commands/connect/mapping/delete.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/mapping/delete.ts)_
 
 ## `heroku connect:mapping:diagnose [MAPPING]`
 
@@ -221,7 +221,7 @@ DESCRIPTION
   Display diagnostic information about a mapping
 ```
 
-_See code: [src/commands/connect/mapping/diagnose.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/mapping/diagnose.ts)_
+_See code: [src/commands/connect/mapping/diagnose.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/mapping/diagnose.ts)_
 
 ## `heroku connect:mapping:reload [MAPPING]`
 
@@ -245,7 +245,7 @@ DESCRIPTION
   Reload a mapping's data from Salesforce
 ```
 
-_See code: [src/commands/connect/mapping/reload.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/mapping/reload.ts)_
+_See code: [src/commands/connect/mapping/reload.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/mapping/reload.ts)_
 
 ## `heroku connect:mapping:state [MAPPING]`
 
@@ -269,7 +269,7 @@ DESCRIPTION
   Return a mapping state
 ```
 
-_See code: [src/commands/connect/mapping/state.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/mapping/state.ts)_
+_See code: [src/commands/connect/mapping/state.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/mapping/state.ts)_
 
 ## `heroku connect:mapping:write-errors NAME`
 
@@ -297,7 +297,7 @@ EXAMPLES
   $ heroku connect:mapping:write-errors -a myapp --resource herokuconnect-twisted-123 Account
 ```
 
-_See code: [src/commands/connect/mapping/write-errors.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/mapping/write-errors.ts)_
+_See code: [src/commands/connect/mapping/write-errors.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/mapping/write-errors.ts)_
 
 ## `heroku connect:notifications`
 
@@ -322,7 +322,7 @@ DESCRIPTION
   Return the unacknowledged notifications
 ```
 
-_See code: [src/commands/connect/notifications/index.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/notifications/index.ts)_
+_See code: [src/commands/connect/notifications/index.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/notifications/index.ts)_
 
 ## `heroku connect:notifications:acknowledge`
 
@@ -347,7 +347,7 @@ DESCRIPTION
   Acknowledges notifications matching the given criteria
 ```
 
-_See code: [src/commands/connect/notifications/acknowledge.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/notifications/acknowledge.ts)_
+_See code: [src/commands/connect/notifications/acknowledge.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/notifications/acknowledge.ts)_
 
 ## `heroku connect:pause`
 
@@ -368,7 +368,7 @@ DESCRIPTION
   Pause a connection
 ```
 
-_See code: [src/commands/connect/pause.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/pause.ts)_
+_See code: [src/commands/connect/pause.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/pause.ts)_
 
 ## `heroku connect:recover`
 
@@ -392,7 +392,7 @@ ALIASES
   $ heroku connect:restart
 ```
 
-_See code: [src/commands/connect/recover.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/recover.ts)_
+_See code: [src/commands/connect/recover.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/recover.ts)_
 
 ## `heroku connect:restart`
 
@@ -435,7 +435,7 @@ DESCRIPTION
   Resume a connection
 ```
 
-_See code: [src/commands/connect/resume.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/resume.ts)_
+_See code: [src/commands/connect/resume.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/resume.ts)_
 
 ## `heroku connect:sf:auth`
 
@@ -459,7 +459,7 @@ DESCRIPTION
   Authorize access to Salesforce for your connection
 ```
 
-_See code: [src/commands/connect/sf/auth.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/sf/auth.ts)_
+_See code: [src/commands/connect/sf/auth.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/sf/auth.ts)_
 
 ## `heroku connect:state`
 
@@ -481,7 +481,7 @@ DESCRIPTION
   Return the connection(s) state
 ```
 
-_See code: [src/commands/connect/state.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/state.ts)_
+_See code: [src/commands/connect/state.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/state.ts)_
 
 ## `heroku connect:write-errors`
 
@@ -506,4 +506,4 @@ EXAMPLES
   $ heroku connect:write-errors -a myapp --resource herokuconnect-twisted-123
 ```
 
-_See code: [src/commands/connect/write-errors.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.5/src/commands/connect/write-errors.ts)_
+_See code: [src/commands/connect/write-errors.ts](https://github.com/heroku/heroku-connect-plugin/blob/heroku-connect-plugin-v0.13.6/src/commands/connect/write-errors.ts)_
