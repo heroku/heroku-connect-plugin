@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.7](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.6...heroku-connect-plugin-v0.13.7) (2026-10-14)
+
+
+### Dependencies
+
+* bump source-map-js from 1.2.1 to 1.2.2 ([#350](https://github.com/heroku/heroku-connect-plugin/issues/350)) ([83d140c](https://github.com/heroku/heroku-connect-plugin/commit/83d140cfaf1fc4d8fd9f421da1e25d4d6643aac3))
+
 ## [0.13.6](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.5...heroku-connect-plugin-v0.13.6) (2026-10-06)
 
 
