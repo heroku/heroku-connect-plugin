@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.13.7](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.6...heroku-connect-plugin-v0.13.7) (2026-10-29)
+
+
+### Dependencies
+
+* bump follow-redirects from 1.16.0 to 1.16.2 ([#352](https://github.com/heroku/heroku-connect-plugin/issues/352)) ([fd0b586](https://github.com/heroku/heroku-connect-plugin/commit/fd0b58649a0d0aee21ff93e1be45b6474e273b2e))
+* bump source-map-js from 1.2.1 to 1.2.2 ([#350](https://github.com/heroku/heroku-connect-plugin/issues/350)) ([83d140c](https://github.com/heroku/heroku-connect-plugin/commit/83d140cfaf1fc4d8fd9f421da1e25d4d6643aac3))
+* bump vite from 8.2.1 to 8.3.4 ([#353](https://github.com/heroku/heroku-connect-plugin/issues/353)) ([008965c](https://github.com/heroku/heroku-connect-plugin/commit/008965cfb02fd6a1a2c35b57f12d3ad3f8089433))
+
 ## [0.13.6](https://github.com/heroku/heroku-connect-plugin/compare/heroku-connect-plugin-v0.13.5...heroku-connect-plugin-v0.13.6) (2026-10-06)
 
 
