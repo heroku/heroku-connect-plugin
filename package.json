@@ -61,7 +61,7 @@
     "cross-spawn": "^6.0.6"
   },
   "devDependencies": {
-    "@heroku-cli/test-utils": "^1.0.1",
+    "@heroku-cli/test-utils": "^2.0.0",
     "@types/inquirer": "^8.2.10",
     "@types/node": "^26.6.2",
     "@vitest/eslint-plugin": "^1.6.27",
